@@ -1,0 +1,29 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { InteractiveMansion } from '../components/InteractiveMansion';
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "LodgingBusiness",
+  "name": "Western Stay – Sanjay Mansion",
+  "description": "Western Stay – Sanjay Mansion in Saravanampatti, Coimbatore offers comfortable accommodation with Wi-Fi, solar hot water, attached bathrooms, RO drinking water, laundry access, parking and 24×7 CCTV surveillance.",
+  "telephone": "+918056889900",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "No. 6, Sanjay Garden, Opp. KCT Tech Park",
+    "addressLocality": "Saravanampatti, Coimbatore",
+    "addressRegion": "Tamil Nadu",
+    "postalCode": "641035",
+    "addressCountry": "IN"
+  },
+  "priceRange": "₹4,900 - ₹8,000"
+};
+---
+
+<Layout
+  title="Western Stay – Sanjay Mansion | Saravanampatti, Coimbatore"
+  description="Western Stay – Sanjay Mansion in Saravanampatti, Coimbatore offers comfortable accommodation with Wi-Fi, solar hot water, attached bathrooms, RO drinking water, laundry access, parking and 24×7 CCTV surveillance."
+  schema={schema}
+>
+  <InteractiveMansion client:load />
+</Layout>

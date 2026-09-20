@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { InteractiveHome } from '../components/InteractiveHome';
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "RealEstateAgent",
+  "name": "Sanjay Properties",
+  "description": "Real estate and housing development firm associated with Sanjay Garden in Saravanampatti, Coimbatore.",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Sanjay Garden, PNT Colony, Saravanampatti",
+    "addressLocality": "Coimbatore",
+    "addressRegion": "Tamil Nadu",
+    "postalCode": "641035",
+    "addressCountry": "IN"
+  }
+};
+---
+
+<Layout
+  title="Sanjay Properties | Sanjay Garden, Saravanampatti, Coimbatore"
+  description="Discover Sanjay Garden, a residential address in Saravanampatti, Coimbatore by Sanjay Properties. Explore the layout, location, and project details."
+  schema={schema}
+>
+  <InteractiveHome client:load />
+</Layout>

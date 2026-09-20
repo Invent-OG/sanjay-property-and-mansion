@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Lapidaria Maior SemiBold';
+  src: local('Lapidaria Maior SemiBold'),
+       local('LapidariaMaior-SemiBold'),
+       local('Lapidaria Maior'),
+       local('LapidariaMaior'),
+       local('Lapidaria'),
+       url('/fonts/LapidariaMaior-SemiBold.woff2') format('woff2'),
+       url('/fonts/LapidariaMaior-SemiBold.otf') format('opentype'),
+       url('/fonts/LapidariaMaior-SemiBold.ttf') format('truetype'),
+       url('/fonts/Lapidaria Maior SemiBold.otf') format('opentype'),
+       url('/fonts/Lapidaria Maior SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lapidaria Maior';
+  src: local('Lapidaria Maior'),
+       local('LapidariaMaior'),
+       local('Lapidaria Maior SemiBold'),
+       local('LapidariaMaior-SemiBold'),
+       local('Lapidaria'),
+       url('/fonts/LapidariaMaior-SemiBold.woff2') format('woff2'),
+       url('/fonts/LapidariaMaior-SemiBold.otf') format('opentype'),
+       url('/fonts/LapidariaMaior-SemiBold.ttf') format('truetype');
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Lapidaria Maior SemiBold', 'Lapidaria Maior', 'Lapidaria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  *, ::before, ::after {
+    font-family: 'Lapidaria Maior SemiBold', 'Lapidaria Maior', 'Lapidaria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  html, body {
+    font-family: 'Lapidaria Maior SemiBold', 'Lapidaria Maior', 'Lapidaria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
+
+/* Custom scrollbar and smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f2f4;
+}
+::-webkit-scrollbar-thumb {
+  background: #c5cad0;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
