@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowUpRight, Check, Copy, MapPin, Phone } from 'lucide-react';
 import { CONTACT_CONFIG } from '../data/contact';
+import { BrandLogo } from './BrandLogo';
 
 interface FooterProps {
   onNavClick: (id: string) => void;
@@ -102,7 +103,7 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Middle Row: Brand Info, Links & Office Address */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {/* Brand Info & Description */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col items-start gap-3">
             <a
               href="#hero"
               onClick={(e) => {
@@ -111,11 +112,7 @@ export const Footer: React.FC<FooterProps> = ({
               }}
               className="inline-block hover:opacity-90 transition-opacity"
             >
-              <img
-                src="/logo/logo-white.png"
-                alt="Sanjay Properties"
-                className="h-10 sm:h-12 w-auto object-contain"
-              />
+              <BrandLogo variant="white" size="md" layout="vertical" />
             </a>
             <p className="text-xs text-neutral-400 leading-relaxed max-w-xs mt-1">
               Building prime residential communities and managed living spaces in Saravanampatti, Coimbatore North.

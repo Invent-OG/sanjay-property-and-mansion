@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Home, Search, ChevronLeft, ChevronRight, Menu, X, ArrowUpRight, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CONTACT_CONFIG } from '../data/contact';
+import { BrandLogo } from './BrandLogo';
 
 interface HeroSectionProps {
   onOpenEnquiry: () => void;
@@ -178,14 +179,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           <div className="text-center pointer-events-auto flex-1 min-w-0 xl:flex-none xl:absolute xl:left-1/2 xl:-translate-x-1/2 px-2 overflow-hidden flex items-center justify-center">
             <a
               href="#hero"
-              className="flex items-center gap-2 hover:opacity-90 transition-opacity focus:outline-none"
+              className="hover:opacity-90 transition-opacity focus:outline-none inline-flex items-center justify-center"
               aria-label={CONTACT_CONFIG.companyName}
             >
-              <img
-                src="/logo/logo-white.png"
-                alt={CONTACT_CONFIG.companyName}
-                className="h-8 sm:h-10 md:h-11 w-auto max-w-[180px] sm:max-w-[240px] object-contain drop-shadow-sm"
-              />
+              <BrandLogo variant="white" size="md" layout="vertical" />
             </a>
           </div>
 
@@ -220,11 +217,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               className="xl:hidden absolute top-20 left-4 right-4 z-30 bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-2xl flex flex-col gap-2"
             >
               <div className="flex items-center justify-between pb-3 mb-1 border-b border-white/10 px-1">
-                <img
-                  src="/logo/logo-white.png"
-                  alt={CONTACT_CONFIG.companyName}
-                  className="h-7 w-auto object-contain"
-                />
+                <BrandLogo variant="white" size="sm" layout="horizontal" />
                 <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">
                   Menu
                 </span>

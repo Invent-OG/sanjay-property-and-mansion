@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, MapPin, Check, Phone, Calendar, Search, FileText, ArrowUpRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CONTACT_CONFIG } from '../data/contact';
+import { BrandLogo } from './BrandLogo';
 
 interface EnquiryModalProps {
   isOpen: boolean;
@@ -41,13 +42,10 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
             {/* Header */}
             <div className="bg-neutral-950 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <img
-                  src="/logo/logo-white.png"
-                  alt="Sanjay Properties"
-                  className="h-8 sm:h-9 w-auto object-contain"
-                />
+                <BrandLogo variant="white" size="sm" layout="horizontal" />
+                <div className="h-6 w-px bg-white/20" />
                 <div>
-                  <h3 className="font-bold text-sm sm:text-base leading-tight">Sanjay Properties Enquiry</h3>
+                  <h3 className="font-bold text-sm sm:text-base leading-tight">Enquiry Desk</h3>
                   <p className="text-[11px] sm:text-xs text-[#d2f831]">Sanjay Garden · Saravanampatti</p>
                 </div>
               </div>

@@ -30,6 +30,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SANJAY_MANSION_DATA } from '../data/sanjayMansion';
 import { CONTACT_CONFIG } from '../data/contact';
 import { Footer } from './Footer';
+import { BrandLogo } from './BrandLogo';
 
 interface SanjayMansionPageProps {
   onBackToHome: () => void;
@@ -169,17 +170,14 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
             <div className="h-5 w-px bg-neutral-300 hidden sm:block" />
 
-            <div className="flex items-center gap-2.5">
-              <img
-                src="/logo/logo-black.png"
-                alt="Sanjay Properties"
-                className="h-7 sm:h-8 w-auto object-contain"
-              />
+            <div className="flex items-center gap-3">
+              <BrandLogo variant="black" size="sm" layout="horizontal" />
+              <div className="h-6 w-px bg-neutral-300 hidden sm:block" />
               <div className="flex flex-col">
-                <span className="text-xs sm:text-sm font-extrabold tracking-wider uppercase text-neutral-900 leading-none">
+                <span className="text-xs sm:text-sm font-normal tracking-wider uppercase text-neutral-900 leading-none">
                   SANJAY MANSION
                 </span>
-                <span className="text-[10px] text-neutral-500 font-semibold tracking-wide">
+                <span className="text-[10px] text-neutral-500 font-normal tracking-wide">
                   Western Stay Residence
                 </span>
               </div>

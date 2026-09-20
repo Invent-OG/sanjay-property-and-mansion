@@ -12,7 +12,7 @@
        url('/fonts/LapidariaMaior-SemiBold.ttf') format('truetype'),
        url('/fonts/Lapidaria Maior SemiBold.otf') format('opentype'),
        url('/fonts/Lapidaria Maior SemiBold.ttf') format('truetype');
-  font-weight: 600;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -27,6 +27,7 @@
        url('/fonts/LapidariaMaior-SemiBold.woff2') format('woff2'),
        url('/fonts/LapidariaMaior-SemiBold.otf') format('opentype'),
        url('/fonts/LapidariaMaior-SemiBold.ttf') format('truetype');
+  font-weight: 100 900;
   font-display: swap;
 }
 
@@ -37,9 +38,11 @@
 @layer base {
   *, ::before, ::after {
     font-family: 'Lapidaria Maior SemiBold', 'Lapidaria Maior', 'Lapidaria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400 !important;
   }
-  html, body {
+  html, body, h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select, strong, b, div {
     font-family: 'Lapidaria Maior SemiBold', 'Lapidaria Maior', 'Lapidaria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400 !important;
   }
 }
 
