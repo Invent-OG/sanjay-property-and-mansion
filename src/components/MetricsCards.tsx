@@ -24,7 +24,7 @@ export const MetricsCards: React.FC = () => {
           <div
             key={card.id}
             className={`stat-card ${
-              card.isAccent ? 'bg-[#d2f831]' : 'bg-[#f0f2f4]'
+              card.isAccent ? 'bg-[#FFCC00]' : 'bg-[#f0f2f4]'
             } rounded-[28px] p-7 sm:p-8 flex flex-col justify-between h-[185px] sm:h-[200px] relative transition-all duration-300 shadow-sm border border-black/5 hover:-translate-y-1 group`}
           >
             {/* Top Right Icon Badge */}

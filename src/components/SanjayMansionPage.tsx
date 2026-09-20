@@ -149,7 +149,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
   ) || SANJAY_MANSION_DATA.weeklyMenu[0];
 
   return (
-    <div className="min-h-screen bg-[#f5f6f8] text-[#111213] selection:bg-[#d2f831] selection:text-black flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f5f6f8] text-[#111213] selection:bg-[#FFCC00] selection:text-black flex flex-col font-sans">
       {/* ========================================================================= */}
       {/* 1. TOP HEADER NAVIGATION (Matching Sanjay Properties Visual Language)   */}
       {/* ========================================================================= */}
@@ -196,7 +196,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
             <a
               href="tel:8056889900"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#d2f831] text-black text-xs font-extrabold hover:bg-neutral-950 hover:text-white active:scale-95 transition-all shadow-2xs"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FFCC00] text-black text-xs font-extrabold hover:bg-neutral-950 hover:text-white active:scale-95 transition-all shadow-2xs"
             >
               <span>Book Stay</span>
               <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -223,13 +223,13 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
           {/* Top Hero Badges */}
           <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#d2f831] text-xs font-bold uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-[#d2f831] animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#FFCC00] text-xs font-bold uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-[#FFCC00] animate-pulse" />
               <span>WESTERN STAY RESIDENCE · COIMBATORE</span>
             </div>
 
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs font-medium">
-              <MapPin className="w-3.5 h-3.5 text-[#d2f831]" />
+              <MapPin className="w-3.5 h-3.5 text-[#FFCC00]" />
               <span>Saravanampatti · Opp. KCT Tech Park</span>
             </div>
           </div>
@@ -239,7 +239,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05] uppercase">
               WESTERN STAY
               <br />
-              <span className="text-[#d2f831]">SANJAY MANSION</span>
+              <span className="text-[#FFCC00]">SANJAY MANSION</span>
             </h1>
 
             <p className="text-lg sm:text-2xl text-neutral-200 font-semibold mt-4 sm:mt-5 tracking-tight italic">
@@ -252,7 +252,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
             {/* Address Banner */}
             <div className="mt-6 p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs sm:text-sm flex items-start gap-3 max-w-xl">
-              <MapPin className="w-4 h-4 text-[#d2f831] shrink-0 mt-0.5" />
+              <MapPin className="w-4 h-4 text-[#FFCC00] shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold block text-white">Location Address:</span>
                 <span className="text-neutral-300">{SANJAY_MANSION_DATA.location.fullAddress}</span>
@@ -263,7 +263,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-8">
               <a
                 href={SANJAY_MANSION_DATA.phones[0].href}
-                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-[#d2f831] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2"
+                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2"
               >
                 <span>BOOK YOUR STAY</span>
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
@@ -275,7 +275,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 rel="noopener noreferrer"
                 className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all shadow-md flex items-center gap-2"
               >
-                <Navigation className="w-4 h-4 text-[#d2f831]" />
+                <Navigation className="w-4 h-4 text-[#FFCC00]" />
                 <span>GET DIRECTIONS</span>
               </a>
 
@@ -283,7 +283,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 href={SANJAY_MANSION_DATA.phones[0].href}
                 className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center gap-2"
               >
-                <Phone className="w-4 h-4 text-[#d2f831]" />
+                <Phone className="w-4 h-4 text-[#FFCC00]" />
                 <span>CALL NOW</span>
               </a>
             </div>
@@ -293,7 +293,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
           <div className="relative z-10 pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-4 text-white">
             <div>
               <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Pricing Starts</span>
-              <span className="text-base sm:text-xl font-black text-[#d2f831]">₹4,900 / mo</span>
+              <span className="text-base sm:text-xl font-black text-[#FFCC00]">₹4,900 / mo</span>
             </div>
             <div>
               <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Connectivity</span>
@@ -318,7 +318,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
         <div className="bg-white rounded-[28px] sm:rounded-[40px] border border-neutral-200/90 p-6 sm:p-12 lg:p-16 shadow-xs">
           <div className="max-w-3xl mx-auto text-center mb-10 sm:mb-14">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-neutral-50 text-neutral-900 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-4">
-              <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+              <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
               <span>SANJAY MANSION PHILOSOPHY</span>
             </div>
 
@@ -340,7 +340,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 className="p-6 rounded-[24px] bg-neutral-50 border border-neutral-200/80 hover:border-neutral-300 transition-all flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-full bg-[#d2f831] text-black font-black flex items-center justify-center text-sm mb-4 shadow-xs">
+                  <div className="w-10 h-10 rounded-full bg-[#FFCC00] text-black font-black flex items-center justify-center text-sm mb-4 shadow-xs">
                     0{idx + 1}
                   </div>
                   <h3 className="text-lg font-bold text-neutral-950 tracking-tight mb-2">
@@ -363,7 +363,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-white text-neutral-900 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+              <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
               <span>TRANSPARENT TARIFFS</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-neutral-950 tracking-tight leading-tight uppercase">
@@ -385,13 +385,13 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               whileHover={{ y: -6 }}
               className={`rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 flex flex-col justify-between transition-all relative ${
                 acc.recommended
-                  ? 'bg-neutral-950 text-white border-2 border-[#d2f831] shadow-xl'
+                  ? 'bg-neutral-950 text-white border-2 border-[#FFCC00] shadow-xl'
                   : 'bg-white text-neutral-950 border border-neutral-200/90 shadow-xs'
               }`}
             >
               {acc.recommended && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <span className="px-4 py-1 rounded-full bg-[#d2f831] text-black text-xs font-black uppercase tracking-wider shadow-sm">
+                  <span className="px-4 py-1 rounded-full bg-[#FFCC00] text-black text-xs font-black uppercase tracking-wider shadow-sm">
                     {acc.badge}
                   </span>
                 </div>
@@ -412,7 +412,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
                 <div className="mt-4 mb-6 pb-6 border-b border-neutral-200/40">
                   <div className="flex items-baseline gap-1.5">
-                    <span className={`text-3xl sm:text-4xl font-black tracking-tight ${acc.recommended ? 'text-[#d2f831]' : 'text-neutral-950'}`}>
+                    <span className={`text-3xl sm:text-4xl font-black tracking-tight ${acc.recommended ? 'text-[#FFCC00]' : 'text-neutral-950'}`}>
                       {acc.priceMonthly}
                     </span>
                     <span className={`text-xs ${acc.recommended ? 'text-neutral-400' : 'text-neutral-500'}`}>
@@ -427,7 +427,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                     <li key={fIdx} className="flex items-start gap-2.5 text-xs sm:text-sm">
                       <CheckCircle2
                         className={`w-4 h-4 shrink-0 mt-0.5 ${
-                          acc.recommended ? 'text-[#d2f831]' : 'text-[#65a30d]'
+                          acc.recommended ? 'text-[#FFCC00]' : 'text-[#65a30d]'
                         }`}
                       />
                       <span className={acc.recommended ? 'text-neutral-200' : 'text-neutral-700'}>
@@ -444,7 +444,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                   href={`tel:8056889900`}
                   className={`w-full py-3 px-4 rounded-full font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition-all text-center ${
                     acc.recommended
-                      ? 'bg-[#d2f831] text-black hover:bg-white'
+                      ? 'bg-[#FFCC00] text-black hover:bg-white'
                       : 'bg-neutral-950 text-white hover:bg-neutral-800'
                   }`}
                 >
@@ -476,8 +476,8 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
       <section id="facilities" className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
         <div className="bg-neutral-950 text-white rounded-[28px] sm:rounded-[40px] p-6 sm:p-12 lg:p-16 shadow-xl">
           <div className="max-w-2xl mb-10 sm:mb-14">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-700 bg-neutral-900 text-[#d2f831] text-xs font-semibold uppercase tracking-wider mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-700 bg-neutral-900 text-[#FFCC00] text-xs font-semibold uppercase tracking-wider mb-3">
+              <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
               <span>COMPREHENSIVE AMENITIES</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight uppercase">
@@ -496,7 +496,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 className="p-5 sm:p-6 rounded-[20px] sm:rounded-[24px] bg-neutral-900/90 border border-neutral-800 hover:border-neutral-700 transition-all flex flex-col justify-between group"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center mb-4 group-hover:bg-[#d2f831] transition-colors shadow-sm">
+                  <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center mb-4 group-hover:bg-[#FFCC00] transition-colors shadow-sm">
                     {renderFacilityIcon(fac.iconName)}
                   </div>
                   <h3 className="text-sm sm:text-base font-bold text-white tracking-tight mb-1.5">
@@ -518,7 +518,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
       <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-white text-neutral-900 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-3">
-            <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+            <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
             <span>CORE ADVANTAGES</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-neutral-950 tracking-tight uppercase">
@@ -534,7 +534,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               className="p-6 sm:p-8 rounded-[24px] sm:rounded-[28px] bg-white border border-neutral-200/90 shadow-xs flex flex-col justify-between"
             >
               <div>
-                <div className="w-10 h-10 rounded-full bg-[#d2f831] text-black font-extrabold flex items-center justify-center text-xs mb-5">
+                <div className="w-10 h-10 rounded-full bg-[#FFCC00] text-black font-extrabold flex items-center justify-center text-xs mb-5">
                   0{idx + 1}
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-neutral-950 tracking-tight mb-2">
@@ -556,7 +556,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
         <div className="bg-white rounded-[28px] sm:rounded-[40px] border border-neutral-200/90 p-6 sm:p-12 lg:p-16 shadow-xs">
           <div className="max-w-2xl mb-8 sm:mb-12">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-neutral-50 text-neutral-900 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+              <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
               <span>NUTRITIOUS DINING OPTIONS</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-neutral-950 tracking-tight uppercase leading-tight">
@@ -762,7 +762,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12">
           <div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-white text-neutral-900 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+              <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
               <span>PROPERTY VISUALS</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-neutral-950 tracking-tight uppercase leading-tight">
@@ -792,7 +792,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80 group-hover:opacity-95 transition-opacity" />
               <div className="absolute bottom-4 left-4 right-4 text-white">
-                <span className="text-[10px] font-bold text-[#d2f831] uppercase tracking-wider block mb-0.5">
+                <span className="text-[10px] font-bold text-[#FFCC00] uppercase tracking-wider block mb-0.5">
                   {img.category}
                 </span>
                 <h4 className="text-sm font-bold tracking-tight">{img.title}</h4>
@@ -840,7 +840,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             <div className="lg:col-span-5 flex flex-col justify-between">
               <div>
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-neutral-50 text-neutral-900 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-4">
-                  <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+                  <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
                   <span>LOCATION &amp; CONNECTIVITY</span>
                 </div>
 
@@ -886,7 +886,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                   href={SANJAY_MANSION_DATA.location.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 rounded-full bg-neutral-950 text-white font-extrabold text-xs sm:text-sm hover:bg-[#d2f831] hover:text-black active:scale-95 transition-all shadow-md"
+                  className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 rounded-full bg-neutral-950 text-white font-extrabold text-xs sm:text-sm hover:bg-[#FFCC00] hover:text-black active:scale-95 transition-all shadow-md"
                 >
                   <Navigation className="w-4 h-4" />
                   <span>GET DIRECTIONS</span>
@@ -906,7 +906,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
               <div className="absolute bottom-4 left-4 z-10">
                 <div className="px-3.5 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-neutral-200 text-neutral-800 text-xs font-bold shadow-xs flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#d2f831] animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-[#FFCC00] animate-pulse" />
                   <span>Western Stay – Sanjay Mansion</span>
                 </div>
               </div>
@@ -921,10 +921,10 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
       <section className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
         <div className="relative rounded-[32px] sm:rounded-[44px] overflow-hidden bg-neutral-950 text-white p-8 sm:p-14 lg:p-18 text-center shadow-2xl">
           {/* Subtle Ambient Radial Lighting */}
-          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-[#d2f831]/20 to-transparent blur-3xl pointer-events-none" />
+          <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-[#FFCC00]/20 to-transparent blur-3xl pointer-events-none" />
 
           <div className="relative z-10 max-w-2xl mx-auto">
-            <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#d2f831] block mb-3">
+            <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-[#FFCC00] block mb-3">
               RESERVE YOUR ROOM TODAY
             </span>
 
@@ -939,7 +939,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <a
                 href="tel:8056889900"
-                className="py-3.5 px-6 sm:px-8 rounded-full bg-[#d2f831] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2"
+                className="py-3.5 px-6 sm:px-8 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2"
               >
                 <Phone className="w-4 h-4 stroke-[2.5]" />
                 <span>CALL 8056889900</span>
@@ -949,7 +949,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 href="tel:8110889900"
                 className="py-3.5 px-6 sm:px-8 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center gap-2"
               >
-                <Phone className="w-4 h-4 text-[#d2f831]" />
+                <Phone className="w-4 h-4 text-[#FFCC00]" />
                 <span>CALL 8110889900</span>
               </a>
 
@@ -959,7 +959,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 rel="noopener noreferrer"
                 className="py-3.5 px-6 sm:px-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all flex items-center gap-2"
               >
-                <Navigation className="w-4 h-4 text-[#d2f831]" />
+                <Navigation className="w-4 h-4 text-[#FFCC00]" />
                 <span>GET DIRECTIONS</span>
               </a>
             </div>

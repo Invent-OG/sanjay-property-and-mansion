@@ -31,7 +31,7 @@ export const METRICS = [
     id: 'sold',
     value: '16K+',
     label: 'PROPERTIES SOLD',
-    bg: 'bg-[#d2f831]',
+    bg: 'bg-[#FFCC00]',
     textColor: 'text-black',
     icon: 'folder'
   },

@@ -53,7 +53,7 @@ export const ExcellencePartner: React.FC<ExcellencePartnerProps> = ({
           >
             <div>
               {/* Circular Lime Green Icon Badge */}
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#d2f831] flex items-center justify-center text-black mb-5 sm:mb-6 shadow-xs">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#FFCC00] flex items-center justify-center text-black mb-5 sm:mb-6 shadow-xs">
                 <MapPin className="w-5 h-5 stroke-[2.2]" />
               </div>
 
@@ -78,7 +78,7 @@ export const ExcellencePartner: React.FC<ExcellencePartnerProps> = ({
           >
             <div>
               {/* Circular Lime Green Icon Badge */}
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#d2f831] flex items-center justify-center text-black mb-5 sm:mb-6 shadow-xs">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#FFCC00] flex items-center justify-center text-black mb-5 sm:mb-6 shadow-xs">
                 <FileCheck className="w-5 h-5 stroke-[2.2]" />
               </div>
 

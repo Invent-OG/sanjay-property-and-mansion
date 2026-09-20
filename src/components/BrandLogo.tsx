@@ -40,28 +40,28 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   // Vertical stacked lockup matching the exact reference image
   const sizeConfig = {
     sm: {
-      img: 'h-6 sm:h-7',
-      sanjay: 'text-[11px] sm:text-xs tracking-[0.26em] pl-[0.26em]',
-      properties: 'text-[7px] sm:text-[8px] tracking-[0.34em] pl-[0.34em]',
-      gap: 'gap-1'
+      img: 'h-5 sm:h-6',
+      sanjay: 'text-[10px] sm:text-[11px] tracking-[0.26em] pl-[0.26em]',
+      properties: 'text-[6.5px] sm:text-[7.5px] tracking-[0.34em] pl-[0.34em]',
+      gap: 'gap-0.5'
     },
     md: {
-      img: 'h-8 sm:h-10 md:h-11',
-      sanjay: 'text-sm sm:text-base md:text-lg tracking-[0.28em] pl-[0.28em]',
-      properties: 'text-[8px] sm:text-[10px] md:text-[11px] tracking-[0.36em] pl-[0.36em]',
-      gap: 'gap-1.5'
+      img: 'h-6 sm:h-7 md:h-8',
+      sanjay: 'text-xs sm:text-sm tracking-[0.28em] pl-[0.28em]',
+      properties: 'text-[7.5px] sm:text-[8.5px] tracking-[0.36em] pl-[0.36em]',
+      gap: 'gap-1'
     },
     lg: {
-      img: 'h-12 sm:h-14 md:h-16',
-      sanjay: 'text-lg sm:text-xl md:text-2xl tracking-[0.3em] pl-[0.3em]',
-      properties: 'text-[10px] sm:text-xs md:text-sm tracking-[0.38em] pl-[0.38em]',
-      gap: 'gap-2'
+      img: 'h-10 sm:h-12 md:h-14',
+      sanjay: 'text-base sm:text-lg md:text-xl tracking-[0.3em] pl-[0.3em]',
+      properties: 'text-[9px] sm:text-xs md:text-sm tracking-[0.38em] pl-[0.38em]',
+      gap: 'gap-1.5'
     },
     xl: {
-      img: 'h-16 sm:h-20',
-      sanjay: 'text-2xl sm:text-3xl tracking-[0.32em] pl-[0.32em]',
-      properties: 'text-xs sm:text-base tracking-[0.4em] pl-[0.4em]',
-      gap: 'gap-2.5'
+      img: 'h-14 sm:h-18',
+      sanjay: 'text-xl sm:text-2xl tracking-[0.32em] pl-[0.32em]',
+      properties: 'text-xs sm:text-sm tracking-[0.4em] pl-[0.4em]',
+      gap: 'gap-2'
     }
   };
 
@@ -72,13 +72,13 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       <img
         src={logoSrc}
         alt="Sanjay Properties"
-        className={`${cfg.img} w-auto object-contain drop-shadow-sm`}
+        className={`${cfg.img} w-auto object-contain drop-shadow-sm shrink-0`}
       />
-      <div className="flex flex-col items-center justify-center leading-none text-center">
+      <div className="flex flex-col items-center justify-center leading-tight text-center">
         <span className={`font-bold uppercase whitespace-nowrap block ${cfg.sanjay} ${textColor}`}>
           SANJAY
         </span>
-        <span className={`font-semibold uppercase whitespace-nowrap block mt-1 ${cfg.properties} ${isWhite ? 'text-white/90' : 'text-neutral-800'}`}>
+        <span className={`font-semibold uppercase whitespace-nowrap block mt-0.5 ${cfg.properties} ${isWhite ? 'text-white/90' : 'text-neutral-800'}`}>
           PROPERTIES
         </span>
       </div>

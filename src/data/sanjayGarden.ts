@@ -37,7 +37,7 @@ export const PROJECT_STAT_CARDS: ProjectStatCard[] = [
     id: 'stat-project',
     title: 'SANJAY GARDEN',
     subtitle: 'Residential Layout',
-    isAccent: true, // Neon lime accent #d2f831
+    isAccent: true, // Neon lime accent #FFCC00
     icon: 'folder'
   },
   {
@@ -202,7 +202,7 @@ export const EDITORIAL_STACK_CARDS = [
     tag: 'Residential Plots · Approved Layout',
     time: 'Verified Location',
     image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
-    buttonBg: 'bg-[#d2f831] text-black'
+    buttonBg: 'bg-[#FFCC00] text-black'
   },
   {
     id: 'card-2',

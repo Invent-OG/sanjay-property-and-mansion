@@ -50,7 +50,7 @@ export const FaqSection: React.FC<FaqSectionProps> = ({ onOpenEnquiry }) => {
 
           {/* Card Content */}
           <div className="relative z-10">
-            <span className="text-xs font-bold text-[#d2f831] uppercase tracking-wider mb-2 block">
+            <span className="text-xs font-bold text-[#FFCC00] uppercase tracking-wider mb-2 block">
               Sanjay Properties
             </span>
             <h3 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">

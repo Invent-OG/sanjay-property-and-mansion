@@ -73,7 +73,7 @@ export const CraftingHomes: React.FC<CraftingHomesProps> = ({ onSelectProperty }
                 }}
                 className={`w-full rounded-full p-1.5 sm:p-2 pl-4 sm:pl-5 pr-2 sm:pr-2.5 flex items-center justify-between transition-all duration-300 text-left group ${
                   isActive
-                    ? 'bg-[#d2f831] text-black font-semibold shadow-sm'
+                    ? 'bg-[#FFCC00] text-black font-semibold shadow-sm'
                     : 'bg-white border border-neutral-200/90 text-neutral-800 font-medium hover:border-neutral-300 hover:bg-neutral-50/80 shadow-2xs'
                 }`}
               >
@@ -135,7 +135,7 @@ export const CraftingHomes: React.FC<CraftingHomesProps> = ({ onSelectProperty }
 
             {/* Bottom info */}
             <div className="absolute bottom-5 left-6 right-6 z-10 text-white">
-              <span className="text-[11px] uppercase tracking-wider font-bold text-[#d2f831]">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-[#FFCC00]">
                 SANJAY GARDEN · {activeCategory.label.toUpperCase()}
               </span>
               <h3 className="text-lg font-bold text-white tracking-tight">{activeCategory.title}</h3>

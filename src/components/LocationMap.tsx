@@ -109,7 +109,7 @@ export const LocationMap: React.FC<LocationMapProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12 gsap-fade">
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-white text-neutral-900 text-xs sm:text-sm font-semibold shadow-2xs uppercase tracking-wide mb-3">
-            <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+            <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
             <span>ACCESSIBILITY & VICINITY MAP</span>
           </div>
           <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-bold text-neutral-900 tracking-tight leading-tight">
@@ -133,7 +133,7 @@ export const LocationMap: React.FC<LocationMapProps> = ({
           {/* Map Top Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-2 py-2 sm:px-3 sm:py-2.5 mb-3 bg-neutral-50 rounded-[20px] sm:rounded-full border border-neutral-200/80">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-neutral-900 text-[#d2f831] flex items-center justify-center shrink-0 shadow-2xs">
+              <div className="w-8 h-8 rounded-full bg-neutral-900 text-[#FFCC00] flex items-center justify-center shrink-0 shadow-2xs">
                 <MapPin className="w-4 h-4 stroke-[2.4]" />
               </div>
               <div className="truncate">
@@ -151,7 +151,7 @@ export const LocationMap: React.FC<LocationMapProps> = ({
                 href={directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#d2f831] text-black text-xs font-bold hover:bg-neutral-900 hover:text-white transition-all active:scale-95 shadow-2xs"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#FFCC00] text-black text-xs font-bold hover:bg-neutral-900 hover:text-white transition-all active:scale-95 shadow-2xs"
                 title="Get driving directions in Google Maps"
               >
                 <Navigation className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -186,7 +186,7 @@ export const LocationMap: React.FC<LocationMapProps> = ({
             {/* Subtle Map Legend Floating Badge */}
             <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 pointer-events-none">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-neutral-200/90 shadow-sm text-neutral-800 text-[11px] font-semibold">
-                <span className="w-2 h-2 rounded-full bg-[#d2f831] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[#FFCC00] animate-pulse" />
                 <span>Sanjay Garden · Saravanampatti Area</span>
               </div>
             </div>
@@ -298,7 +298,7 @@ export const LocationMap: React.FC<LocationMapProps> = ({
                 className="w-full py-2.5 px-4 rounded-full bg-neutral-950 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2"
               >
                 <span>Schedule a Guided Site Visit</span>
-                <ArrowUpRight className="w-4 h-4 text-[#d2f831]" />
+                <ArrowUpRight className="w-4 h-4 text-[#FFCC00]" />
               </button>
             )}
 

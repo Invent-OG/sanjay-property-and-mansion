@@ -46,7 +46,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
                 <div className="h-6 w-px bg-white/20" />
                 <div>
                   <h3 className="font-bold text-sm sm:text-base leading-tight">Enquiry Desk</h3>
-                  <p className="text-[11px] sm:text-xs text-[#d2f831]">Sanjay Garden · Saravanampatti</p>
+                  <p className="text-[11px] sm:text-xs text-[#FFCC00]">Sanjay Garden · Saravanampatti</p>
                 </div>
               </div>
               <button
@@ -62,7 +62,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
             <div className="p-5 sm:p-6 bg-white overflow-y-auto">
               {submitted ? (
                 <div className="py-8 text-center flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-full bg-[#d2f831] text-black flex items-center justify-center mb-3 shadow-md">
+                  <div className="w-12 h-12 rounded-full bg-[#FFCC00] text-black flex items-center justify-center mb-3 shadow-md">
                     <Check className="w-6 h-6 stroke-[3]" />
                   </div>
                   <h4 className="text-lg font-bold text-neutral-900">Enquiry Received</h4>
@@ -158,7 +158,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
 
                     <button
                       type="submit"
-                      className="bg-[#d2f831] text-black font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full hover:bg-neutral-900 hover:text-white transition-all shadow-sm active:scale-95"
+                      className="bg-[#FFCC00] text-black font-bold text-xs sm:text-sm px-6 py-2.5 rounded-full hover:bg-neutral-900 hover:text-white transition-all shadow-sm active:scale-95"
                     >
                       Submit Enquiry
                     </button>
@@ -206,7 +206,7 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
           >
             <div className="p-5 bg-neutral-950 text-white flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <Calendar className="w-5 h-5 text-[#d2f831]" />
+                <Calendar className="w-5 h-5 text-[#FFCC00]" />
                 <div>
                   <h3 className="font-bold text-base">Schedule a Site Visit</h3>
                   <p className="text-xs text-neutral-400">Sanjay Garden, Saravanampatti</p>
@@ -224,7 +224,7 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
             <div className="p-6">
               {confirmed ? (
                 <div className="py-6 text-center flex flex-col items-center">
-                  <div className="w-12 h-12 rounded-full bg-[#d2f831] text-black flex items-center justify-center mb-3">
+                  <div className="w-12 h-12 rounded-full bg-[#FFCC00] text-black flex items-center justify-center mb-3">
                     <Check className="w-6 h-6 stroke-[3]" />
                   </div>
                   <h4 className="text-base font-bold text-neutral-900">Visit Scheduled</h4>
@@ -292,7 +292,7 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
 
                   <button
                     type="submit"
-                    className="w-full bg-[#d2f831] text-black font-bold text-xs sm:text-sm py-3 rounded-full hover:bg-neutral-900 hover:text-white transition-all shadow-sm active:scale-95 mt-2"
+                    className="w-full bg-[#FFCC00] text-black font-bold text-xs sm:text-sm py-3 rounded-full hover:bg-neutral-900 hover:text-white transition-all shadow-sm active:scale-95 mt-2"
                   >
                     Confirm Site Visit
                   </button>
@@ -413,7 +413,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onEnqui
         <div className="p-6 sm:p-8 overflow-y-auto">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-[#d2f831] bg-black px-2.5 py-0.5 rounded-full inline-block mb-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#FFCC00] bg-black px-2.5 py-0.5 rounded-full inline-block mb-2">
                 Sanjay Garden
               </span>
               <h3 className="text-2xl font-bold text-neutral-900">{item.title}</h3>
@@ -454,7 +454,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onEnqui
                 onClose();
                 onEnquire();
               }}
-              className="w-full sm:flex-1 bg-[#d2f831] text-black font-bold text-xs sm:text-sm py-3 rounded-full hover:bg-neutral-900 hover:text-white transition-all shadow-sm text-center"
+              className="w-full sm:flex-1 bg-[#FFCC00] text-black font-bold text-xs sm:text-sm py-3 rounded-full hover:bg-neutral-900 hover:text-white transition-all shadow-sm text-center"
             >
               Enquire About This Project
             </button>

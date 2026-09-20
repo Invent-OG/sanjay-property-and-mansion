@@ -30,7 +30,7 @@ export const BrighterDaysBanner: React.FC<BrighterDaysBannerProps> = ({
 
         {/* Banner Content */}
         <div className="relative z-10 max-w-2xl mx-auto flex flex-col items-center">
-          <span className="text-xs font-bold uppercase tracking-widest text-[#d2f831] mb-3">
+          <span className="text-xs font-bold uppercase tracking-widest text-[#FFCC00] mb-3">
             {CONTACT_CONFIG.companyName}
           </span>
 
@@ -47,7 +47,7 @@ export const BrighterDaysBanner: React.FC<BrighterDaysBannerProps> = ({
           <div className="flex flex-wrap items-center justify-center gap-3.5 mt-8">
             <button
               onClick={onExploreProject}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#d2f831] text-black text-xs sm:text-sm font-bold hover:bg-white transition-all shadow-md active:scale-95"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#FFCC00] text-black text-xs sm:text-sm font-bold hover:bg-white transition-all shadow-md active:scale-95"
             >
               <span>Explore Sanjay Garden</span>
               <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
@@ -74,14 +74,14 @@ export const BrighterDaysBanner: React.FC<BrighterDaysBannerProps> = ({
             Let&apos;s talk about your next property.
           </div>
           <div className="text-xs text-neutral-400 mt-1 flex items-center gap-1.5 justify-center sm:justify-start">
-            <MapPin className="w-3 h-3 text-[#d2f831]" />
+            <MapPin className="w-3 h-3 text-[#FFCC00]" />
             <span>Saravanampatti, Coimbatore – 641035</span>
           </div>
         </div>
 
         <button
           onClick={onOpenEnquiry}
-          className="w-12 h-12 rounded-full bg-[#d2f831] text-black flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform shrink-0"
+          className="w-12 h-12 rounded-full bg-[#FFCC00] text-black flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-transform shrink-0"
           title="Start enquiry"
           aria-label="Enquire with Sanjay Properties"
         >

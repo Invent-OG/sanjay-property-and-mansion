@@ -50,15 +50,15 @@ export const Footer: React.FC<FooterProps> = ({
               className="group flex flex-wrap items-center gap-2.5 sm:gap-3 cursor-pointer w-fit"
               title="Click to copy email address"
             >
-              <h3 className="text-xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight group-hover:text-[#d2f831] transition-colors break-all sm:break-normal">
+              <h3 className="text-xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight group-hover:text-[#FFCC00] transition-colors break-all sm:break-normal">
                 {CONTACT_CONFIG.email}
               </h3>
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 group-hover:bg-[#d2f831] group-hover:text-black transition-all shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 group-hover:bg-[#FFCC00] group-hover:text-black transition-all shrink-0">
                 {copiedEmail ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </div>
             </div>
             {copiedEmail && (
-              <span className="text-[11px] text-[#d2f831] font-semibold mt-1 block">
+              <span className="text-[11px] text-[#FFCC00] font-semibold mt-1 block">
                 Copied to clipboard!
               </span>
             )}
@@ -83,14 +83,14 @@ export const Footer: React.FC<FooterProps> = ({
               />
               <button
                 type="submit"
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#d2f831] text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shrink-0"
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FFCC00] text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shrink-0"
                 aria-label="Subscribe to updates"
               >
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
               </button>
             </form>
             {subscribed && (
-              <span className="text-[11px] text-[#d2f831] font-medium mt-1.5 block">
+              <span className="text-[11px] text-[#FFCC00] font-medium mt-1.5 block">
                 ✓ Thank you for connecting with Sanjay Properties!
               </span>
             )}
@@ -126,19 +126,19 @@ export const Footer: React.FC<FooterProps> = ({
             </h4>
             <button
               onClick={() => onNavClick('hero')}
-              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#d2f831] text-left transition-colors"
+              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#FFCC00] text-left transition-colors"
             >
               Home
             </button>
             <button
               onClick={() => onNavClick('about')}
-              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#d2f831] text-left transition-colors"
+              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#FFCC00] text-left transition-colors"
             >
               About Sanjay Properties
             </button>
             <button
               onClick={() => onNavClick('sanjay-garden')}
-              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#d2f831] text-left transition-colors"
+              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#FFCC00] text-left transition-colors"
             >
               Sanjay Garden
             </button>
@@ -150,20 +150,20 @@ export const Footer: React.FC<FooterProps> = ({
                   onNavigateToMansion();
                 }
               }}
-              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#d2f831] text-left transition-colors flex items-center justify-between group"
+              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#FFCC00] text-left transition-colors flex items-center justify-between group"
             >
               <span>Sanjay Mansion</span>
-              <span className="text-[10px] bg-[#d2f831] text-black font-extrabold px-1.5 py-0.5 rounded-sm">Stay</span>
+              <span className="text-[10px] bg-[#FFCC00] text-black font-extrabold px-1.5 py-0.5 rounded-sm">Stay</span>
             </a>
             <button
               onClick={() => onNavClick('location')}
-              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#d2f831] text-left transition-colors"
+              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#FFCC00] text-left transition-colors"
             >
               Location Connectivity
             </button>
             <button
               onClick={() => onNavClick('faq')}
-              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#d2f831] text-left transition-colors"
+              className="text-xs sm:text-sm font-medium text-neutral-300 hover:text-[#FFCC00] text-left transition-colors"
             >
               Frequently Asked Questions
             </button>
@@ -205,7 +205,7 @@ export const Footer: React.FC<FooterProps> = ({
                 href={`https://wa.me/${CONTACT_CONFIG.whatsappNumber}?text=Hi%20Sanjay%20Properties,%20I%20would%20like%20to%20enquire%20about%20Sanjay%20Garden`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs font-medium text-[#d2f831] hover:underline inline-flex items-center gap-1.5"
+                className="text-xs font-medium text-[#FFCC00] hover:underline inline-flex items-center gap-1.5"
               >
                 <span>WhatsApp Enquiry Desk</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />

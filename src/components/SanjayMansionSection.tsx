@@ -40,7 +40,7 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
         {/* Section Header Eyebrow */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-8 sm:mb-10 pb-6 border-b border-neutral-100">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-neutral-300 bg-neutral-50 text-neutral-900 text-xs sm:text-sm font-semibold uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-[#d2f831]" />
+            <span className="w-2 h-2 rounded-full bg-[#FFCC00]" />
             <span>SANJAY PROPERTIES PORTFOLIO</span>
           </div>
 
@@ -67,15 +67,15 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
 
               {/* Top Tag */}
               <div className="absolute top-4 left-4 z-10">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#d2f831] text-[11px] font-bold uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#d2f831] animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#FFCC00] text-[11px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FFCC00] animate-pulse" />
                   Western Stay Residence
                 </span>
               </div>
 
               {/* Bottom Caption on Image */}
               <div className="absolute bottom-4 left-4 right-4 z-10 text-white">
-                <p className="text-xs uppercase tracking-widest text-[#d2f831] font-bold mb-1">
+                <p className="text-xs uppercase tracking-widest text-[#FFCC00] font-bold mb-1">
                   Coimbatore North · Saravanampatti
                 </p>
                 <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
@@ -166,7 +166,7 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
               </div>
 
               {/* Pricing Callout */}
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-[#f8fae8] border border-[#d2f831]/60 mb-6">
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-[#fffbe6] border border-[#FFCC00]/60 mb-6">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-600 block">
                     Accommodation Pricing
@@ -197,12 +197,12 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
                 className="flex-1 py-3 px-6 rounded-full bg-neutral-950 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2 group cursor-pointer"
               >
                 <span>VIEW SANJAY MANSION</span>
-                <ArrowUpRight className="w-4 h-4 text-[#d2f831] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <ArrowUpRight className="w-4 h-4 text-[#FFCC00] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
 
               <a
                 href={SANJAY_MANSION_DATA.phones[0].href}
-                className="py-3 px-6 rounded-full bg-[#d2f831] text-black font-extrabold text-xs sm:text-sm hover:bg-neutral-900 hover:text-white active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2 text-center"
+                className="py-3 px-6 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-neutral-900 hover:text-white active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2 text-center"
               >
                 <PhoneCall className="w-4 h-4 stroke-[2.4]" />
                 <span>CALL FOR BOOKING</span>

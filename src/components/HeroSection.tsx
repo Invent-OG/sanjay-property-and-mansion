@@ -96,7 +96,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         </AnimatePresence>
 
         {/* SECTION 01: FLOATING NAVIGATION */}
-        <nav className="relative z-20 w-full max-w-full px-3 sm:px-6 lg:px-8 pt-3 sm:pt-6 flex items-center justify-between gap-2 sm:gap-4 box-border overflow-hidden">
+        <nav className="relative z-20 w-full max-w-full px-3 sm:px-6 lg:px-8 pt-3 sm:pt-5 pb-2 flex items-center justify-between gap-2 sm:gap-4 box-border">
           {/* Left Navigation Pill Capsule */}
           <div className="hidden xl:flex items-center bg-black/30 backdrop-blur-md border border-white/20 p-1 rounded-full shadow-lg shrink-0 gap-0.5">
             <button
@@ -176,10 +176,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           </div>
 
           {/* Center Brand Wordmark / Logo */}
-          <div className="text-center pointer-events-auto flex-1 min-w-0 xl:flex-none xl:absolute xl:left-1/2 xl:-translate-x-1/2 px-2 overflow-hidden flex items-center justify-center">
+          <div className="text-center pointer-events-auto flex-1 min-w-0 xl:flex-none xl:absolute xl:left-1/2 xl:-translate-x-1/2 px-2 flex items-center justify-center">
             <a
               href="#hero"
-              className="hover:opacity-90 transition-opacity focus:outline-none inline-flex items-center justify-center"
+              className="hover:opacity-90 transition-opacity focus:outline-none inline-flex items-center justify-center py-0.5"
               aria-label={CONTACT_CONFIG.companyName}
             >
               <BrandLogo variant="white" size="md" layout="vertical" />
@@ -199,7 +199,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
             <button
               onClick={onOpenEnquiry}
-              className="bg-white text-black font-bold text-xs sm:text-sm px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full hover:bg-[#d2f831] hover:text-black transition-all shadow-md active:scale-95 whitespace-nowrap shrink-0"
+              className="bg-white text-black font-bold text-xs sm:text-sm px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full hover:bg-[#FFCC00] hover:text-black transition-all shadow-md active:scale-95 whitespace-nowrap shrink-0"
             >
               <span className="hidden sm:inline">Enquire Now</span>
               <span className="sm:hidden">Enquire</span>
@@ -252,7 +252,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 className="flex items-center justify-between text-white font-medium p-3 rounded-xl hover:bg-white/10 text-left text-sm"
               >
                 <span>Sanjay Mansion</span>
-                <span className="text-[10px] bg-[#d2f831] text-black font-extrabold px-2 py-0.5 rounded-full">Stay</span>
+                <span className="text-[10px] bg-[#FFCC00] text-black font-extrabold px-2 py-0.5 rounded-full">Stay</span>
               </a>
               <button
                 onClick={() => scrollToSection('location')}
@@ -281,7 +281,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 transition={{ delay: 0.1 }}
                 className="inline-flex items-center gap-2 bg-black/35 backdrop-blur-md border border-white/25 text-white text-xs font-semibold px-4 py-1.5 rounded-full"
               >
-                <span className="w-2 h-2 rounded-full bg-[#d2f831] animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[#FFCC00] animate-pulse" />
                 <span className="tracking-wide uppercase">{slide.tag}</span>
               </motion.div>
 
@@ -312,7 +312,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-6 sm:mt-8 max-w-md sm:max-w-none">
               <button
                 onClick={() => scrollToSection('sanjay-garden')}
-                className="bg-[#d2f831] text-black font-bold text-xs sm:text-sm px-6 py-3.5 sm:py-3 rounded-full hover:bg-white hover:text-black transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
+                className="bg-[#FFCC00] text-black font-bold text-xs sm:text-sm px-6 py-3.5 sm:py-3 rounded-full hover:bg-white hover:text-black transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2"
               >
                 <span>Explore Sanjay Garden</span>
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
@@ -336,7 +336,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <button
                   key={idx}
                   onClick={() => setCurrentSlide(idx)}
-                  className={`h-1.5 transition-all rounded-full ${currentSlide === idx ? 'w-7 sm:w-8 bg-[#d2f831]' : 'w-2 bg-white/40 hover:bg-white/70'
+                  className={`h-1.5 transition-all rounded-full ${currentSlide === idx ? 'w-7 sm:w-8 bg-[#FFCC00]' : 'w-2 bg-white/40 hover:bg-white/70'
                     }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
@@ -357,7 +357,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
               <button
                 onClick={() => setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length)}
-                className="w-10 h-10 rounded-full bg-black/35 backdrop-blur-md border border-white/25 text-white flex items-center justify-center hover:bg-[#d2f831] hover:text-black transition-all active:scale-95"
+                className="w-10 h-10 rounded-full bg-black/35 backdrop-blur-md border border-white/25 text-white flex items-center justify-center hover:bg-[#FFCC00] hover:text-black transition-all active:scale-95"
                 aria-label="Next Slide"
               >
                 <ChevronRight className="w-4 h-4" />

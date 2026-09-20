@@ -61,7 +61,7 @@ export const AestheticRoomStack: React.FC<AestheticRoomStackProps> = ({ onSearch
           {/* Lime Circle Arrow Button */}
           <button
             onClick={() => cycleCards(1)}
-            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#d2f831] text-black flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-transform shadow-xs shrink-0"
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FFCC00] text-black flex items-center justify-center font-bold hover:scale-105 active:scale-95 transition-transform shadow-xs shrink-0"
             title="Next Property Card"
           >
             <ChevronRight className="w-4 h-4 stroke-[2.5]" />
@@ -174,7 +174,7 @@ export const AestheticRoomStack: React.FC<AestheticRoomStackProps> = ({ onSearch
                     e.stopPropagation();
                     cycleCards(1);
                   }}
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#d2f831] text-black font-extrabold flex items-center justify-center shadow-xs hover:scale-110 active:scale-95 transition-transform"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#FFCC00] text-black font-extrabold flex items-center justify-center shadow-xs hover:scale-110 active:scale-95 transition-transform"
                   aria-label="Next card"
                 >
                   <Plus className="w-4 h-4 stroke-[2.5]" />
@@ -204,7 +204,7 @@ export const AestheticRoomStack: React.FC<AestheticRoomStackProps> = ({ onSearch
             </div>
             <button
               type="submit"
-              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#d2f831] text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shrink-0 shadow-xs"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#FFCC00] text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shrink-0 shadow-xs"
               aria-label="Search"
             >
               <Search className="w-4 h-4 stroke-[2.5]" />
