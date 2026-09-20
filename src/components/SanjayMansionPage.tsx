@@ -36,12 +36,14 @@ interface SanjayMansionPageProps {
   onBackToHome: () => void;
   onOpenEnquiryModal: () => void;
   onOpenScheduleModal: () => void;
+  onOpenBookingModal?: (roomType?: string) => void;
 }
 
 export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
   onBackToHome,
   onOpenEnquiryModal,
-  onOpenScheduleModal
+  onOpenScheduleModal,
+  onOpenBookingModal
 }) => {
   const [selectedGalleryImg, setSelectedGalleryImg] = useState<string | null>(null);
   const [activeMealPlanTab, setActiveMealPlanTab] = useState<'VEG' | 'NON-VEG'>('VEG');
@@ -194,13 +196,14 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               <span>8056889900</span>
             </a>
 
-            <a
-              href="tel:8056889900"
+            <button
+              type="button"
+              onClick={() => onOpenBookingModal ? onOpenBookingModal() : onOpenEnquiryModal()}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FFCC00] text-black text-xs font-extrabold hover:bg-neutral-950 hover:text-white active:scale-95 transition-all shadow-2xs"
             >
               <span>Book Stay</span>
               <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-            </a>
+            </button>
           </div>
         </div>
       </header>
@@ -261,13 +264,14 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
             {/* Hero CTA Buttons */}
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-8">
-              <a
-                href={SANJAY_MANSION_DATA.phones[0].href}
+              <button
+                type="button"
+                onClick={() => onOpenBookingModal ? onOpenBookingModal('Single Room (Deluxe)') : onOpenEnquiryModal()}
                 className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2"
               >
                 <span>BOOK YOUR STAY</span>
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
-              </a>
+              </button>
 
               <a
                 href={SANJAY_MANSION_DATA.location.googleMapsUrl}
@@ -440,8 +444,9 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
               {/* Card Action */}
               <div>
-                <a
-                  href={`tel:8056889900`}
+                <button
+                  type="button"
+                  onClick={() => onOpenBookingModal ? onOpenBookingModal(acc.name) : onOpenEnquiryModal()}
                   className={`w-full py-3 px-4 rounded-full font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition-all text-center ${
                     acc.recommended
                       ? 'bg-[#FFCC00] text-black hover:bg-white'
@@ -450,7 +455,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 >
                   <span>Book {acc.name}</span>
                   <ArrowUpRight className="w-4 h-4" />
-                </a>
+                </button>
               </div>
             </motion.div>
           ))}

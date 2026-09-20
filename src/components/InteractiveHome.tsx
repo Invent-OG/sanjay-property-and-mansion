@@ -151,11 +151,13 @@ export function InteractiveHome() {
       <EnquiryModal
         isOpen={isEnquiryOpen}
         onClose={() => setIsEnquiryOpen(false)}
+        source="Sanjay Properties"
       />
 
       <ScheduleVisitModal
         isOpen={isScheduleOpen}
         onClose={() => setIsScheduleOpen(false)}
+        source="Sanjay Properties"
       />
 
       <SearchModal

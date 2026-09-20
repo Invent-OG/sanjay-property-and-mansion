@@ -226,8 +226,16 @@ export const Footer: React.FC<FooterProps> = ({
           <div>
             © {new Date().getFullYear()} Sanjay Properties. All rights reserved.
           </div>
-          <div>
-            Layout Reference: 42/2008 · Saravanampatti, Coimbatore – 641035
+          <div className="flex items-center gap-4">
+            <span>Layout Reference: 42/2008 · Saravanampatti, Coimbatore</span>
+            <span className="text-neutral-700">·</span>
+            <a
+              href="/admin"
+              className="text-neutral-400 hover:text-[#FFCC00] font-semibold transition-colors flex items-center gap-1"
+            >
+              <span>Admin CRM</span>
+              <ArrowUpRight className="w-3 h-3" />
+            </a>
           </div>
         </div>
       </div>

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { SanjayMansionPage } from './SanjayMansionPage';
 import { EnquiryFab } from './EnquiryFab';
-import { EnquiryModal, ScheduleVisitModal } from './Modals';
+import { EnquiryModal, ScheduleVisitModal, MansionBookingModal } from './Modals';
 
 export function InteractiveMansion() {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [selectedRoomType, setSelectedRoomType] = useState('Single Room (Deluxe)');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -15,6 +17,13 @@ export function InteractiveMansion() {
 
   const navigateToHome = () => {
     window.location.href = '/';
+  };
+
+  const handleOpenBooking = (roomType?: string) => {
+    if (roomType) {
+      setSelectedRoomType(roomType);
+    }
+    setIsBookingOpen(true);
   };
 
   return (
@@ -30,20 +39,29 @@ export function InteractiveMansion() {
         onBackToHome={navigateToHome}
         onOpenEnquiryModal={() => setIsEnquiryOpen(true)}
         onOpenScheduleModal={() => setIsScheduleOpen(true)}
+        onOpenBookingModal={handleOpenBooking}
       />
 
       {/* Quick Enquiry Floating Action Button */}
       <EnquiryFab onClick={() => setIsEnquiryOpen(true)} />
 
-      {/* Modals */}
+      {/* Modals specifically configured with source="Sanjay Mansion" */}
       <EnquiryModal
         isOpen={isEnquiryOpen}
         onClose={() => setIsEnquiryOpen(false)}
+        source="Sanjay Mansion"
       />
 
       <ScheduleVisitModal
         isOpen={isScheduleOpen}
         onClose={() => setIsScheduleOpen(false)}
+        source="Sanjay Mansion"
+      />
+
+      <MansionBookingModal
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        initialRoomType={selectedRoomType}
       />
     </>
   );

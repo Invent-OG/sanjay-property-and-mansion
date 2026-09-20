@@ -1,38 +1,73 @@
 import React, { useState } from 'react';
-import { X, MapPin, Check, Phone, Calendar, Search, FileText, ArrowUpRight } from 'lucide-react';
+import { X, MapPin, Check, Phone, Calendar, Search, FileText, ArrowUpRight, Bed, Utensils, Clock, CheckCircle2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CONTACT_CONFIG } from '../data/contact';
 import { BrandLogo } from './BrandLogo';
+import { leadStore, type LeadSource } from '../services/leadStore';
 
+// =========================================================================
+// 1. GENERAL ENQUIRY MODAL (Supports both Sanjay Properties & Mansion)
+// =========================================================================
 interface EnquiryModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialTopic?: string;
+  source?: LeadSource;
 }
 
-export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, initialTopic }) => {
+export const EnquiryModal: React.FC<EnquiryModalProps> = ({
+  isOpen,
+  onClose,
+  initialTopic,
+  source = 'Sanjay Properties'
+}) => {
+  const isMansion = source === 'Sanjay Mansion';
+  const defaultTopic = initialTopic || (isMansion ? 'Mansion Room Booking' : 'General Enquiry');
+
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     email: '',
-    topic: initialTopic || 'General Enquiry',
+    topic: defaultTopic,
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Save lead to unified CRM store
+    leadStore.saveLead({
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      source: source,
+      type: formData.topic,
+      status: 'New',
+      details: {
+        message: formData.message,
+        targetProperty: isMansion ? 'Western Stay – Sanjay Mansion' : 'Sanjay Garden, Saravanampatti'
+      }
+    });
+
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);
       onClose();
-    }, 2500);
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        topic: defaultTopic,
+        message: ''
+      });
+    }, 2400);
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -45,8 +80,12 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
                 <BrandLogo variant="white" size="sm" layout="horizontal" />
                 <div className="h-6 w-px bg-white/20" />
                 <div>
-                  <h3 className="font-bold text-sm sm:text-base leading-tight">Enquiry Desk</h3>
-                  <p className="text-[11px] sm:text-xs text-[#FFCC00]">Sanjay Garden · Saravanampatti</p>
+                  <h3 className="font-bold text-sm sm:text-base leading-tight">
+                    {isMansion ? 'Mansion Enquiry Desk' : 'Property Enquiry Desk'}
+                  </h3>
+                  <p className="text-[11px] sm:text-xs text-[#FFCC00]">
+                    {isMansion ? 'Western Stay · Saravanampatti' : 'Sanjay Garden · Saravanampatti'}
+                  </p>
                 </div>
               </div>
               <button
@@ -67,14 +106,14 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
                   </div>
                   <h4 className="text-lg font-bold text-neutral-900">Enquiry Received</h4>
                   <p className="text-xs sm:text-sm text-neutral-500 max-w-xs mt-1">
-                    Thank you for reaching out to Sanjay Properties. Our team will contact you regarding Sanjay Garden shortly.
+                    Thank you for reaching out to {source}. Your enquiry is recorded in our desk and our team will contact you shortly.
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                      Full Name
+                      Full Name *
                     </label>
                     <input
                       type="text"
@@ -89,7 +128,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                        Phone Number
+                        Phone Number *
                       </label>
                       <input
                         type="tel"
@@ -117,28 +156,47 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                      Enquiry Topic
+                      Enquiry Category
                     </label>
-                    <select
-                      value={formData.topic}
-                      onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
-                      className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
-                    >
-                      <option value="General Enquiry">General Project Enquiry</option>
-                      <option value="Plot Dimensions & Availability">Plot Dimensions & Availability</option>
-                      <option value="Pricing & Commercial Terms">Pricing & Commercial Terms</option>
-                      <option value="Layout Ref: 42/2008 & Survey Documents">Layout Ref: 42/2008 & Survey Documents</option>
-                      <option value="Site Visit Request">Site Visit Request</option>
-                    </select>
+                    {isMansion ? (
+                      <select
+                        value={formData.topic}
+                        onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
+                      >
+                        <option value="Mansion Room Booking">Room Booking / Availability</option>
+                        <option value="Single Room Enquiry">Single Room (Deluxe) Stay</option>
+                        <option value="Sharing Room (2/3/4 Bed)">Sharing Room (2/3/4 Bed)</option>
+                        <option value="Meal Plan Enquiry">Meal Plan & Dining Options</option>
+                        <option value="Corporate / Group Stay">Corporate / Group Stay</option>
+                        <option value="General Mansion Enquiry">General Enquiry</option>
+                      </select>
+                    ) : (
+                      <select
+                        value={formData.topic}
+                        onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-neutral-900 focus:outline-none focus:border-neutral-900"
+                      >
+                        <option value="General Enquiry">General Project Enquiry</option>
+                        <option value="Plot Dimensions & Availability">Plot Dimensions & Availability</option>
+                        <option value="Pricing & Commercial Terms">Pricing & Commercial Terms</option>
+                        <option value="Layout Ref: 42/2008 & Survey Documents">Layout Ref: 42/2008 & Survey Documents</option>
+                        <option value="Site Visit Request">Site Visit Request</option>
+                      </select>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                      Message / Notes (Optional)
+                      Message / Requirement (Optional)
                     </label>
                     <textarea
                       rows={3}
-                      placeholder="Specific requirements or questions about Sanjay Garden..."
+                      placeholder={
+                        isMansion
+                          ? 'Specify your move-in date, room preference or special requests...'
+                          : 'Specific requirements or questions about Sanjay Garden...'
+                      }
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none focus:border-neutral-900 resize-none"
@@ -147,7 +205,11 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
 
                   <div className="pt-2 flex items-center justify-between gap-3">
                     <a
-                      href={`https://wa.me/${CONTACT_CONFIG.whatsappNumber}?text=Hi%20Sanjay%20Properties,%20I%20would%20like%20to%20enquire%20about%20Sanjay%20Garden`}
+                      href={
+                        isMansion
+                          ? `https://wa.me/918056889900?text=Hi%20Sanjay%20Mansion,%20I%20would%20like%20to%20enquire%20about%20Western%20Stay%20rooms`
+                          : `https://wa.me/${CONTACT_CONFIG.whatsappNumber}?text=Hi%20Sanjay%20Properties,%20I%20would%20like%20to%20enquire%20about%20Sanjay%20Garden`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs font-semibold text-neutral-600 hover:text-black flex items-center gap-1.5"
@@ -173,12 +235,21 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({ isOpen, onClose, ini
   );
 };
 
+// =========================================================================
+// 2. SCHEDULE VISIT MODAL
+// =========================================================================
 interface ScheduleVisitModalProps {
   isOpen: boolean;
   onClose: () => void;
+  source?: LeadSource;
 }
 
-export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, onClose }) => {
+export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({
+  isOpen,
+  onClose,
+  source = 'Sanjay Properties'
+}) => {
+  const isMansion = source === 'Sanjay Mansion';
   const [date, setDate] = useState('');
   const [timeSlot, setTimeSlot] = useState('Morning (10:00 AM - 1:00 PM)');
   const [name, setName] = useState('');
@@ -187,17 +258,35 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
 
   const handleBook = (e: React.FormEvent) => {
     e.preventDefault();
+
+    leadStore.saveLead({
+      name,
+      phone,
+      source,
+      type: 'Site Visit Request',
+      status: 'Visit Scheduled',
+      details: {
+        preferredDate: date,
+        timeSlot: timeSlot,
+        targetProperty: isMansion ? 'Western Stay – Sanjay Mansion' : 'Sanjay Garden, Saravanampatti',
+        message: `Scheduled visit for ${isMansion ? 'Sanjay Mansion hostel inspection' : 'Sanjay Garden layout walkthrough'}`
+      }
+    });
+
     setConfirmed(true);
     setTimeout(() => {
       setConfirmed(false);
       onClose();
-    }, 2500);
+      setName('');
+      setPhone('');
+      setDate('');
+    }, 2400);
   };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -208,8 +297,12 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
               <div className="flex items-center gap-2.5">
                 <Calendar className="w-5 h-5 text-[#FFCC00]" />
                 <div>
-                  <h3 className="font-bold text-base">Schedule a Site Visit</h3>
-                  <p className="text-xs text-neutral-400">Sanjay Garden, Saravanampatti</p>
+                  <h3 className="font-bold text-base">
+                    {isMansion ? 'Schedule a Mansion Visit' : 'Schedule a Site Visit'}
+                  </h3>
+                  <p className="text-xs text-neutral-400">
+                    {isMansion ? 'Opp. KCT Tech Park, Saravanampatti' : 'Sanjay Garden, Saravanampatti'}
+                  </p>
                 </div>
               </div>
               <button
@@ -229,14 +322,16 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
                   </div>
                   <h4 className="text-base font-bold text-neutral-900">Visit Scheduled</h4>
                   <p className="text-xs text-neutral-500 mt-1 max-w-xs">
-                    Our team will meet you at Sanjay Garden, PNT Colony, Saravanampatti.
+                    {isMansion
+                      ? 'Our team will meet you at Western Stay – Sanjay Mansion.'
+                      : 'Our team will meet you at Sanjay Garden, PNT Colony, Saravanampatti.'}
                   </p>
                 </div>
               ) : (
                 <form onSubmit={handleBook} className="space-y-4">
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                      Preferred Date
+                      Preferred Date *
                     </label>
                     <input
                       type="date"
@@ -264,7 +359,7 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                      Your Name
+                      Your Name *
                     </label>
                     <input
                       type="text"
@@ -278,7 +373,7 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
 
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-1">
-                      Phone Number
+                      Phone Number *
                     </label>
                     <input
                       type="tel"
@@ -306,6 +401,247 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({ isOpen, 
   );
 };
 
+// =========================================================================
+// 3. MANSION ROOM BOOKING MODAL (Tailored for Western Stay Room & Meals)
+// =========================================================================
+interface MansionBookingModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialRoomType?: string;
+}
+
+export const MansionBookingModal: React.FC<MansionBookingModalProps> = ({
+  isOpen,
+  onClose,
+  initialRoomType = 'Single Room (Deluxe)'
+}) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    roomType: initialRoomType,
+    mealPlan: 'Veg Plan (Monthly)',
+    checkInDate: '',
+    occupation: 'Working Professional',
+    notes: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    leadStore.saveLead({
+      name: formData.name,
+      phone: formData.phone,
+      email: formData.email,
+      source: 'Sanjay Mansion',
+      type: 'Mansion Room Booking',
+      status: 'New',
+      details: {
+        roomType: formData.roomType,
+        mealPlan: formData.mealPlan,
+        preferredDate: formData.checkInDate,
+        targetProperty: 'Western Stay – Sanjay Mansion',
+        message: `Booking Request: ${formData.roomType} | ${formData.mealPlan} | Occupation: ${formData.occupation}. Note: ${formData.notes || 'None'}`
+      }
+    });
+
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      onClose();
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        roomType: initialRoomType,
+        mealPlan: 'Veg Plan (Monthly)',
+        checkInDate: '',
+        occupation: 'Working Professional',
+        notes: ''
+      });
+    }, 2500);
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="w-full max-w-lg bg-white rounded-3xl overflow-hidden shadow-2xl border border-neutral-200 flex flex-col max-h-[92vh]"
+          >
+            {/* Header */}
+            <div className="bg-neutral-950 text-white p-4 sm:p-5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#FFCC00] text-black flex items-center justify-center font-bold">
+                  <Bed className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm sm:text-base leading-tight">Reserve Room / Stay</h3>
+                  <p className="text-[11px] sm:text-xs text-[#FFCC00]">Western Stay – Sanjay Mansion</p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <div className="p-5 sm:p-6 bg-white overflow-y-auto">
+              {submitted ? (
+                <div className="py-8 text-center flex flex-col items-center">
+                  <div className="w-12 h-12 rounded-full bg-[#FFCC00] text-black flex items-center justify-center mb-3 shadow-md">
+                    <Check className="w-6 h-6 stroke-[3]" />
+                  </div>
+                  <h4 className="text-lg font-bold text-neutral-900">Booking Request Submitted!</h4>
+                  <p className="text-xs sm:text-sm text-neutral-500 max-w-xs mt-1">
+                    Thank you! The Sanjay Mansion manager will contact you with room availability and payment details.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-3.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                        Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Your name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                        Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="+91 90000 00000"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                        Room Type
+                      </label>
+                      <select
+                        value={formData.roomType}
+                        onChange={(e) => setFormData({ ...formData, roomType: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none"
+                      >
+                        <option value="Single Room (Deluxe)">Single Room (₹7,500 - ₹8,000/mo)</option>
+                        <option value="2 Sharing Room">2 Sharing Room (₹6,000 - ₹6,500/mo)</option>
+                        <option value="3 Sharing Room">3 Sharing Room (₹5,200 - ₹5,500/mo)</option>
+                        <option value="4 Sharing Room">4 Sharing Room (₹4,900/mo)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                        Meal Plan
+                      </label>
+                      <select
+                        value={formData.mealPlan}
+                        onChange={(e) => setFormData({ ...formData, mealPlan: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none"
+                      >
+                        <option value="Veg Plan (Monthly)">Veg Plan (₹3,600 / mo)</option>
+                        <option value="Non-Veg Plan (Monthly)">Non-Veg Plan (₹3,800 / mo)</option>
+                        <option value="Weekly Trial Plan">Weekly Trial Plan</option>
+                        <option value="No Meal Plan">Room Only (No Food)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                        Expected Move-in Date
+                      </label>
+                      <input
+                        type="date"
+                        value={formData.checkInDate}
+                        onChange={(e) => setFormData({ ...formData, checkInDate: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                        Resident Category
+                      </label>
+                      <select
+                        value={formData.occupation}
+                        onChange={(e) => setFormData({ ...formData, occupation: e.target.value })}
+                        className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none"
+                      >
+                        <option value="IT / Working Professional">IT / Working Professional</option>
+                        <option value="College Student (KCT / SNS / Kumaraguru)">College Student</option>
+                        <option value="Short Term / Business Visitor">Short Term Visitor</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-neutral-600 mb-1">
+                      Additional Requests / Notes
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="e.g. Need vehicle parking, ground floor preference, roommate preference..."
+                      value={formData.notes}
+                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                      className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-900 focus:outline-none resize-none"
+                    />
+                  </div>
+
+                  <div className="pt-2 flex items-center justify-between gap-3">
+                    <a
+                      href="tel:8056889900"
+                      className="text-xs font-semibold text-neutral-600 hover:text-black flex items-center gap-1"
+                    >
+                      <Phone className="w-3.5 h-3.5" />
+                      <span>Call Desk: 8056889900</span>
+                    </a>
+
+                    <button
+                      type="submit"
+                      className="bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm px-6 py-2.5 rounded-full hover:bg-neutral-900 hover:text-white transition-all shadow-sm active:scale-95"
+                    >
+                      Confirm Booking Request
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// =========================================================================
+// 4. SEARCH MODAL
+// =========================================================================
 interface SearchModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -320,13 +656,16 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
   const topics = [
     { title: 'Sanjay Garden Phase 1 Layout', tag: 'D.D.T.P / C.L.P.A No. 42/2008' },
     { title: 'Survey References: S.F. No. 402/2pt, 3pt, 4pt', tag: 'Cadastral Records' },
+    { title: 'Western Stay – Sanjay Mansion Hostel & Rooms', tag: 'Opp. KCT Tech Park' },
     { title: 'PNT Colony, Saravanampatti Belt', tag: 'Location Connectivity' },
     { title: 'Residential Plots Dimensions', tag: 'Site Specifications' },
     { title: 'Coimbatore North Growth Corridor', tag: 'Regional Access' }
   ];
 
-  const filtered = topics.filter((t) =>
-    t.title.toLowerCase().includes(query.toLowerCase()) || t.tag.toLowerCase().includes(query.toLowerCase())
+  const filtered = topics.filter(
+    (t) =>
+      t.title.toLowerCase().includes(query.toLowerCase()) ||
+      t.tag.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
@@ -381,6 +720,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose, onSel
   );
 };
 
+// =========================================================================
+// 5. DETAIL MODAL
+// =========================================================================
 interface DetailModalProps {
   item: { title: string; image?: string; subtitle?: string } | null;
   onClose: () => void;
@@ -400,7 +742,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ item, onClose, onEnqui
       >
         {item.image && (
           <div className="relative h-60 sm:h-72 w-full bg-neutral-950">
-            <img src={item.image} alt={item.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
             <button
               onClick={onClose}
               className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/50 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/70"
