@@ -62,52 +62,43 @@ export const SANJAY_MANSION_DATA = {
   ],
   accommodations: [
     {
-      id: 'single',
-      name: 'Single Occupancy',
-      badge: 'Private & Quiet',
-      priceMonthly: '₹8,000',
-      priceNote: 'per month',
-      features: [
-        'Dedicated Private Room',
-        'Individual Cot & Mattress',
-        'Attached Private Bathroom',
-        'Study Table & Chair',
-        'Secure Cupboard Storage',
-        'Free 60GB High-Speed Wi-Fi',
-        'Solar Hot Water Facility'
-      ]
-    },
-    {
-      id: 'double',
-      name: '2 Sharing',
-      badge: 'Most Popular',
-      recommended: true,
-      priceMonthly: '₹5,900',
-      priceNote: 'per person / month',
-      features: [
-        'Spacious Dual Room',
-        'Two Individual Cots & Mattresses',
-        'Attached Private Bathroom',
-        'Dual Study Desks',
-        'Individual Lockable Cupboards',
-        'Free 60GB High-Speed Wi-Fi',
-        'Solar Hot Water Facility'
-      ]
-    },
-    {
-      id: 'quad',
-      name: '4 Sharing',
-      badge: 'Best Value',
+      id: 'four-sharing',
+      name: 'Four Sharing Room',
+      badge: 'Budget Friendly',
       priceMonthly: '₹4,900',
       priceNote: 'per person / month',
       features: [
-        'Well-Ventilated Quad Room',
-        'Four Individual Cots & Mattresses',
-        'Attached Private Bathroom',
-        'Individual Secure Storage',
-        'Free 60GB High-Speed Wi-Fi',
-        'Solar Hot Water Facility',
-        'Laundry & Parking Access'
+        'Individual Bed & Storage Wardrobe',
+        'Solar Heated 24×7 Hot Water',
+        'High-Speed Wi-Fi Internet Included',
+        'Clean Regular Housekeeping Included'
+      ]
+    },
+    {
+      id: 'double-sharing',
+      name: 'Double Sharing Room',
+      badge: 'Most Popular',
+      recommended: true,
+      priceMonthly: '₹6,500',
+      priceNote: 'per person / month',
+      features: [
+        'Spacious Double Bed Configuration',
+        'Attached Clean Restroom',
+        'Study Desk Space & Power Points',
+        'Peaceful & Quiet Environment'
+      ]
+    },
+    {
+      id: 'single-private',
+      name: 'Single Private Room',
+      badge: 'Maximum Privacy',
+      priceMonthly: '₹9,500',
+      priceNote: 'per month',
+      features: [
+        'Complete Single Private Room',
+        'Dedicated Workspace & Storage',
+        'Premium Natural Ventilation',
+        'Full Access to All Mansion Amenities'
       ]
     }
   ] as AccommodationOption[],
@@ -236,15 +227,15 @@ export const SANJAY_MANSION_DATA = {
   basicMealPlanPlans: [
     {
       type: 'VEG',
-      monthly: '₹3,600',
-      weekly: '₹900',
-      tag: 'Pure Vegetarian'
+      monthly: '₹3,500',
+      weekly: '₹950',
+      tag: 'Pure Veg Homestyle'
     },
     {
       type: 'NON-VEG',
-      monthly: '₹3,800',
-      weekly: '₹950',
-      tag: 'Veg + Non-Veg Specials'
+      monthly: '₹4,200',
+      weekly: '₹1,150',
+      tag: 'Includes Non-Veg Specials'
     }
   ],
   weeklyMenu: [

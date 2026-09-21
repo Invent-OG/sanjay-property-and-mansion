@@ -221,12 +221,20 @@ export const propertyService = {
     }
 
     try {
-      // 1. Fetch Property
-      const { data: prop, error: propError } = await client
-        .from('properties')
-        .select('*')
-        .eq('slug', slug)
-        .maybeSingle();
+      // 1. Fetch Property by UUID or slug
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug);
+      let query = client.from('properties').select('*');
+      if (isUuid) {
+        query = query.eq('id', slug);
+      } else {
+        query = query.eq('slug', slug);
+      }
+      let { data: prop, error: propError } = await query.maybeSingle();
+
+      if (!prop && slug !== 'sanjay-mansion') {
+        const fallback = await client.from('properties').select('*').eq('slug', 'sanjay-mansion').maybeSingle();
+        prop = fallback.data;
+      }
 
       if (propError || !prop) {
         return defaultData;

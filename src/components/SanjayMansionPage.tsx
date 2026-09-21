@@ -55,7 +55,9 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
   // Load latest property data dynamically from Supabase
   useEffect(() => {
     propertyService.getFullPropertyBySlug('sanjay-mansion').then((res) => {
-      if (res) setData(res);
+      if (res) {
+        setData(res);
+      }
     });
   }, []);
 

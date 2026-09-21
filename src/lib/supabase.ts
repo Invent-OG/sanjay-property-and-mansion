@@ -1,22 +1,34 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-// Retrieve environment variables from Astro Vite import.meta.env or Node process.env
-const supabaseUrl =
-  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_SUPABASE_URL) ||
-  (typeof process !== 'undefined' && process.env && process.env.PUBLIC_SUPABASE_URL) ||
-  '';
+// Project credentials with live fallbacks
+export const DEFAULT_SUPABASE_URL = 'https://htdqtqddlnhibfangxov.supabase.co';
+export const DEFAULT_SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0ZHF0cWRkbG5oaWJmYW5neG92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk5MzQzMjYsImV4cCI6MjEwNTUxMDMyNn0.HXZVuLm6gRqEdHBBX4xcbgm7JeP_hX1g7uBIOq3B4k0';
 
-const supabaseAnonKey =
-  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.PUBLIC_SUPABASE_ANON_KEY) ||
-  (typeof process !== 'undefined' && process.env && process.env.PUBLIC_SUPABASE_ANON_KEY) ||
-  '';
+export function getSupabaseUrl(): string {
+  return (
+    (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_SUPABASE_URL) ||
+    (typeof process !== 'undefined' && process.env?.PUBLIC_SUPABASE_URL) ||
+    DEFAULT_SUPABASE_URL
+  );
+}
+
+export function getSupabaseAnonKey(): string {
+  return (
+    (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_SUPABASE_ANON_KEY) ||
+    (typeof process !== 'undefined' && process.env?.PUBLIC_SUPABASE_ANON_KEY) ||
+    DEFAULT_SUPABASE_ANON_KEY
+  );
+}
 
 export const isSupabaseConfigured = (): boolean => {
+  const url = getSupabaseUrl();
+  const key = getSupabaseAnonKey();
   return Boolean(
-    supabaseUrl &&
-    supabaseAnonKey &&
-    supabaseUrl !== 'https://your-project.supabase.co' &&
-    supabaseAnonKey !== 'your-anon-key'
+    url &&
+    key &&
+    url !== 'https://your-project.supabase.co' &&
+    key !== 'your-anon-key'
   );
 };
 
@@ -28,7 +40,9 @@ export function getSupabaseClient(): SupabaseClient | null {
     return null;
   }
   if (!clientInstance) {
-    clientInstance = createClient(supabaseUrl, supabaseAnonKey, {
+    const url = getSupabaseUrl();
+    const key = getSupabaseAnonKey();
+    clientInstance = createClient(url, key, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -40,13 +54,4 @@ export function getSupabaseClient(): SupabaseClient | null {
   return clientInstance;
 }
 
-export const supabase = isSupabaseConfigured()
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storageKey: 'sanjay_supabase_auth_token'
-      }
-    })
-  : null;
+export const supabase = getSupabaseClient();

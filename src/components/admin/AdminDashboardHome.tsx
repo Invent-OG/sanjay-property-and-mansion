@@ -323,7 +323,7 @@ export const AdminDashboardHome: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <a
-                        href={`/admin/properties/${prop.id || 'sanjay-mansion'}`}
+                        href={`/admin/properties/${prop.slug || prop.id || 'sanjay-mansion'}`}
                         className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 transition-colors cursor-pointer"
                       >
                         Edit

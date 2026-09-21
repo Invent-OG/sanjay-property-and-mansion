@@ -237,7 +237,7 @@ export const AdminPropertiesList: React.FC = () => {
                     <td className="py-4 text-right pr-5">
                       <div className="flex items-center justify-end gap-1.5">
                         <a
-                          href={`/admin/properties/${prop.id}`}
+                          href={`/admin/properties/${prop.slug || prop.id}`}
                           className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition-colors cursor-pointer"
                           title="Edit Property"
                         >

@@ -114,7 +114,8 @@ export const AdminPropertyEditor: React.FC<AdminPropertyEditorProps> = ({ proper
       setIsLoading(true);
       try {
         if (!isNew) {
-          const fullData = await propertyService.getFullPropertyBySlug('sanjay-mansion');
+          const target = propertyId && propertyId !== 'default' && propertyId !== 'edit' ? propertyId : 'sanjay-mansion';
+          const fullData = await propertyService.getFullPropertyBySlug(target);
           setProperty(fullData.property);
           setImages(fullData.images);
           setAccommodations(fullData.accommodations);
