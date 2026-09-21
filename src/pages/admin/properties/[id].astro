@@ -6,9 +6,15 @@ import { AdminPropertyEditor } from '../../../components/admin/AdminPropertyEdit
 
 export function getStaticPaths() {
   return [
+    { params: { id: 'sanjay-gardens' } },
+    { params: { id: 'sanjay-gardens-uuid-001' } },
     { params: { id: 'sanjay-mansion' } },
-    { params: { id: '737838ec-a052-47c2-9a72-35b24f7ef2ad' } },
     { params: { id: 'sanjay-mansion-uuid-101' } },
+    { params: { id: 'sanjay-enclave-villas' } },
+    { params: { id: 'sanjay-enclave-uuid-003' } },
+    { params: { id: 'sanjay-avenue' } },
+    { params: { id: 'sanjay-avenue-uuid-004' } },
+    { params: { id: '737838ec-a052-47c2-9a72-35b24f7ef2ad' } },
     { params: { id: 'default' } },
     { params: { id: 'edit' } }
   ];

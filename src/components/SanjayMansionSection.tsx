@@ -216,7 +216,7 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
                 onClick={onNavigateToMansion}
                 className="flex-1 py-3 px-6 rounded-full bg-neutral-950 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2 group cursor-pointer"
               >
-                <span>VIEW {prop.short_name.toUpperCase()}</span>
+                <span>VIEW {(prop.short_name || 'Sanjay Mansion').toUpperCase()}</span>
                 <ArrowUpRight className="w-4 h-4 text-[#FFCC00] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
 

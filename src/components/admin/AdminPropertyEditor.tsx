@@ -67,6 +67,7 @@ export const AdminPropertyEditor: React.FC<AdminPropertyEditorProps> = ({ proper
     slug: 'sanjay-mansion',
     name: 'WESTERN STAY – SANJAY MANSION',
     short_name: 'Sanjay Mansion',
+    property_type: 'Commercial',
     tagline: 'Your Home Away From Home',
     description: 'A peaceful and comfortable stay in Saravanampatti, Coimbatore.',
     long_description: 'Western Stay – Sanjay Mansion offers a peaceful and comfortable accommodation experience in Saravanampatti, Coimbatore.',
@@ -88,6 +89,7 @@ export const AdminPropertyEditor: React.FC<AdminPropertyEditorProps> = ({ proper
     hero_image_url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=85',
     pricing_start: '₹4,900',
     status: 'active',
+    is_featured: true,
     is_featured_homepage: true,
     seo_title: 'Western Stay – Sanjay Mansion | Saravanampatti, Coimbatore',
     seo_description: 'Western Stay – Sanjay Mansion in Saravanampatti, Coimbatore offers comfortable accommodation with Wi-Fi, solar hot water, attached bathrooms, RO drinking water, laundry access, parking and 24×7 CCTV surveillance.',
@@ -116,12 +118,12 @@ export const AdminPropertyEditor: React.FC<AdminPropertyEditorProps> = ({ proper
         if (!isNew) {
           const target = propertyId && propertyId !== 'default' && propertyId !== 'edit' ? propertyId : 'sanjay-mansion';
           const fullData = await propertyService.getFullPropertyBySlug(target);
-          setProperty(fullData.property);
-          setImages(fullData.images);
+          setProperty(fullData.property as unknown as PropertyRecord);
+          setImages(fullData.images as unknown as PropertyImageRecord[]);
           setAccommodations(fullData.accommodations);
           setFacilities(fullData.facilities);
           setMealPlans(fullData.mealPlans);
-          setMealRates(fullData.mealSubscriptionRates);
+          setMealRates(fullData.mealSubscriptionRates as unknown as MealSubscriptionRateRecord[]);
           setWeeklyMenu(fullData.weeklyMenu);
         }
       } catch (err) {
@@ -210,14 +212,19 @@ export const AdminPropertyEditor: React.FC<AdminPropertyEditorProps> = ({ proper
   const handleAddAccommodation = () => {
     const newRoom: AccommodationRecord = {
       id: 'temp-' + Date.now(),
+      slug: 'room-' + Date.now(),
       property_id: property.id,
       name: 'New Room Option',
       badge: '',
+      max_occupants: 1,
+      monthly_price: 5000,
       price_monthly: 5000,
       price_display: '₹5,000',
       price_note: 'per month',
       features: ['Furnished Room', 'Attached Bathroom', 'Wi-Fi Access'],
+      ac_available: false,
       is_recommended: false,
+      display_order: accommodations.length + 1,
       sort_order: accommodations.length + 1,
       is_active: true,
       created_at: new Date().toISOString(),

@@ -1,0 +1,33 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+
+export function getStaticPaths() {
+  return [
+    { params: { tab: 'rooms' } },
+    { params: { tab: 'room-types' } },
+    { params: { tab: 'occupants' } },
+    { params: { tab: 'facilities' } },
+    { params: { tab: 'meals' } },
+    { params: { tab: 'gallery' } },
+    { params: { tab: 'enquiries' } },
+    { params: { tab: 'settings' } }
+  ];
+}
+
+const { tab } = Astro.params;
+const currentPath = `/admin/western-stay/${tab || ''}`;
+---
+
+<Layout
+  title="Western Stay Manager | Sanjay Properties Admin Portal"
+  description="Manage Western Stay rooms, rates, occupants, facilities, meals, and inquiries."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath={currentPath}
+      client:only="react"
+    />
+  </AdminAuthGuard>
+</Layout>

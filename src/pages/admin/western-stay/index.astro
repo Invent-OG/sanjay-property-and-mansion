@@ -1,0 +1,19 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+---
+
+<Layout
+  title="Western Stay Dashboard | Sanjay Properties Admin Portal"
+  description="Manage Western Stay hostel rooms, live occupancy, resident billing, and facilities."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin/western-stay"
+      title="Western Stay Overview"
+      subtitle="Live occupancy, room inventory status, bookings, and resident revenue"
+      client:only="react"
+    />
+  </AdminAuthGuard>
+</Layout>

@@ -1,4 +1,4 @@
-export type LeadSource = 'Sanjay Properties' | 'Sanjay Mansion';
+export type LeadSource = 'Sanjay Properties' | 'Western Stay' | 'Sanjay Mansion';
 
 export type LeadType =
   | 'General Enquiry'

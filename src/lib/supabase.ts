@@ -7,7 +7,7 @@ export const DEFAULT_SUPABASE_ANON_KEY =
 
 export function getSupabaseUrl(): string {
   return (
-    (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_SUPABASE_URL) ||
+    (typeof import.meta !== 'undefined' && (import.meta as any).env?.PUBLIC_SUPABASE_URL) ||
     (typeof process !== 'undefined' && process.env?.PUBLIC_SUPABASE_URL) ||
     DEFAULT_SUPABASE_URL
   );
@@ -15,7 +15,7 @@ export function getSupabaseUrl(): string {
 
 export function getSupabaseAnonKey(): string {
   return (
-    (typeof import.meta !== 'undefined' && import.meta.env?.PUBLIC_SUPABASE_ANON_KEY) ||
+    (typeof import.meta !== 'undefined' && (import.meta as any).env?.PUBLIC_SUPABASE_ANON_KEY) ||
     (typeof process !== 'undefined' && process.env?.PUBLIC_SUPABASE_ANON_KEY) ||
     DEFAULT_SUPABASE_ANON_KEY
   );

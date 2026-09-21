@@ -55,8 +55,9 @@ export function useDeleteProperty() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await propertyService.deleteProperty(id);
-      if (error) throw new Error(error);
+      const res = await propertyService.deleteProperty(id);
+      if (typeof res === 'object' && res.error) throw new Error(res.error);
+      if (res === false) throw new Error('Failed to delete property');
       return id;
     },
     onSuccess: (deletedId) => {

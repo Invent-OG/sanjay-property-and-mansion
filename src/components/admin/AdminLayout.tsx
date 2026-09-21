@@ -15,10 +15,10 @@ import {
   Sparkles,
   Bed,
   UtensilsCrossed,
-  MapPin
+  MapPin,
+  FileText
 } from 'lucide-react';
 import { authService } from '../../services/authService';
-import { BrandLogo } from '../BrandLogo';
 import { QueryProvider } from '../common/QueryProvider';
 import { AdminDashboardHome } from './AdminDashboardHome';
 import { AdminPropertiesList } from './AdminPropertiesList';
@@ -26,6 +26,17 @@ import { AdminPropertyEditor } from './AdminPropertyEditor';
 import { AdminLeadsManager } from './AdminLeadsManager';
 import { AdminMediaLibrary } from './AdminMediaLibrary';
 import { AdminSettings } from './AdminSettings';
+
+// Western Stay Business Components
+import { WesternStayDashboard } from './western-stay/WesternStayDashboard';
+import { WesternStayRooms } from './western-stay/WesternStayRooms';
+import { WesternStayRoomTypes } from './western-stay/WesternStayRoomTypes';
+import { WesternStayOccupants } from './western-stay/WesternStayOccupants';
+import { WesternStayFacilities } from './western-stay/WesternStayFacilities';
+import { WesternStayMeals } from './western-stay/WesternStayMeals';
+import { WesternStayGallery } from './western-stay/WesternStayGallery';
+import { WesternStayEnquiries } from './western-stay/WesternStayEnquiries';
+import { WesternStaySettings } from './western-stay/WesternStaySettings';
 
 export interface AdminNavContextType {
   activePath: string;
@@ -100,24 +111,33 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   };
 
   const navItems = [
-    { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, exact: true },
+    { label: 'Overview', href: '/admin', icon: LayoutDashboard, exact: true },
     {
-      group: 'PROPERTY MANAGEMENT',
+      group: 'WESTERN STAY (PG & HOSTEL)',
       items: [
-        { label: 'Properties', href: '/admin/properties', icon: Building2 },
-        { label: 'Media Library', href: '/admin/media', icon: ImageIcon }
+        { label: 'Hostel Dashboard', href: '/admin/western-stay', icon: LayoutDashboard, exact: true },
+        { label: 'Room Inventory', href: '/admin/western-stay/rooms', icon: Bed },
+        { label: 'Tariffs & Room Types', href: '/admin/western-stay/room-types', icon: Building2 },
+        { label: 'Residents Directory', href: '/admin/western-stay/occupants', icon: Users },
+        { label: 'Amenities & Facilities', href: '/admin/western-stay/facilities', icon: Sparkles },
+        { label: 'Meals & 7-Day Menu', href: '/admin/western-stay/meals', icon: UtensilsCrossed },
+        { label: 'Hostel Gallery', href: '/admin/western-stay/gallery', icon: ImageIcon },
+        { label: 'Room Enquiries CRM', href: '/admin/western-stay/enquiries', icon: Bell },
+        { label: 'Hostel Settings', href: '/admin/western-stay/settings', icon: MapPin }
       ]
     },
     {
-      group: 'CUSTOMERS & CRM',
+      group: 'SANJAY PROPERTIES (REAL ESTATE)',
       items: [
-        { label: 'Leads & Enquiries', href: '/admin/leads', icon: Users }
+        { label: 'Properties & Plots', href: '/admin/properties', icon: Building2 },
+        { label: 'Property Enquiries', href: '/admin/leads', icon: Users },
+        { label: 'Media Library', href: '/admin/media', icon: ImageIcon }
       ]
     },
     {
       group: 'SYSTEM',
       items: [
-        { label: 'Settings & SEO', href: '/admin/settings', icon: Settings }
+        { label: 'Site Settings & SEO', href: '/admin/settings', icon: Settings }
       ]
     }
   ];
@@ -137,36 +157,103 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     if (cleanActive === '/admin') {
       return {
         title: 'Dashboard Overview',
-        subtitle: 'Real-time performance metrics, quick actions, and recent customer enquiries',
+        subtitle: 'Unified operational metrics across Western Stay Hostel and Sanjay Properties Real Estate',
         breadcrumbs: []
       };
     }
+
+    // Western Stay Routes
+    if (cleanActive === '/admin/western-stay') {
+      return {
+        title: 'Western Stay Overview',
+        subtitle: 'Live occupancy, room inventory status, bookings, and resident revenue',
+        breadcrumbs: [{ label: 'Western Stay' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/rooms') {
+      return {
+        title: 'Room Inventory Management',
+        subtitle: 'Add, update status, and manage physical rooms across Ground, 1st, and 2nd floors',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Rooms' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/room-types') {
+      return {
+        title: 'Room Types & Tariffs',
+        subtitle: 'Configure Single, 2-Sharing, and 4-Sharing pricing, AC surcharges, and deposit',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Room Types' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/occupants') {
+      return {
+        title: 'Occupants & Resident Directory',
+        subtitle: 'Private directory of current residents, room assignments, dues, and check-in records',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Occupants' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/facilities') {
+      return {
+        title: 'Hostel Facilities & Amenities',
+        subtitle: 'Manage Wi-Fi, solar hot water, RO drinking water, and other resident amenities',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Facilities' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/meals') {
+      return {
+        title: 'Meals & Weekly Dining Menu',
+        subtitle: 'Homestyle meal plans, subscription rates, and 7-day breakfast, lunch, and dinner menu',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Meals & Menu' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/gallery') {
+      return {
+        title: 'Hostel Photo Gallery',
+        subtitle: 'Manage property exterior, bedroom, dining, and campus photos',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Gallery' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/enquiries') {
+      return {
+        title: 'Western Stay Room Enquiries',
+        subtitle: 'Track guest leads, preferred sharing types, and follow-up via Call / WhatsApp',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Enquiries' }]
+      };
+    }
+    if (cleanActive === '/admin/western-stay/settings') {
+      return {
+        title: 'Western Stay Hostel Settings',
+        subtitle: 'Hostel contact phone numbers, reception details, and Google Maps embed',
+        breadcrumbs: [{ label: 'Western Stay', href: '/admin/western-stay' }, { label: 'Settings' }]
+      };
+    }
+
+    // Real Estate Routes
     if (cleanActive === '/admin/properties') {
       return {
-        title: 'Property Listings',
-        subtitle: 'View, edit, and manage property configurations and active public website visibility',
+        title: 'Real Estate Property Listings',
+        subtitle: 'Manage plots, lands, villas, and commercial property listings for Sanjay Properties',
         breadcrumbs: [{ label: 'Properties' }]
       };
     }
     if (cleanActive === '/admin/properties/new') {
       return {
-        title: 'Add New Property',
-        subtitle: 'Create a new property listing with facilities and accommodation plans',
+        title: 'Add New Property Listing',
+        subtitle: 'Create a new real estate plot or residential project listing',
         breadcrumbs: [{ label: 'Properties', href: '/admin/properties' }, { label: 'New Property' }]
       };
     }
     if (cleanActive.startsWith('/admin/properties/')) {
       return {
         title: 'Property Editor',
-        subtitle: 'Modify rooms, facilities, meal plans, weekly menu, images, and contact information',
+        subtitle: 'Modify plots, pricing, legal approvals, layout specifications, and photos',
         breadcrumbs: [{ label: 'Properties', href: '/admin/properties' }, { label: 'Editor' }]
       };
     }
     if (cleanActive === '/admin/leads') {
       return {
-        title: 'Customer Enquiries & Leads',
-        subtitle: 'View customer submissions, call prospects directly, send WhatsApp messages, and record notes',
-        breadcrumbs: [{ label: 'Leads CRM' }]
+        title: 'Real Estate Inquiries & Leads',
+        subtitle: 'View land and plot buyer inquiries, call prospects directly, and send WhatsApp messages',
+        breadcrumbs: [{ label: 'Property Leads' }]
       };
     }
     if (cleanActive === '/admin/media') {
@@ -179,7 +266,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     if (cleanActive === '/admin/settings') {
       return {
         title: 'Site Settings & SEO',
-        subtitle: 'Manage global contact details, project information, and default SEO tags',
+        subtitle: 'Manage global Sanjay Properties contact details and default SEO tags',
         breadcrumbs: [{ label: 'Settings & SEO' }]
       };
     }
@@ -198,6 +285,37 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     if (cleanActive === '/admin') {
       return <AdminDashboardHome />;
     }
+
+    // Western Stay Views
+    if (cleanActive === '/admin/western-stay') {
+      return <WesternStayDashboard />;
+    }
+    if (cleanActive === '/admin/western-stay/rooms') {
+      return <WesternStayRooms />;
+    }
+    if (cleanActive === '/admin/western-stay/room-types') {
+      return <WesternStayRoomTypes />;
+    }
+    if (cleanActive === '/admin/western-stay/occupants') {
+      return <WesternStayOccupants />;
+    }
+    if (cleanActive === '/admin/western-stay/facilities') {
+      return <WesternStayFacilities />;
+    }
+    if (cleanActive === '/admin/western-stay/meals') {
+      return <WesternStayMeals />;
+    }
+    if (cleanActive === '/admin/western-stay/gallery') {
+      return <WesternStayGallery />;
+    }
+    if (cleanActive === '/admin/western-stay/enquiries') {
+      return <WesternStayEnquiries />;
+    }
+    if (cleanActive === '/admin/western-stay/settings') {
+      return <WesternStaySettings />;
+    }
+
+    // Real Estate Views
     if (cleanActive === '/admin/properties') {
       return <AdminPropertiesList />;
     }
@@ -288,7 +406,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                       Sanjay Properties
                     </span>
                     <span className="text-[10px] text-neutral-400 font-medium tracking-wider uppercase">
-                      Admin Dashboard
+                      Admin Portal
                     </span>
                   </div>
                 </a>
@@ -303,8 +421,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               </div>
 
               {/* Navigation Links */}
-              <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
-                {/* Dashboard Link */}
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+                {/* Overview Link */}
                 <div>
                   <a
                     href="/admin"
@@ -312,24 +430,24 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                       e.preventDefault();
                       navigateTo('/admin');
                     }}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                    className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                       isActiveRoute('/admin', true)
                         ? 'bg-[#FFCC00] text-black font-bold shadow-md shadow-[#FFCC00]/10'
                         : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
                     }`}
                   >
                     <LayoutDashboard className="w-4 h-4" />
-                    <span>Dashboard</span>
+                    <span>Overview</span>
                   </a>
                 </div>
 
                 {/* Groups */}
                 {navItems.slice(1).map((section: any, idx) => (
-                  <div key={idx} className="space-y-1.5">
-                    <div className="px-3.5 text-[11px] font-bold text-neutral-500 uppercase tracking-wider">
+                  <div key={idx} className="space-y-1">
+                    <div className="px-3.5 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
                       {section.group}
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       {section.items.map((item: any, itemIdx: number) => {
                         const active = isActiveRoute(item.href, item.exact);
                         const Icon = item.icon;
@@ -341,54 +459,38 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                               e.preventDefault();
                               navigateTo(item.href);
                             }}
-                            className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                               active
                                 ? 'bg-[#FFCC00] text-black font-bold shadow-md shadow-[#FFCC00]/10'
                                 : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
                             }`}
                           >
-                            <Icon className="w-4 h-4" />
-                            <span>{item.label}</span>
+                            <Icon className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{item.label}</span>
                           </a>
                         );
                       })}
                     </div>
                   </div>
                 ))}
-
-                {/* Public Website Preview Quicklink */}
-                <div className="pt-4 border-t border-neutral-800/60">
-                  <a
-                    href="/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between px-3.5 py-2 rounded-lg text-xs font-semibold text-neutral-400 hover:text-[#FFCC00] hover:bg-neutral-800/40 transition-colors"
-                  >
-                    <span className="flex items-center gap-2">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>View Public Site</span>
-                    </span>
-                    <span className="text-[10px] bg-neutral-800 px-1.5 py-0.5 rounded text-neutral-400">Live</span>
-                  </a>
-                </div>
               </div>
 
-              {/* User Profile & Logout Bottom Bar */}
+              {/* User Profile & Logout */}
               <div className="p-4 border-t border-neutral-800/80 bg-[#111317]">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-neutral-950 font-bold flex items-center justify-center shrink-0 text-sm">
-                      {adminEmail.charAt(0).toUpperCase()}
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xs font-bold text-[#FFCC00] shrink-0">
+                      A
                     </div>
-                    <div className="truncate">
-                      <div className="text-xs font-bold text-white truncate">Admin</div>
-                      <div className="text-[11px] text-neutral-400 truncate">{adminEmail}</div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs font-bold text-white truncate">Administrator</span>
+                      <span className="text-[10px] text-neutral-400 truncate">{adminEmail}</span>
                     </div>
                   </div>
                   <button
                     onClick={handleLogout}
-                    title="Logout"
-                    className="p-2 rounded-lg text-neutral-400 hover:text-rose-400 hover:bg-neutral-800/80 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                    title="Sign Out"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -420,10 +522,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               }}
             >
               {/* Top Bar for Desktop */}
-              <header className="hidden lg:flex h-18 bg-[#14161b]/90 backdrop-blur-md border-b border-neutral-800/80 px-8 items-center justify-between sticky top-0 z-30">
+              <header className="hidden lg:flex h-16 bg-[#14161b]/90 backdrop-blur-md border-b border-neutral-800/80 px-8 items-center justify-between sticky top-0 z-30">
                 <div>
                   {currentMeta.breadcrumbs.length > 0 && (
-                    <div className="flex items-center gap-1.5 text-xs text-neutral-400 mb-0.5">
+                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 mb-0.5">
                       <a
                         href="/admin"
                         onClick={(e) => {
@@ -455,7 +557,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                       ))}
                     </div>
                   )}
-                  <h1 className="text-lg font-bold text-white leading-tight">{currentMeta.title}</h1>
+                  <h1 className="text-base font-bold text-white leading-tight">{currentMeta.title}</h1>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -463,10 +565,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     href="/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg border border-neutral-700 bg-neutral-800/60 hover:bg-neutral-700/80 text-xs font-semibold text-neutral-200 transition-colors"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-700 bg-neutral-800/60 hover:bg-neutral-700/80 text-xs font-semibold text-neutral-200 transition-colors"
                   >
                     <ExternalLink className="w-3.5 h-3.5 text-[#FFCC00]" />
-                    <span>Visit Public Website</span>
+                    <span>View Website</span>
                   </a>
 
                   <button

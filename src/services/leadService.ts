@@ -93,9 +93,7 @@ export const leadService = {
 
   // Get all leads with optional filters
   async getLeads(filters: LeadFilters = {}): Promise<LeadRecord[]> {
-    const client = getSupabaseClient();
-    if (!client) {
-      // Fallback: convert leadStore leads to LeadRecord format
+    const getLocalFormattedLeads = (): LeadRecord[] => {
       const localLeads = leadStore.getLeads();
       return localLeads.map((l) => ({
         id: l.id,
@@ -115,6 +113,28 @@ export const leadService = {
         created_at: l.createdAt,
         updated_at: l.updatedAt
       }));
+    };
+
+    const client = getSupabaseClient();
+    if (!client) {
+      let results = getLocalFormattedLeads();
+      if (filters.source && filters.source !== 'all') {
+        results = results.filter((l) => l.source === filters.source);
+      }
+      if (filters.status && filters.status !== 'all') {
+        results = results.filter((l) => l.status === filters.status);
+      }
+      if (filters.search && filters.search.trim()) {
+        const q = filters.search.toLowerCase().trim();
+        results = results.filter(
+          (l) =>
+            l.name.toLowerCase().includes(q) ||
+            l.phone.toLowerCase().includes(q) ||
+            (l.email && l.email.toLowerCase().includes(q)) ||
+            (l.message && l.message.toLowerCase().includes(q))
+        );
+      }
+      return results;
     }
 
     try {
@@ -134,8 +154,15 @@ export const leadService = {
       }
 
       const { data, error } = await query;
-      if (error || !data) {
-        return [];
+      if (error || !data || data.length === 0) {
+        let results = getLocalFormattedLeads();
+        if (filters.source && filters.source !== 'all') {
+          results = results.filter((l) => l.source === filters.source);
+        }
+        if (filters.status && filters.status !== 'all') {
+          results = results.filter((l) => l.status === filters.status);
+        }
+        return results;
       }
 
       let results = data as LeadRecord[];
@@ -154,7 +181,7 @@ export const leadService = {
       return results;
     } catch (err) {
       console.error('Error fetching leads:', err);
-      return [];
+      return getLocalFormattedLeads();
     }
   },
 

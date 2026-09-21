@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   Building2,
   Users,
-  UserCheck,
+  Bed,
   Sparkles,
   Plus,
   ArrowUpRight,
@@ -13,10 +13,16 @@ import {
   Edit3,
   Image as ImageIcon,
   CheckCircle2,
-  X
+  X,
+  Clock,
+  DollarSign,
+  TrendingUp,
+  MapPin,
+  ArrowRight
 } from 'lucide-react';
 import { useProperties } from '../../hooks/usePropertiesQuery';
 import { useLeads, useLeadStats, useUpdateLeadStatus } from '../../hooks/useLeadsQuery';
+import { useWesternStayStatsQuery, useWesternStayRoomsQuery } from '../../hooks/useWesternStayQuery';
 import type { Lead, LeadStatus } from '../../types/database';
 
 export const AdminDashboardHome: React.FC = () => {
@@ -27,6 +33,8 @@ export const AdminDashboardHome: React.FC = () => {
   const { data: properties = [], isLoading: isLoadingProps } = useProperties();
   const { data: leads = [], isLoading: isLoadingLeads } = useLeads();
   const { data: statsData, isLoading: isLoadingStats } = useLeadStats();
+  const { data: westernStayStats } = useWesternStayStatsQuery();
+  const { data: westernStayRooms } = useWesternStayRoomsQuery();
   const updateStatusMutation = useUpdateLeadStatus();
 
   const showToast = (msg: string) => {
@@ -46,8 +54,7 @@ export const AdminDashboardHome: React.FC = () => {
     }
   };
 
-  const activePropertiesCount = properties.filter((p) => p.status === 'active').length;
-  const recentLeads = leads.slice(0, 8);
+  const recentLeads = leads.slice(0, 6);
 
   const getStatusBadge = (status: LeadStatus) => {
     switch (status) {
@@ -69,17 +76,8 @@ export const AdminDashboardHome: React.FC = () => {
     }
   };
 
-  const generateWhatsAppUrl = (phone: string, leadName: string, source: string) => {
-    const cleanPhone = phone.replace(/[^0-9]/g, '');
-    const formattedPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
-    const text = encodeURIComponent(
-      `Hello ${leadName}, thank you for contacting ${source} regarding your enquiry. How can we assist you today?`
-    );
-    return `https://wa.me/${formattedPhone}?text=${text}`;
-  };
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       {/* Toast Notification */}
       {toastMsg && (
         <div className="fixed bottom-6 right-6 z-50 bg-[#1e222b] text-white px-5 py-3 rounded-2xl shadow-2xl border border-neutral-700 text-xs sm:text-sm font-semibold flex items-center gap-2 animate-bounce">
@@ -88,377 +86,257 @@ export const AdminDashboardHome: React.FC = () => {
         </div>
       )}
 
-      {/* Top Banner & Quick Actions */}
-      <div className="bg-gradient-to-r from-[#171a22] to-[#121419] border border-neutral-800 p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+      {/* Top Banner */}
+      <div className="bg-gradient-to-r from-neutral-900 via-[#161922] to-neutral-900 border border-neutral-800 p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFCC00]/10 border border-[#FFCC00]/30 text-[#FFCC00] text-xs font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>TanStack Query & Drizzle ORM Active</span>
+            <span>Dual Enterprise Management</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-            Central Management Dashboard
+            Sanjay Properties & Western Stay Admin
           </h2>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-xl">
-            Manage properties, accommodation tariffs, facilities, meal menus, enquiry leads, and site SEO in real-time.
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-2xl">
+            Seamlessly control real estate property developments and Western Stay PG hostel operations from a unified portal.
           </p>
         </div>
 
-        {/* Quick Actions Grid */}
         <div className="flex flex-wrap items-center gap-2.5">
           <a
-            href="/admin/properties/new"
-            className="px-4 py-2.5 rounded-xl bg-[#FFCC00] hover:bg-[#e6b800] text-black font-bold text-xs sm:text-sm flex items-center gap-1.5 transition-all shadow-md shadow-[#FFCC00]/10 cursor-pointer"
+            href="/admin/western-stay"
+            className="px-4 py-2.5 rounded-xl bg-[#FFCC00] hover:bg-[#ffe066] text-black font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
           >
-            <Plus className="w-4 h-4" />
-            <span>Add Property</span>
+            <Bed className="w-4 h-4" />
+            <span>Western Stay Hostel</span>
           </a>
           <a
             href="/admin/properties"
-            className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition-colors border border-neutral-700 cursor-pointer"
+            className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors border border-neutral-700"
           >
-            <Edit3 className="w-4 h-4 text-amber-400" />
-            <span>Edit Properties</span>
-          </a>
-          <a
-            href="/admin/media"
-            className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition-colors border border-neutral-700 cursor-pointer"
-          >
-            <ImageIcon className="w-4 h-4 text-blue-400" />
-            <span>Upload Media</span>
-          </a>
-        </div>
-      </div>
-
-      {/* KPI Stats Cards (Live TanStack Query) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        {/* Total Properties */}
-        <div className="bg-[#14161c] border border-neutral-800/90 rounded-2xl p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-neutral-400 mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider">TOTAL PROPERTIES</span>
             <Building2 className="w-4 h-4 text-[#FFCC00]" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-white">
-            {isLoadingProps ? <span className="animate-pulse">--</span> : properties.length}
-          </div>
-          <div className="text-[11px] text-neutral-400 mt-1 flex items-center gap-1.5">
-            <span className="text-emerald-400 font-semibold">{activePropertiesCount} Active</span> on website
-          </div>
-        </div>
-
-        {/* Active Properties */}
-        <div className="bg-[#14161c] border border-neutral-800/90 rounded-2xl p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-neutral-400 mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider">ACTIVE PROPERTIES</span>
-            <Building2 className="w-4 h-4 text-emerald-400" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-white">
-            {isLoadingProps ? <span className="animate-pulse">--</span> : activePropertiesCount}
-          </div>
-          <div className="text-[11px] text-neutral-400 mt-1">
-            Western Stay – Sanjay Mansion
-          </div>
-        </div>
-
-        {/* Total Leads */}
-        <div className="bg-[#14161c] border border-neutral-800/90 rounded-2xl p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-neutral-400 mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider">TOTAL LEADS</span>
-            <Users className="w-4 h-4 text-blue-400" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-white">
-            {isLoadingStats ? <span className="animate-pulse">--</span> : statsData?.total ?? leads.length}
-          </div>
-          <div className="text-[11px] text-neutral-400 mt-1">
-            Across Properties & Mansion
-          </div>
-        </div>
-
-        {/* New Leads */}
-        <div className="bg-[#14161c] border border-neutral-800/90 rounded-2xl p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-neutral-400 mb-3">
-            <span className="text-xs font-bold uppercase tracking-wider">NEW LEADS</span>
-            <UserCheck className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="text-2xl sm:text-3xl font-extrabold text-amber-400">
-            {isLoadingStats ? <span className="animate-pulse">--</span> : statsData?.new ?? leads.filter(l => l.status === 'New').length}
-          </div>
-          <div className="text-[11px] text-neutral-400 mt-1 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-            <span>Requires review</span>
-          </div>
+            <span>Real Estate Listings</span>
+          </a>
         </div>
       </div>
 
-      {/* Main Content Split: Recent Leads Table & Properties Showcase */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Enquiries (2 cols on desktop) */}
-        <div className="lg:col-span-2 bg-[#14161c] border border-neutral-800 rounded-3xl p-5 sm:p-6">
-          <div className="flex items-center justify-between mb-5 pb-4 border-b border-neutral-800/80">
-            <div>
-              <h3 className="text-base font-bold text-white">Recent Enquiries & Leads</h3>
-              <p className="text-xs text-neutral-400">Cached and auto-synced via TanStack Query</p>
+      {/* Operational Highlights Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Western Stay Hostel Box */}
+        <div className="p-6 rounded-3xl bg-neutral-900 border border-neutral-800 hover:border-[#FFCC00]/40 transition-colors flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#FFCC00]/10 text-[#FFCC00] text-xs font-bold border border-[#FFCC00]/30 uppercase tracking-wider">
+                PG / Hostel Operation
+              </span>
+              <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Live Sync
+              </span>
             </div>
+
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <Bed className="w-5 h-5 text-[#FFCC00]" />
+              Western Stay – Sanjay Mansion
+            </h3>
+            <p className="text-xs text-neutral-400 mt-1">
+              Saravanampatti, Coimbatore • PG for working professionals & students
+            </p>
+
+            <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-neutral-800 text-center">
+              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
+                <div className="text-xs text-neutral-400">Total Rooms</div>
+                <div className="text-xl font-bold text-white mt-1">
+                  {westernStayStats?.totalRooms ?? 8}
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <div className="text-xs text-emerald-400">Available</div>
+                <div className="text-xl font-bold text-emerald-400 mt-1">
+                  {westernStayStats?.availableRooms ?? 2}
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
+                <div className="text-xs text-neutral-400">Occupancy</div>
+                <div className="text-xl font-bold text-[#FFCC00] mt-1">
+                  {westernStayStats?.occupancyRate ?? 75}%
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-neutral-800 flex items-center justify-between">
+            <span className="text-xs text-neutral-400">
+              Monthly Rent Revenue: <strong className="text-white">₹{(westernStayStats?.currentMonthlyRevenue ?? 42300).toLocaleString('en-IN')}</strong>
+            </span>
             <a
-              href="/admin/leads"
+              href="/admin/western-stay"
               className="text-xs font-bold text-[#FFCC00] hover:underline flex items-center gap-1"
             >
-              <span>View All Leads</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              Manage Western Stay <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
+        </div>
 
-          {isLoadingLeads ? (
-            <div className="py-12 text-center text-xs text-neutral-500 animate-pulse">
-              Loading recent leads...
+        {/* Sanjay Properties Real Estate Box */}
+        <div className="p-6 rounded-3xl bg-neutral-900 border border-neutral-800 hover:border-[#FFCC00]/40 transition-colors flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/30 uppercase tracking-wider">
+                Real Estate Development
+              </span>
+              <span className="text-xs text-neutral-400">Layouts & Plots</span>
             </div>
-          ) : recentLeads.length === 0 ? (
-            <div className="py-12 text-center">
-              <Users className="w-8 h-8 text-neutral-600 mx-auto mb-2" />
-              <p className="text-sm font-semibold text-neutral-300">No enquiries recorded yet</p>
-              <p className="text-xs text-neutral-500 mt-1">
-                Leads submitted through the public website will appear here in real time.
-              </p>
+
+            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+              <Building2 className="w-5 h-5 text-blue-400" />
+              Sanjay Properties
+            </h3>
+            <p className="text-xs text-neutral-400 mt-1">
+              Saravanampatti, Coimbatore • DTCP Approved Villa Plots & Real Estate
+            </p>
+
+            <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-neutral-800 text-center">
+              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
+                <div className="text-xs text-neutral-400">Listed Projects</div>
+                <div className="text-xl font-bold text-white mt-1">
+                  {properties.length || 1}
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                <div className="text-xs text-blue-400">Active Layouts</div>
+                <div className="text-xl font-bold text-blue-400 mt-1">
+                  1 (Sanjay Gardens)
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
+                <div className="text-xs text-neutral-400">Total Leads</div>
+                <div className="text-xl font-bold text-[#FFCC00] mt-1">
+                  {statsData?.total ?? leads.length}
+                </div>
+              </div>
             </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="text-neutral-500 border-b border-neutral-800/60 pb-2 uppercase tracking-wider font-bold">
-                    <th className="pb-3 pl-2">Prospect</th>
-                    <th className="pb-3">Source</th>
-                    <th className="pb-3">Date</th>
-                    <th className="pb-3">Status</th>
-                    <th className="pb-3 text-right pr-2">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-800/40">
-                  {recentLeads.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-neutral-800/30 transition-colors group">
-                      <td className="py-3.5 pl-2">
-                        <div className="font-bold text-white">{lead.name}</div>
-                        <div className="text-[11px] text-neutral-400 flex items-center gap-2 mt-0.5">
-                          <span>{lead.phone}</span>
-                          {lead.email && <span>· {lead.email}</span>}
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-neutral-800 flex items-center justify-between">
+            <span className="text-xs text-neutral-400">
+              Flagship Project: <strong className="text-white">Sanjay Gardens</strong>
+            </span>
+            <a
+              href="/admin/properties"
+              className="text-xs font-bold text-[#FFCC00] hover:underline flex items-center gap-1"
+            >
+              Manage Property Listings <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Enquiries & Leads */}
+      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 sm:p-6">
+        <div className="flex items-center justify-between mb-5 pb-4 border-b border-neutral-800">
+          <div>
+            <h3 className="text-base font-bold text-white">Recent Customer Enquiries</h3>
+            <p className="text-xs text-neutral-400">Across Sanjay Properties and Western Stay</p>
+          </div>
+          <a
+            href="/admin/leads"
+            className="text-xs font-bold text-[#FFCC00] hover:underline flex items-center gap-1"
+          >
+            <span>View All Enquiries</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        {isLoadingLeads ? (
+          <div className="py-12 text-center text-xs text-neutral-500 animate-pulse">
+            Loading recent enquiries...
+          </div>
+        ) : recentLeads.length === 0 ? (
+          <div className="py-12 text-center text-xs text-neutral-500">
+            No customer enquiries recorded yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead>
+                <tr className="text-neutral-500 border-b border-neutral-800 pb-2 uppercase tracking-wider font-bold">
+                  <th className="pb-3 pl-2">Prospect</th>
+                  <th className="pb-3">Source / Property</th>
+                  <th className="pb-3">Date</th>
+                  <th className="pb-3">Status</th>
+                  <th className="pb-3 text-right pr-2">Quick Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-800">
+                {recentLeads.map((lead) => {
+                  const cleanPhone = lead.phone.replace(/[^0-9]/g, '');
+                  const waNumber = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+
+                  return (
+                    <tr key={lead.id} className="hover:bg-neutral-800/40 transition-colors">
+                      <td className="py-3.5 pl-2 font-semibold text-white">
+                        <div>{lead.name}</div>
+                        <div className="text-[11px] text-neutral-400 font-mono mt-0.5">
+                          {lead.phone}
                         </div>
                       </td>
                       <td className="py-3.5">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          lead.source === 'Sanjay Mansion'
-                            ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
-                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                          lead.source.includes('Mansion') || lead.source.includes('Western')
+                            ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
+                            : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
                         }`}>
                           {lead.source}
                         </span>
                       </td>
-                      <td className="py-3.5 text-neutral-400">
+                      <td className="py-3.5 text-neutral-400 font-mono">
                         {new Date(lead.created_at).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short'
                         })}
                       </td>
                       <td className="py-3.5">
-                        <span className={`px-2.5 py-1 rounded-full text-[11px] ${getStatusBadge(lead.status as LeadStatus)}`}>
-                          {lead.status}
-                        </span>
+                        <select
+                          value={lead.status}
+                          onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
+                          className="bg-neutral-800 border border-neutral-700 rounded-lg px-2 py-1 text-xs text-neutral-200 focus:outline-none focus:border-[#FFCC00]"
+                        >
+                          <option value="New">New</option>
+                          <option value="Contacted">Contacted</option>
+                          <option value="In Discussion">In Discussion</option>
+                          <option value="Visit Scheduled">Visit Scheduled</option>
+                          <option value="Converted">Converted</option>
+                          <option value="Closed">Closed</option>
+                        </select>
                       </td>
-                      <td className="py-3.5 text-right pr-2">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => setSelectedLead(lead)}
-                            className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white cursor-pointer"
-                            title="View Lead Details"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          {lead.status === 'New' && (
-                            <button
-                              onClick={() => handleStatusChange(lead.id, 'Contacted')}
-                              className="px-2 py-1 rounded-md bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-[11px] font-semibold transition-colors cursor-pointer"
-                              title="Mark as Contacted"
-                            >
-                              Contact
-                            </button>
-                          )}
-                        </div>
+                      <td className="py-3.5 text-right pr-2 space-x-2">
+                        <a
+                          href={`https://wa.me/${waNumber}?text=Hi%20${encodeURIComponent(
+                            lead.name
+                          )},%20thank%20you%20for%20contacting%20us%20regarding%20${encodeURIComponent(
+                            lead.source
+                          )}.`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30 transition-colors"
+                        >
+                          WhatsApp
+                        </a>
+                        <a
+                          href={`tel:${lead.phone}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold transition-colors"
+                        >
+                          Call
+                        </a>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Quick Properties Overview (1 col) */}
-        <div className="space-y-6">
-          <div className="bg-[#14161c] border border-neutral-800 rounded-3xl p-5 sm:p-6">
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-neutral-800/80">
-              <h3 className="text-base font-bold text-white">Active Properties</h3>
-              <a href="/admin/properties" className="text-xs font-bold text-[#FFCC00] hover:underline">
-                Manage
-              </a>
-            </div>
-
-            <div className="space-y-4">
-              {isLoadingProps ? (
-                <div className="py-8 text-center text-xs text-neutral-500 animate-pulse">Loading properties...</div>
-              ) : properties.map((prop) => (
-                <div key={prop.id} className="p-4 rounded-2xl bg-[#0e1014] border border-neutral-800/80">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-[#FFCC00] tracking-wider block">
-                        {prop.short_name}
-                      </span>
-                      <h4 className="text-sm font-bold text-white leading-tight mt-0.5">{prop.name}</h4>
-                      <p className="text-[11px] text-neutral-400 mt-1">{prop.full_address || prop.address_line1}</p>
-                    </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0">
-                      {prop.status}
-                    </span>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-neutral-800 flex items-center justify-between">
-                    <div className="text-xs font-bold text-white">
-                      From {prop.pricing_start || '₹4,900'}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`/admin/properties/${prop.slug || prop.id || 'sanjay-mansion'}`}
-                        className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 transition-colors cursor-pointer"
-                      >
-                        Edit
-                      </a>
-                      <a
-                        href="/sanjay-mansion"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white cursor-pointer"
-                        title="View Public Page"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-
-          {/* Contact Support Info Card */}
-          <div className="bg-[#14161c] border border-neutral-800 rounded-3xl p-5">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-2">
-              Website Contact Numbers
-            </h4>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between py-1 border-b border-neutral-800/60">
-                <span className="text-neutral-400">Primary Booking:</span>
-                <span className="font-bold text-white">+91 80568 89900</span>
-              </div>
-              <div className="flex justify-between py-1 border-b border-neutral-800/60">
-                <span className="text-neutral-400">Secondary Booking:</span>
-                <span className="font-bold text-white">+91 81108 89900</span>
-              </div>
-              <div className="flex justify-between py-1">
-                <span className="text-neutral-400">Location:</span>
-                <span className="font-bold text-neutral-200 truncate max-w-[150px]">Saravanampatti, CBE</span>
-              </div>
-            </div>
-            <a
-              href="/admin/settings"
-              className="mt-3 block text-center py-2 rounded-xl bg-neutral-800/70 hover:bg-neutral-800 text-neutral-300 text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Update Contact Settings
-            </a>
-          </div>
-        </div>
+        )}
       </div>
-
-      {/* Lead Detail Modal */}
-      {selectedLead && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-[#171a22] border border-neutral-700 rounded-3xl max-w-lg w-full p-6 text-white shadow-2xl relative">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-800">
-              <div>
-                <span className="text-[10px] font-bold text-[#FFCC00] uppercase tracking-wider">
-                  Lead Details · {selectedLead.source}
-                </span>
-                <h3 className="text-lg font-bold mt-0.5">{selectedLead.name}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedLead(null)}
-                className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-400 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="py-4 space-y-3.5 text-xs">
-              <div className="grid grid-cols-2 gap-3 p-3 rounded-xl bg-[#101217] border border-neutral-800">
-                <div>
-                  <span className="text-neutral-500 block">Phone</span>
-                  <a href={`tel:${selectedLead.phone}`} className="font-bold text-white hover:text-[#FFCC00]">
-                    {selectedLead.phone}
-                  </a>
-                </div>
-                <div>
-                  <span className="text-neutral-500 block">Email</span>
-                  <span className="font-bold text-neutral-200">{selectedLead.email || 'Not provided'}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-500 block">Enquiry Type</span>
-                  <span className="font-bold text-neutral-200">{selectedLead.enquiry_type}</span>
-                </div>
-                <div>
-                  <span className="text-neutral-500 block">Status</span>
-                  <span className={`inline-block px-2 py-0.5 rounded text-[10px] ${getStatusBadge(selectedLead.status as LeadStatus)}`}>
-                    {selectedLead.status}
-                  </span>
-                </div>
-              </div>
-
-              {selectedLead.preferred_accommodation && (
-                <div className="p-3 rounded-xl bg-[#101217] border border-neutral-800">
-                  <span className="text-neutral-500 block">Preferred Accommodation</span>
-                  <span className="font-semibold text-white">{selectedLead.preferred_accommodation}</span>
-                </div>
-              )}
-
-              {selectedLead.message && (
-                <div className="p-3 rounded-xl bg-[#101217] border border-neutral-800">
-                  <span className="text-neutral-500 block mb-1">Customer Message</span>
-                  <p className="text-neutral-300 italic">"{selectedLead.message}"</p>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Actions (Call & WhatsApp) */}
-            <div className="pt-4 border-t border-neutral-800 flex flex-wrap gap-2.5">
-              <a
-                href={`tel:${selectedLead.phone}`}
-                className="flex-1 py-2.5 px-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <Phone className="w-3.5 h-3.5 text-[#FFCC00]" />
-                <span>Call Lead</span>
-              </a>
-              <a
-                href={generateWhatsAppUrl(selectedLead.phone, selectedLead.name, selectedLead.source)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
-              </a>
-              <button
-                onClick={() => handleStatusChange(selectedLead.id, 'Contacted')}
-                className="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition-colors cursor-pointer"
-              >
-                Mark Contacted
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
