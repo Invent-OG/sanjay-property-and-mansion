@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MapPin,
   Wifi,
@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { SANJAY_MANSION_DATA } from '../data/sanjayMansion';
+import { propertyService, getDefaultSanjayMansionFullData } from '../services/propertyService';
+import type { FullPropertyData } from '../types/database';
 
 interface SanjayMansionSectionProps {
   onNavigateToMansion: () => void;
@@ -30,6 +32,24 @@ const HIGHLIGHT_FACILITIES = [
 export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
   onNavigateToMansion
 }) => {
+  const [data, setData] = useState<FullPropertyData>(getDefaultSanjayMansionFullData());
+
+  useEffect(() => {
+    propertyService.getFullPropertyBySlug('sanjay-mansion').then((res) => {
+      if (res) setData(res);
+    });
+  }, []);
+
+  const prop = data.property;
+
+  // If property is marked inactive or not featured, don't show on homepage
+  if (prop.status === 'inactive' || !prop.is_featured_homepage) {
+    return null;
+  }
+
+  const heroImg = prop.hero_image_url || data.images[0]?.url || SANJAY_MANSION_DATA.gallery[0].url;
+  const thumbnails = data.images.slice(1, 4);
+
   return (
     <section
       id="sanjay-mansion-section"
@@ -46,7 +66,7 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
 
           <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500">
             <MapPin className="w-4 h-4 text-neutral-800" />
-            <span>Saravanampatti, Coimbatore · Opp. KCT Tech Park</span>
+            <span>{prop.area}, {prop.city} · {prop.address_line2 || 'Opp. KCT Tech Park'}</span>
           </div>
         </div>
 
@@ -56,8 +76,8 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
           <div className="lg:col-span-6 flex flex-col gap-3">
             <div className="relative w-full h-[320px] sm:h-[420px] lg:h-[480px] rounded-[24px] sm:rounded-[32px] overflow-hidden bg-neutral-900 group shadow-sm">
               <img
-                src={SANJAY_MANSION_DATA.gallery[0].url}
-                alt="Western Stay Sanjay Mansion building exterior"
+                src={heroImg}
+                alt={prop.name}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 loading="lazy"
               />
@@ -86,20 +106,20 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
 
             {/* Small Thumbnails Row */}
             <div className="grid grid-cols-3 gap-2.5">
-              {SANJAY_MANSION_DATA.gallery.slice(1, 4).map((thumb, idx) => (
+              {thumbnails.map((thumb, idx) => (
                 <div
-                  key={thumb.id}
+                  key={thumb.id || idx}
                   className="relative h-20 sm:h-24 rounded-xl sm:rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200/80"
                 >
                   <img
                     src={thumb.url}
-                    alt={thumb.title}
+                    alt={thumb.title || 'Mansion Photo'}
                     className="w-full h-full object-cover"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-black/20" />
                   <span className="absolute bottom-1.5 left-2 text-[10px] font-bold text-white drop-shadow-sm truncate pr-1">
-                    {idx === 0 ? 'Exterior' : idx === 1 ? 'Rooms' : 'Interiors'}
+                    {thumb.category || (idx === 0 ? 'Exterior' : idx === 1 ? 'Rooms' : 'Interiors')}
                   </span>
                 </div>
               ))}
@@ -118,18 +138,18 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
 
               {/* Section Headings */}
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-neutral-950 tracking-tight leading-[1.1] mb-2">
-                WESTERN STAY
-                <br />
-                <span className="text-neutral-900">SANJAY MANSION</span>
+                {prop.name || 'WESTERN STAY – SANJAY MANSION'}
               </h2>
 
-              <p className="text-sm sm:text-base font-semibold text-neutral-800 italic mb-4">
-                &ldquo;{SANJAY_MANSION_DATA.tagline}&rdquo;
-              </p>
+              {prop.tagline && (
+                <p className="text-sm sm:text-base font-semibold text-neutral-800 italic mb-4">
+                  &ldquo;{prop.tagline}&rdquo;
+                </p>
+              )}
 
               {/* Short Description */}
               <p className="text-neutral-600 text-xs sm:text-sm leading-relaxed mb-6">
-                {SANJAY_MANSION_DATA.description}
+                {prop.description || 'A peaceful and comfortable stay in Saravanampatti, Coimbatore, designed with essential facilities, clean surroundings and convenient accommodation options.'}
               </p>
 
               {/* Location Badge Card */}
@@ -139,10 +159,10 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-neutral-900">
-                    Prime Location in Saravanampatti
+                    Prime Location in {prop.area}
                   </h4>
                   <p className="text-[11px] sm:text-xs text-neutral-500 mt-0.5 leading-relaxed">
-                    {SANJAY_MANSION_DATA.location.fullAddress}
+                    {prop.full_address || `${prop.address_line1}, ${prop.address_line2 || ''}, ${prop.area}, ${prop.city} – ${prop.pincode}`}
                   </p>
                 </div>
               </div>
@@ -174,7 +194,7 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-xs text-neutral-600 font-medium">Starting from</span>
                     <span className="text-xl sm:text-2xl font-black text-neutral-950">
-                      {SANJAY_MANSION_DATA.pricingStart}
+                      {prop.pricing_start || '₹4,900'}
                     </span>
                     <span className="text-xs text-neutral-500 font-medium">/ month</span>
                   </div>
@@ -196,13 +216,13 @@ export const SanjayMansionSection: React.FC<SanjayMansionSectionProps> = ({
                 onClick={onNavigateToMansion}
                 className="flex-1 py-3 px-6 rounded-full bg-neutral-950 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2 group cursor-pointer"
               >
-                <span>VIEW SANJAY MANSION</span>
+                <span>VIEW {prop.short_name.toUpperCase()}</span>
                 <ArrowUpRight className="w-4 h-4 text-[#FFCC00] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </button>
 
               <a
-                href={SANJAY_MANSION_DATA.phones[0].href}
-                className="py-3 px-6 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-neutral-900 hover:text-white active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2 text-center"
+                href={`tel:${prop.primary_phone || '8056889900'}`}
+                className="py-3 px-6 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-neutral-900 hover:text-white active:scale-95 transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-pointer"
               >
                 <PhoneCall className="w-4 h-4 stroke-[2.4]" />
                 <span>CALL FOR BOOKING</span>

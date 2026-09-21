@@ -1,0 +1,34 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+import { AdminPropertyEditor } from '../../../components/admin/AdminPropertyEditor';
+
+export function getStaticPaths() {
+  return [
+    { params: { id: 'sanjay-mansion' } },
+    { params: { id: 'sanjay-mansion-uuid-101' } },
+    { params: { id: 'default' } },
+    { params: { id: 'edit' } }
+  ];
+}
+
+const { id } = Astro.params;
+---
+
+<Layout
+  title="Edit Property | Sanjay Properties Admin Portal"
+  description="Edit property specifications, rooms, meals, menu, facilities and media gallery."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin/properties"
+      title="Property Editor"
+      subtitle="Modify rooms, facilities, meal plans, weekly menu, images, and contact information"
+      breadcrumbs={[{ label: 'Properties', href: '/admin/properties' }, { label: 'Editor' }]}
+      client:only="react"
+    >
+      <AdminPropertyEditor propertyId={id} client:only="react" />
+    </AdminLayout>
+  </AdminAuthGuard>
+</Layout>

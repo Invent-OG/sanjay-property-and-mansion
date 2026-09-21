@@ -1,0 +1,11 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { AdminLogin } from '../../components/admin/AdminLogin';
+---
+
+<Layout
+  title="Admin Login | Sanjay Properties & Sanjay Mansion"
+  description="Secure administrative login for Sanjay Properties & Western Stay Sanjay Mansion management portal."
+>
+  <AdminLogin client:only="react" />
+</Layout>

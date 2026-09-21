@@ -1,0 +1,23 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+import { AdminPropertiesList } from '../../../components/admin/AdminPropertiesList';
+---
+
+<Layout
+  title="Properties Management | Sanjay Properties Admin Portal"
+  description="Manage Sanjay Properties real estate developments, accommodations, pricing and listings."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin/properties"
+      title="Property Listings"
+      subtitle="View, edit, and manage property configurations and active public website visibility"
+      breadcrumbs={[{ label: 'Properties' }]}
+      client:only="react"
+    >
+      <AdminPropertiesList client:only="react" />
+    </AdminLayout>
+  </AdminAuthGuard>
+</Layout>

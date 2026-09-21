@@ -31,6 +31,8 @@ import { SANJAY_MANSION_DATA } from '../data/sanjayMansion';
 import { CONTACT_CONFIG } from '../data/contact';
 import { Footer } from './Footer';
 import { BrandLogo } from './BrandLogo';
+import { propertyService, getDefaultSanjayMansionFullData } from '../services/propertyService';
+import type { FullPropertyData } from '../types/database';
 
 interface SanjayMansionPageProps {
   onBackToHome: () => void;
@@ -45,22 +47,29 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
   onOpenScheduleModal,
   onOpenBookingModal
 }) => {
+  const [data, setData] = useState<FullPropertyData>(getDefaultSanjayMansionFullData());
   const [selectedGalleryImg, setSelectedGalleryImg] = useState<string | null>(null);
   const [activeMealPlanTab, setActiveMealPlanTab] = useState<'VEG' | 'NON-VEG'>('VEG');
   const [selectedMenuDay, setSelectedMenuDay] = useState<string>('Monday');
 
-  // Sync document title and meta description for SEO
+  // Load latest property data dynamically from Supabase
+  useEffect(() => {
+    propertyService.getFullPropertyBySlug('sanjay-mansion').then((res) => {
+      if (res) setData(res);
+    });
+  }, []);
+
+  const prop = data.property;
+
+  // Sync document title and meta description for SEO dynamically
   useEffect(() => {
     const originalTitle = document.title;
-    document.title = 'Western Stay – Sanjay Mansion | Saravanampatti, Coimbatore';
+    document.title = prop.seo_title || 'Western Stay – Sanjay Mansion | Saravanampatti, Coimbatore';
 
     const metaDescription = document.querySelector('meta[name="description"]');
     const originalDesc = metaDescription?.getAttribute('content') || '';
-    if (metaDescription) {
-      metaDescription.setAttribute(
-        'content',
-        'Western Stay – Sanjay Mansion in Saravanampatti, Coimbatore. Comfortable accommodation with Wi-Fi, solar hot water, attached bathrooms, RO water, laundry access, CCTV surveillance and convenient stay options.'
-      );
+    if (metaDescription && prop.seo_description) {
+      metaDescription.setAttribute('content', prop.seo_description);
     }
 
     // Scroll to top when page opens
@@ -76,26 +85,18 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
       script.text = JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'LodgingBusiness',
-        name: 'Western Stay – Sanjay Mansion',
+        name: prop.name || 'Western Stay – Sanjay Mansion',
         description:
-          'Comfortable and secure residential accommodation in Saravanampatti, Coimbatore near KCT Tech Park.',
-        telephone: '+918056889900',
+          prop.seo_description || 'Comfortable and secure residential accommodation in Saravanampatti, Coimbatore near KCT Tech Park.',
+        telephone: `+91${prop.primary_phone || '8056889900'}`,
         address: {
           '@type': 'PostalAddress',
-          streetAddress: 'No. 6, Sanjay Garden, Opp. KCT Tech Park',
-          addressLocality: 'Saravanampatti, Coimbatore',
+          streetAddress: `${prop.address_line1}, ${prop.address_line2 || ''}`,
+          addressLocality: `${prop.area}, ${prop.city}`,
           addressRegion: 'Tamil Nadu',
-          postalCode: '641035',
+          postalCode: prop.pincode || '641035',
           addressCountry: 'IN'
         },
-        amenityFeature: [
-          { '@type': 'LocationFeatureSpecification', name: 'Free Wi-Fi', value: true },
-          { '@type': 'LocationFeatureSpecification', name: 'Solar Hot Water', value: true },
-          { '@type': 'LocationFeatureSpecification', name: 'Attached Bathrooms', value: true },
-          { '@type': 'LocationFeatureSpecification', name: 'RO Water', value: true },
-          { '@type': 'LocationFeatureSpecification', name: 'CCTV Surveillance', value: true },
-          { '@type': 'LocationFeatureSpecification', name: 'Covered Parking', value: true }
-        ],
         priceRange: '₹4,900 - ₹8,000'
       });
       document.head.appendChild(script);
@@ -111,7 +112,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
         existingScript.remove();
       }
     };
-  }, []);
+  }, [prop]);
 
   // Helper for rendering facility icons
   const renderFacilityIcon = (iconName: string) => {
@@ -146,9 +147,15 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
     }
   };
 
-  const activeDayMenu = SANJAY_MANSION_DATA.weeklyMenu.find(
-    (m) => m.day === selectedMenuDay
-  ) || SANJAY_MANSION_DATA.weeklyMenu[0];
+  const activeDayMenu = data.weeklyMenu.find(
+    (m) => m.day_of_week === selectedMenuDay
+  ) || data.weeklyMenu[0] || {
+    day_of_week: 'Monday',
+    breakfast: 'Idli (4), Sambar, Chutney',
+    lunch: 'White Rice, Sambar, Poriyal, Rasam, Curd, Pulikulambu',
+    dinner: 'Chapathi + Kurma',
+    is_holiday: false
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-[#111213] selection:bg-[#FFCC00] selection:text-black flex flex-col font-sans">
@@ -216,8 +223,8 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
           {/* Background Image & Gradient */}
           <div className="absolute inset-0 z-0">
             <img
-              src={SANJAY_MANSION_DATA.gallery[0].url}
-              alt="Western Stay Sanjay Mansion Building"
+              src={prop.hero_image_url || data.images[0]?.url || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=85'}
+              alt={prop.name}
               className="w-full h-full object-cover opacity-50 scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-neutral-950/40" />
@@ -233,24 +240,24 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs font-medium">
               <MapPin className="w-3.5 h-3.5 text-[#FFCC00]" />
-              <span>Saravanampatti · Opp. KCT Tech Park</span>
+              <span>{prop.area} · {prop.address_line2 || 'Opp. KCT Tech Park'}</span>
             </div>
           </div>
 
           {/* Main Hero Content */}
           <div className="relative z-10 max-w-3xl my-auto py-8">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05] uppercase">
-              WESTERN STAY
-              <br />
-              <span className="text-[#FFCC00]">SANJAY MANSION</span>
+              {prop.hero_title || prop.name}
             </h1>
 
-            <p className="text-lg sm:text-2xl text-neutral-200 font-semibold mt-4 sm:mt-5 tracking-tight italic">
-              &ldquo;{SANJAY_MANSION_DATA.tagline}&rdquo;
-            </p>
+            {prop.tagline && (
+              <p className="text-lg sm:text-2xl text-neutral-200 font-semibold mt-4 sm:mt-5 tracking-tight italic">
+                &ldquo;{prop.tagline}&rdquo;
+              </p>
+            )}
 
             <p className="text-xs sm:text-sm lg:text-base text-neutral-300 font-normal mt-3 max-w-2xl leading-relaxed">
-              Quality &amp; Comfort. A peaceful address for a comfortable stay. Wake up to nature.
+              {prop.hero_description || 'Quality & Comfort. A peaceful address for a comfortable stay. Wake up to nature.'}
             </p>
 
             {/* Address Banner */}
@@ -258,7 +265,9 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               <MapPin className="w-4 h-4 text-[#FFCC00] shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold block text-white">Location Address:</span>
-                <span className="text-neutral-300">{SANJAY_MANSION_DATA.location.fullAddress}</span>
+                <span className="text-neutral-300">
+                  {prop.full_address || `${prop.address_line1}, ${prop.address_line2 || ''}, ${prop.area}, ${prop.city} – ${prop.pincode}`}
+                </span>
               </div>
             </div>
 
@@ -266,26 +275,26 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-8">
               <button
                 type="button"
-                onClick={() => onOpenBookingModal ? onOpenBookingModal('Single Room (Deluxe)') : onOpenEnquiryModal()}
-                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2"
+                onClick={() => onOpenBookingModal ? onOpenBookingModal('Single Occupancy') : onOpenEnquiryModal()}
+                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2 cursor-pointer"
               >
                 <span>BOOK YOUR STAY</span>
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
               </button>
 
               <a
-                href={SANJAY_MANSION_DATA.location.googleMapsUrl}
+                href={prop.google_maps_url || 'https://maps.app.goo.gl/AJSivYbLohUfKxEA7'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all shadow-md flex items-center gap-2"
+                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all shadow-md flex items-center gap-2 cursor-pointer"
               >
                 <Navigation className="w-4 h-4 text-[#FFCC00]" />
                 <span>GET DIRECTIONS</span>
               </a>
 
               <a
-                href={SANJAY_MANSION_DATA.phones[0].href}
-                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center gap-2"
+                href={`tel:${prop.primary_phone || '8056889900'}`}
+                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Phone className="w-4 h-4 text-[#FFCC00]" />
                 <span>CALL NOW</span>
@@ -297,19 +306,19 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
           <div className="relative z-10 pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-4 text-white">
             <div>
               <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Pricing Starts</span>
-              <span className="text-base sm:text-xl font-black text-[#FFCC00]">₹4,900 / mo</span>
+              <span className="text-base sm:text-xl font-black text-[#FFCC00]">{prop.pricing_start || '₹4,900'} / mo</span>
             </div>
             <div>
-              <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Connectivity</span>
-              <span className="text-base sm:text-xl font-bold">Opp. KCT Tech Park</span>
+              <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Key Landmark</span>
+              <span className="text-xs sm:text-sm font-bold text-neutral-200">{prop.address_line2 || 'Opp. KCT Tech Park'}</span>
             </div>
             <div>
-              <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Wi-Fi Data</span>
-              <span className="text-base sm:text-xl font-bold">60GB / Person</span>
+              <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Locality</span>
+              <span className="text-xs sm:text-sm font-bold text-neutral-200">{prop.area}, {prop.city}</span>
             </div>
             <div>
-              <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Security</span>
-              <span className="text-base sm:text-xl font-bold">24×7 CCTV</span>
+              <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Property Managed By</span>
+              <span className="text-xs sm:text-sm font-bold text-[#FFCC00]">Sanjay Properties</span>
             </div>
           </div>
         </div>
@@ -383,26 +392,26 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
         {/* 3 Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch mb-8">
-          {SANJAY_MANSION_DATA.accommodations.map((acc) => (
+          {data.accommodations.map((acc) => (
             <motion.div
               key={acc.id}
               whileHover={{ y: -6 }}
               className={`rounded-[28px] sm:rounded-[36px] p-6 sm:p-8 flex flex-col justify-between transition-all relative ${
-                acc.recommended
+                acc.is_recommended
                   ? 'bg-neutral-950 text-white border-2 border-[#FFCC00] shadow-xl'
                   : 'bg-white text-neutral-950 border border-neutral-200/90 shadow-xs'
               }`}
             >
-              {acc.recommended && (
+              {acc.is_recommended && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                   <span className="px-4 py-1 rounded-full bg-[#FFCC00] text-black text-xs font-black uppercase tracking-wider shadow-sm">
-                    {acc.badge}
+                    {acc.badge || 'Most Popular'}
                   </span>
                 </div>
               )}
 
               <div>
-                {!acc.recommended && (
+                {!acc.is_recommended && acc.badge && (
                   <div className="mb-3">
                     <span className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 text-xs font-bold uppercase tracking-wider">
                       {acc.badge}
@@ -410,17 +419,17 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                   </div>
                 )}
 
-                <h3 className={`text-2xl font-black tracking-tight ${acc.recommended ? 'text-white' : 'text-neutral-950'}`}>
+                <h3 className={`text-2xl font-black tracking-tight ${acc.is_recommended ? 'text-white' : 'text-neutral-950'}`}>
                   {acc.name}
                 </h3>
 
                 <div className="mt-4 mb-6 pb-6 border-b border-neutral-200/40">
                   <div className="flex items-baseline gap-1.5">
-                    <span className={`text-3xl sm:text-4xl font-black tracking-tight ${acc.recommended ? 'text-[#FFCC00]' : 'text-neutral-950'}`}>
-                      {acc.priceMonthly}
+                    <span className={`text-3xl sm:text-4xl font-black tracking-tight ${acc.is_recommended ? 'text-[#FFCC00]' : 'text-neutral-950'}`}>
+                      {acc.price_display || `₹${acc.price_monthly}`}
                     </span>
-                    <span className={`text-xs ${acc.recommended ? 'text-neutral-400' : 'text-neutral-500'}`}>
-                      {acc.priceNote}
+                    <span className={`text-xs ${acc.is_recommended ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                      {acc.price_note || 'per month'}
                     </span>
                   </div>
                 </div>
@@ -431,10 +440,10 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                     <li key={fIdx} className="flex items-start gap-2.5 text-xs sm:text-sm">
                       <CheckCircle2
                         className={`w-4 h-4 shrink-0 mt-0.5 ${
-                          acc.recommended ? 'text-[#FFCC00]' : 'text-[#65a30d]'
+                          acc.is_recommended ? 'text-[#FFCC00]' : 'text-[#65a30d]'
                         }`}
                       />
-                      <span className={acc.recommended ? 'text-neutral-200' : 'text-neutral-700'}>
+                      <span className={acc.is_recommended ? 'text-neutral-200' : 'text-neutral-700'}>
                         {feat}
                       </span>
                     </li>
@@ -447,8 +456,8 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenBookingModal ? onOpenBookingModal(acc.name) : onOpenEnquiryModal()}
-                  className={`w-full py-3 px-4 rounded-full font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition-all text-center ${
-                    acc.recommended
+                  className={`w-full py-3 px-4 rounded-full font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 active:scale-95 transition-all text-center cursor-pointer ${
+                    acc.is_recommended
                       ? 'bg-[#FFCC00] text-black hover:bg-white'
                       : 'bg-neutral-950 text-white hover:bg-neutral-800'
                   }`}
@@ -493,16 +502,16 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             </p>
           </div>
 
-          {/* 12 Facility Items Grid */}
+          {/* Facility Items Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {SANJAY_MANSION_DATA.facilities.map((fac) => (
+            {data.facilities.map((fac) => (
               <div
                 key={fac.id}
                 className="p-5 sm:p-6 rounded-[20px] sm:rounded-[24px] bg-neutral-900/90 border border-neutral-800 hover:border-neutral-700 transition-all flex flex-col justify-between group"
               >
                 <div>
                   <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center mb-4 group-hover:bg-[#FFCC00] transition-colors shadow-sm">
-                    {renderFacilityIcon(fac.iconName)}
+                    {renderFacilityIcon(fac.icon_name)}
                   </div>
                   <h3 className="text-sm sm:text-base font-bold text-white tracking-tight mb-1.5">
                     {fac.title}
@@ -572,11 +581,11 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             </p>
           </div>
 
-          {/* 3 Meal Option Frequency Cards */}
+          {/* Meal Frequency Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mb-8">
-            {SANJAY_MANSION_DATA.mealsSummary.map((m, idx) => (
+            {data.mealPlans.map((m, idx) => (
               <div
-                key={idx}
+                key={m.id || idx}
                 className="p-6 rounded-[24px] bg-neutral-50 border border-neutral-200/80 flex flex-col justify-between"
               >
                 <div>
@@ -584,16 +593,16 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                     <span className="px-3 py-1 rounded-full bg-neutral-200 text-neutral-800 text-xs font-bold uppercase tracking-wider">
                       {m.frequency}
                     </span>
-                    <span className="text-xs text-neutral-500 font-semibold">{m.days}</span>
+                    <span className="text-xs text-neutral-500 font-semibold">{m.duration_days}</span>
                   </div>
 
                   <div className="mt-2 mb-4">
                     <span className="text-2xl sm:text-3xl font-black text-neutral-950">
-                      {m.priceApprox}
+                      {m.price_approx}
                     </span>
-                    {m.dailyRateApprox && (
+                    {m.daily_rate_approx && (
                       <span className="text-xs text-neutral-600 block mt-1 font-medium">
-                        {m.dailyRateApprox}
+                        {m.daily_rate_approx}
                       </span>
                     )}
                   </div>
@@ -608,7 +617,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
           <div className="p-3.5 rounded-xl bg-neutral-100 border border-neutral-200 text-xs text-neutral-500 flex items-center gap-2">
             <Info className="w-4 h-4 shrink-0 text-neutral-600" />
-            <span>{SANJAY_MANSION_DATA.mealsDisclaimer}</span>
+            <span>Meal pricing is vendor-based and may be subject to change.</span>
           </div>
         </div>
       </section>
@@ -633,7 +642,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveMealPlanTab('VEG')}
-                className={`px-5 py-2 rounded-full transition-all ${
+                className={`px-5 py-2 rounded-full transition-all cursor-pointer ${
                   activeMealPlanTab === 'VEG'
                     ? 'bg-neutral-950 text-white shadow-xs'
                     : 'text-neutral-600 hover:text-neutral-900'
@@ -644,7 +653,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               <button
                 type="button"
                 onClick={() => setActiveMealPlanTab('NON-VEG')}
-                className={`px-5 py-2 rounded-full transition-all ${
+                className={`px-5 py-2 rounded-full transition-all cursor-pointer ${
                   activeMealPlanTab === 'NON-VEG'
                     ? 'bg-neutral-950 text-white shadow-xs'
                     : 'text-neutral-600 hover:text-neutral-900'
@@ -656,27 +665,35 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
           </div>
 
           {/* Pricing Highlight for active tab */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <div className="p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-2xs">
-              <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                {activeMealPlanTab} Monthly Subscription
-              </span>
-              <div className="text-2xl font-black text-neutral-950">
-                {activeMealPlanTab === 'VEG' ? '₹3,600' : '₹3,800'}
-                <span className="text-xs text-neutral-500 font-normal"> / month (26 Days)</span>
-              </div>
-            </div>
+          {(() => {
+            const activeRate = data.mealSubscriptionRates.find((r) => r.plan_type === activeMealPlanTab) || {
+              monthly_price: activeMealPlanTab === 'VEG' ? '₹3,600' : '₹3,800',
+              weekly_price: activeMealPlanTab === 'VEG' ? '₹900' : '₹950'
+            };
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                <div className="p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-2xs">
+                  <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                    {activeMealPlanTab} Monthly Subscription
+                  </span>
+                  <div className="text-2xl font-black text-neutral-950">
+                    {activeRate.monthly_price}
+                    <span className="text-xs text-neutral-500 font-normal"> / month (26 Days)</span>
+                  </div>
+                </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-2xs">
-              <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                {activeMealPlanTab} Weekly Trial Plan
-              </span>
-              <div className="text-2xl font-black text-neutral-950">
-                {activeMealPlanTab === 'VEG' ? '₹900' : '₹950'}
-                <span className="text-xs text-neutral-500 font-normal"> / week</span>
+                <div className="p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-2xs">
+                  <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
+                    {activeMealPlanTab} Weekly Trial Plan
+                  </span>
+                  <div className="text-2xl font-black text-neutral-950">
+                    {activeRate.weekly_price}
+                    <span className="text-xs text-neutral-500 font-normal"> / week</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* Weekly Menu Interactive Preview */}
           <div className="bg-white rounded-3xl border border-neutral-200/80 p-5 sm:p-8">
@@ -689,29 +706,29 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
             {/* Day Selector Pills */}
             <div className="flex items-center gap-1.5 overflow-x-auto pb-3 mb-6 no-scrollbar">
-              {SANJAY_MANSION_DATA.weeklyMenu.map((m) => (
+              {data.weeklyMenu.map((m) => (
                 <button
-                  key={m.day}
+                  key={m.id || m.day_of_week}
                   type="button"
-                  onClick={() => setSelectedMenuDay(m.day)}
-                  className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
-                    selectedMenuDay === m.day
+                  onClick={() => setSelectedMenuDay(m.day_of_week)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                    selectedMenuDay === m.day_of_week
                       ? 'bg-neutral-950 text-white shadow-2xs'
                       : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                   }`}
                 >
-                  {m.day}
-                  {m.isHoliday && <span className="ml-1 text-[10px] opacity-75">(Holiday)</span>}
+                  {m.day_of_week}
+                  {m.is_holiday && <span className="ml-1 text-[10px] opacity-75">(Holiday)</span>}
                 </button>
               ))}
             </div>
 
             {/* Day Menu Details */}
-            {activeDayMenu.isHoliday ? (
+            {activeDayMenu.is_holiday ? (
               <div className="p-8 rounded-2xl bg-neutral-50 text-center border border-neutral-200/60">
-                <p className="text-base font-bold text-neutral-800">Sunday Dining Holiday</p>
+                <p className="text-base font-bold text-neutral-800">{activeDayMenu.day_of_week} Dining Holiday</p>
                 <p className="text-xs text-neutral-500 mt-1">
-                  Residents explore local Saravanampatti restaurants and dining spots on Sundays.
+                  Residents explore local Saravanampatti restaurants and dining spots on holidays.
                 </p>
               </div>
             ) : (
@@ -783,7 +800,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
         {/* Gallery Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {SANJAY_MANSION_DATA.gallery.map((img) => (
+          {data.images.map((img) => (
             <div
               key={img.id}
               onClick={() => setSelectedGalleryImg(img.url)}
@@ -791,7 +808,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             >
               <img
                 src={img.url}
-                alt={img.title}
+                alt={img.title || img.alt_text || 'Property Image'}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 loading="lazy"
               />
@@ -859,12 +876,10 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
                     <div>
                       <h4 className="text-sm font-bold text-neutral-950">Property Address:</h4>
                       <p className="text-xs sm:text-sm text-neutral-600 mt-1 leading-relaxed">
-                        {SANJAY_MANSION_DATA.location.addressLine1}
+                        {prop.address_line1}
+                        {prop.address_line2 && <><br />{prop.address_line2}</>}
                         <br />
-                        {SANJAY_MANSION_DATA.location.landmark}
-                        <br />
-                        {SANJAY_MANSION_DATA.location.area}, {SANJAY_MANSION_DATA.location.city} –{' '}
-                        {SANJAY_MANSION_DATA.location.pincode}
+                        {prop.area}, {prop.city} – {prop.pincode}
                       </p>
                     </div>
                   </div>
@@ -888,7 +903,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
               <div>
                 <a
-                  href={SANJAY_MANSION_DATA.location.googleMapsUrl}
+                  href={prop.google_maps_url || 'https://maps.app.goo.gl/AJSivYbLohUfKxEA7'}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3.5 rounded-full bg-neutral-950 text-white font-extrabold text-xs sm:text-sm hover:bg-[#FFCC00] hover:text-black active:scale-95 transition-all shadow-md"
@@ -903,7 +918,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             <div className="lg:col-span-7 h-[360px] sm:h-[420px] rounded-[24px] sm:rounded-[32px] overflow-hidden bg-neutral-100 border border-neutral-200/90 shadow-sm relative">
               <iframe
                 title="Sanjay Mansion Location Map"
-                src={SANJAY_MANSION_DATA.location.embedMapUrl}
+                src={prop.embed_map_url || 'https://maps.google.com/maps?q=11.0827,76.9942+(Western%20Stay%20-%20Sanjay%20Mansion)&t=&z=16&ie=UTF8&iwloc=&output=embed'}
                 className="w-full h-full border-0"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -912,7 +927,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
               <div className="absolute bottom-4 left-4 z-10">
                 <div className="px-3.5 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-neutral-200 text-neutral-800 text-xs font-bold shadow-xs flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-[#FFCC00] animate-pulse" />
-                  <span>Western Stay – Sanjay Mansion</span>
+                  <span>{prop.name || 'Western Stay – Sanjay Mansion'}</span>
                 </div>
               </div>
             </div>
@@ -943,26 +958,28 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
 
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <a
-                href="tel:8056889900"
-                className="py-3.5 px-6 sm:px-8 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2"
+                href={`tel:${prop.primary_phone || '8056889900'}`}
+                className="py-3.5 px-6 sm:px-8 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2 cursor-pointer"
               >
                 <Phone className="w-4 h-4 stroke-[2.5]" />
-                <span>CALL 8056889900</span>
+                <span>CALL {prop.primary_phone || '8056889900'}</span>
               </a>
 
-              <a
-                href="tel:8110889900"
-                className="py-3.5 px-6 sm:px-8 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center gap-2"
-              >
-                <Phone className="w-4 h-4 text-[#FFCC00]" />
-                <span>CALL 8110889900</span>
-              </a>
+              {prop.secondary_phone && (
+                <a
+                  href={`tel:${prop.secondary_phone}`}
+                  className="py-3.5 px-6 sm:px-8 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+                >
+                  <Phone className="w-4 h-4 text-[#FFCC00]" />
+                  <span>CALL {prop.secondary_phone}</span>
+                </a>
+              )}
 
               <a
-                href={SANJAY_MANSION_DATA.location.googleMapsUrl}
+                href={prop.google_maps_url || 'https://maps.app.goo.gl/AJSivYbLohUfKxEA7'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-3.5 px-6 sm:px-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all flex items-center gap-2"
+                className="py-3.5 px-6 sm:px-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Navigation className="w-4 h-4 text-[#FFCC00]" />
                 <span>GET DIRECTIONS</span>

@@ -1,0 +1,23 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+import { AdminMediaLibrary } from '../../../components/admin/AdminMediaLibrary';
+---
+
+<Layout
+  title="Media Library | Sanjay Properties Admin Portal"
+  description="Manage property photos, exterior shots, room interiors, and cloud-hosted storage assets."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin/media"
+      title="Media Storage Library"
+      subtitle="Upload, preview, copy URLs, and organize property images stored in Supabase Storage"
+      breadcrumbs={[{ label: 'Media Library' }]}
+      client:only="react"
+    >
+      <AdminMediaLibrary client:only="react" />
+    </AdminLayout>
+  </AdminAuthGuard>
+</Layout>

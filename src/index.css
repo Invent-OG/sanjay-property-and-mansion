@@ -6,12 +6,7 @@
        local('LapidariaMaior-SemiBold'),
        local('Lapidaria Maior'),
        local('LapidariaMaior'),
-       local('Lapidaria'),
-       url('/fonts/LapidariaMaior-SemiBold.woff2') format('woff2'),
-       url('/fonts/LapidariaMaior-SemiBold.otf') format('opentype'),
-       url('/fonts/LapidariaMaior-SemiBold.ttf') format('truetype'),
-       url('/fonts/Lapidaria Maior SemiBold.otf') format('opentype'),
-       url('/fonts/Lapidaria Maior SemiBold.ttf') format('truetype');
+       local('Lapidaria');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -23,10 +18,7 @@
        local('LapidariaMaior'),
        local('Lapidaria Maior SemiBold'),
        local('LapidariaMaior-SemiBold'),
-       local('Lapidaria'),
-       url('/fonts/LapidariaMaior-SemiBold.woff2') format('woff2'),
-       url('/fonts/LapidariaMaior-SemiBold.otf') format('opentype'),
-       url('/fonts/LapidariaMaior-SemiBold.ttf') format('truetype');
+       local('Lapidaria');
   font-weight: 100 900;
   font-display: swap;
 }

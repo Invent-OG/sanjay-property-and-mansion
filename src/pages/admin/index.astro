@@ -1,0 +1,22 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../components/admin/AdminLayout';
+import { AdminDashboardHome } from '../../components/admin/AdminDashboardHome';
+---
+
+<Layout
+  title="Dashboard | Sanjay Properties Admin Portal"
+  description="Centralized administration and lead CRM for Sanjay Properties and Western Stay Sanjay Mansion."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin"
+      title="Dashboard Overview"
+      subtitle="Real-time performance metrics, quick actions, and recent customer enquiries"
+      client:only="react"
+    >
+      <AdminDashboardHome client:only="react" />
+    </AdminLayout>
+  </AdminAuthGuard>
+</Layout>

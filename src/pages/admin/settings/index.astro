@@ -1,0 +1,23 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+import { AdminSettings } from '../../../components/admin/AdminSettings';
+---
+
+<Layout
+  title="System Settings | Sanjay Properties Admin Portal"
+  description="Configure business info, official contact numbers, addresses, and global SEO metadata."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin/settings"
+      title="Settings & SEO Configuration"
+      subtitle="Manage centralized business contact numbers, official addresses, and search engine metadata"
+      breadcrumbs={[{ label: 'Settings' }]}
+      client:only="react"
+    >
+      <AdminSettings client:only="react" />
+    </AdminLayout>
+  </AdminAuthGuard>
+</Layout>

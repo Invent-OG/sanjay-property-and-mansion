@@ -1,0 +1,23 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+import { AdminLeadsManager } from '../../../components/admin/AdminLeadsManager';
+---
+
+<Layout
+  title="Leads & Enquiry CRM | Sanjay Properties Admin Portal"
+  description="Manage prospective customer leads, room bookings, and site visit enquiries in real time."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin/leads"
+      title="Customer Enquiries & Leads"
+      subtitle="View customer submissions, call prospects directly, send WhatsApp messages, and record notes"
+      breadcrumbs={[{ label: 'Leads CRM' }]}
+      client:only="react"
+    >
+      <AdminLeadsManager client:only="react" />
+    </AdminLayout>
+  </AdminAuthGuard>
+</Layout>

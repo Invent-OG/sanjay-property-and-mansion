@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { CONTACT_CONFIG } from '../data/contact';
 import { BrandLogo } from './BrandLogo';
 import { leadStore, type LeadSource } from '../services/leadStore';
+import { leadService } from '../services/leadService';
 
 // =========================================================================
 // 1. GENERAL ENQUIRY MODAL (Supports both Sanjay Properties & Mansion)
@@ -36,18 +37,15 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Save lead to unified CRM store
-    leadStore.saveLead({
+    // Save lead to Supabase & CRM store
+    leadService.submitLead({
       name: formData.name,
       phone: formData.phone,
       email: formData.email,
       source: source,
-      type: formData.topic,
-      status: 'New',
-      details: {
-        message: formData.message,
-        targetProperty: isMansion ? 'Western Stay – Sanjay Mansion' : 'Sanjay Garden, Saravanampatti'
-      }
+      enquiry_type: formData.topic,
+      message: formData.message,
+      preferred_accommodation: isMansion ? formData.topic : undefined
     });
 
     setSubmitted(true);
@@ -259,18 +257,14 @@ export const ScheduleVisitModal: React.FC<ScheduleVisitModalProps> = ({
   const handleBook = (e: React.FormEvent) => {
     e.preventDefault();
 
-    leadStore.saveLead({
+    leadService.submitLead({
       name,
       phone,
       source,
-      type: 'Site Visit Request',
-      status: 'Visit Scheduled',
-      details: {
-        preferredDate: date,
-        timeSlot: timeSlot,
-        targetProperty: isMansion ? 'Western Stay – Sanjay Mansion' : 'Sanjay Garden, Saravanampatti',
-        message: `Scheduled visit for ${isMansion ? 'Sanjay Mansion hostel inspection' : 'Sanjay Garden layout walkthrough'}`
-      }
+      enquiry_type: 'Site Visit Request',
+      preferred_date: date,
+      time_slot: timeSlot,
+      message: `Scheduled visit for ${isMansion ? 'Sanjay Mansion hostel inspection' : 'Sanjay Garden layout walkthrough'}`
     });
 
     setConfirmed(true);
@@ -430,20 +424,16 @@ export const MansionBookingModal: React.FC<MansionBookingModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    leadStore.saveLead({
+    leadService.submitLead({
       name: formData.name,
       phone: formData.phone,
       email: formData.email,
       source: 'Sanjay Mansion',
-      type: 'Mansion Room Booking',
-      status: 'New',
-      details: {
-        roomType: formData.roomType,
-        mealPlan: formData.mealPlan,
-        preferredDate: formData.checkInDate,
-        targetProperty: 'Western Stay – Sanjay Mansion',
-        message: `Booking Request: ${formData.roomType} | ${formData.mealPlan} | Occupation: ${formData.occupation}. Note: ${formData.notes || 'None'}`
-      }
+      enquiry_type: 'Mansion Room Booking',
+      preferred_accommodation: formData.roomType,
+      meal_plan: formData.mealPlan,
+      preferred_date: formData.checkInDate,
+      message: `Booking Request: ${formData.roomType} | ${formData.mealPlan} | Occupation: ${formData.occupation}. Note: ${formData.notes || 'None'}`
     });
 
     setSubmitted(true);
