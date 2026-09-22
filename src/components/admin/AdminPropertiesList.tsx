@@ -79,23 +79,26 @@ export const AdminPropertiesList: React.FC = () => {
       {/* Top Header & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-extrabold text-white tracking-tight">Properties Portfolio</h2>
-          <p className="text-xs text-neutral-400 mt-0.5">
-            Manage your real estate listings, hostels, and residential communities
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
+            <Building2 className="w-5 h-5 text-[#FFCC00]" />
+            Properties Portfolio
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+            Manage your real estate listings, gated villa plots, and residential communities
           </p>
         </div>
 
         <a
           href="/admin/properties/new"
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#FFCC00] hover:bg-[#e6b800] text-neutral-950 font-bold text-xs sm:text-sm transition-all shadow-md shadow-[#FFCC00]/15 shrink-0 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#FFCC00] hover:bg-[#ffe066] text-black font-semibold text-xs transition-all shadow-sm shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>+ ADD PROPERTY</span>
+          <span>Add Property</span>
         </a>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 bg-[#14161c] border border-neutral-800 p-3 rounded-2xl">
+      <div className="flex flex-col sm:flex-row gap-3 bg-[#0E1015] border border-neutral-800/80 p-3 rounded-xl">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -103,7 +106,7 @@ export const AdminPropertiesList: React.FC = () => {
             placeholder="Search by property name, area or city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#0e1014] border border-neutral-700/80 rounded-xl text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00]"
+            className="w-full pl-10 pr-4 py-2 bg-[#14161C] border border-neutral-700/70 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00] transition-colors"
           />
         </div>
 
@@ -112,7 +115,7 @@ export const AdminPropertiesList: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-[#0e1014] border border-neutral-700/80 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-[#FFCC00]"
+            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>
@@ -125,39 +128,39 @@ export const AdminPropertiesList: React.FC = () => {
       {/* Properties Table / Cards */}
       {isLoading ? (
         <div className="py-16 text-center text-xs text-neutral-400 animate-pulse">
-          Loading properties with TanStack Query...
+          Loading properties portfolio...
         </div>
       ) : filteredProperties.length === 0 ? (
-        <div className="py-16 text-center bg-[#14161c] border border-neutral-800 rounded-3xl p-8">
+        <div className="py-16 text-center bg-[#0E1015] border border-neutral-800/80 rounded-xl p-8">
           <Building2 className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
           <h3 className="text-base font-bold text-white">No properties found</h3>
           <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto">
-            Try adjusting your search query or add a new property to get started.
+            Try adjusting your search query or add a new property listing to get started.
           </p>
           <a
             href="/admin/properties/new"
-            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-xl bg-[#FFCC00] text-black font-bold text-xs cursor-pointer"
+            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-[#FFCC00] text-black font-semibold text-xs cursor-pointer shadow-sm"
           >
             <Plus className="w-4 h-4" />
             <span>Create First Property</span>
           </a>
         </div>
       ) : (
-        <div className="bg-[#14161c] border border-neutral-800 rounded-3xl overflow-hidden">
+        <div className="bg-[#0E1015] border border-neutral-800/80 rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-neutral-800 text-neutral-400 uppercase tracking-wider font-bold bg-[#111317]">
-                  <th className="py-3.5 pl-5">Property</th>
-                  <th className="py-3.5">Location</th>
-                  <th className="py-3.5">Status</th>
-                  <th className="py-3.5">Featured on Home</th>
-                  <th className="py-3.5">Starting Price</th>
-                  <th className="py-3.5">Last Updated</th>
-                  <th className="py-3.5 text-right pr-5">Actions</th>
+              <thead className="bg-[#12141A] text-neutral-400 uppercase text-[10px] font-semibold tracking-wider border-b border-neutral-800/70">
+                <tr>
+                  <th className="py-3 pl-4">Property</th>
+                  <th className="py-3">Location</th>
+                  <th className="py-3">Status</th>
+                  <th className="py-3">Featured on Home</th>
+                  <th className="py-3">Starting Price</th>
+                  <th className="py-3">Last Updated</th>
+                  <th className="py-3 text-right pr-4">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60">
+              <tbody className="divide-y divide-neutral-800/50">
                 {filteredProperties.map((prop) => (
                   <tr key={prop.id} className="hover:bg-neutral-800/30 transition-colors">
                     <td className="py-4 pl-5">

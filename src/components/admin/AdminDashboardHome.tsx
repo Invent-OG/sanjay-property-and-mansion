@@ -4,21 +4,16 @@ import {
   Users,
   Bed,
   Sparkles,
-  Plus,
   ArrowUpRight,
-  ExternalLink,
   Phone,
   MessageSquare,
-  Eye,
-  Edit3,
-  Image as ImageIcon,
   CheckCircle2,
-  X,
-  Clock,
-  DollarSign,
+  ArrowRight,
   TrendingUp,
-  MapPin,
-  ArrowRight
+  ShieldCheck,
+  Calendar,
+  Layers,
+  ChevronRight
 } from 'lucide-react';
 import { useProperties } from '../../hooks/usePropertiesQuery';
 import { useLeads, useLeadStats, useUpdateLeadStatus } from '../../hooks/useLeadsQuery';
@@ -26,7 +21,6 @@ import { useWesternStayStatsQuery, useWesternStayRoomsQuery } from '../../hooks/
 import type { Lead, LeadStatus } from '../../types/database';
 
 export const AdminDashboardHome: React.FC = () => {
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   // TanStack Query Hooks
@@ -46,9 +40,6 @@ export const AdminDashboardHome: React.FC = () => {
     try {
       await updateStatusMutation.mutateAsync({ id: leadId, status: newStatus });
       showToast(`Lead status updated to ${newStatus}`);
-      if (selectedLead && selectedLead.id === leadId) {
-        setSelectedLead({ ...selectedLead, status: newStatus });
-      }
     } catch (err: any) {
       showToast(err.message || 'Failed to update lead');
     }
@@ -56,250 +47,356 @@ export const AdminDashboardHome: React.FC = () => {
 
   const recentLeads = leads.slice(0, 6);
 
-  const getStatusBadge = (status: LeadStatus) => {
+  const getStatusBadgeStyle = (status: LeadStatus) => {
     switch (status) {
       case 'New':
-        return 'bg-amber-500/15 text-amber-400 border border-amber-500/30 font-semibold';
+        return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
       case 'Contacted':
-        return 'bg-blue-500/15 text-blue-400 border border-blue-500/30 font-semibold';
+        return 'bg-sky-500/10 text-sky-400 border border-sky-500/20';
       case 'In Discussion':
-        return 'bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold';
+        return 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
       case 'Visit Scheduled':
-        return 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-semibold';
+        return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
       case 'Converted':
-        return 'bg-[#FFCC00]/20 text-[#FFCC00] border border-[#FFCC00]/40 font-bold';
+        return 'bg-[#FFCC00]/15 text-[#FFCC00] border border-[#FFCC00]/30 font-semibold';
       case 'Closed':
       case 'Lost':
-        return 'bg-neutral-800 text-neutral-400 border border-neutral-700';
+        return 'bg-neutral-800 text-neutral-400 border border-neutral-700/60';
       default:
         return 'bg-neutral-800 text-neutral-300';
     }
   };
 
+  const occupancyRate = westernStayStats?.occupancyRate ?? 75;
+  const monthlyRevenue = westernStayStats?.currentMonthlyRevenue ?? 42300;
+  const availableRoomsCount = westernStayStats?.availableRooms ?? 2;
+  const totalRoomsCount = westernStayStats?.totalRooms ?? 8;
+
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-7 animate-fade-in pb-12">
       {/* Toast Notification */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1e222b] text-white px-5 py-3 rounded-2xl shadow-2xl border border-neutral-700 text-xs sm:text-sm font-semibold flex items-center gap-2 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#161922] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-neutral-700/80 text-xs font-medium flex items-center gap-2.5 animate-bounce">
           <CheckCircle2 className="w-4 h-4 text-[#FFCC00]" />
           <span>{toastMsg}</span>
         </div>
       )}
 
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-neutral-900 via-[#161922] to-neutral-900 border border-neutral-800 p-6 sm:p-8 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFCC00]/10 border border-[#FFCC00]/30 text-[#FFCC00] text-xs font-bold uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Dual Enterprise Management</span>
+      {/* Executive Header Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-[#0E1015] border border-neutral-800/80 p-6 sm:p-7 shadow-sm">
+        {/* Subtle accent glow in background */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 rounded-full bg-[#FFCC00]/5 blur-3xl pointer-events-none" />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#FFCC00]/10 border border-[#FFCC00]/20 text-[#FFCC00] text-[11px] font-semibold tracking-wide">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Unified Operations Console</span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              Enterprise Dashboard
+            </h1>
+            <p className="text-xs sm:text-sm text-neutral-400 max-w-2xl font-normal leading-relaxed">
+              Monitoring real-time performance across Western Stay PG Hostel and Sanjay Properties real estate developments.
+            </p>
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-            Sanjay Properties & Western Stay Admin
-          </h2>
-          <p className="text-xs sm:text-sm text-neutral-400 mt-1 max-w-2xl">
-            Seamlessly control real estate property developments and Western Stay PG hostel operations from a unified portal.
-          </p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
-          <a
-            href="/admin/western-stay"
-            className="px-4 py-2.5 rounded-xl bg-[#FFCC00] hover:bg-[#ffe066] text-black font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
-          >
-            <Bed className="w-4 h-4" />
-            <span>Western Stay Hostel</span>
-          </a>
-          <a
-            href="/admin/properties"
-            className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-semibold text-xs flex items-center gap-1.5 transition-colors border border-neutral-700"
-          >
-            <Building2 className="w-4 h-4 text-[#FFCC00]" />
-            <span>Real Estate Listings</span>
-          </a>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <a
+              href="/admin/western-stay"
+              className="px-3.5 py-2 rounded-lg bg-[#FFCC00] hover:bg-[#ffe066] text-black font-semibold text-xs flex items-center gap-1.5 transition-all shadow-sm"
+            >
+              <Bed className="w-3.5 h-3.5" />
+              <span>Hostel Rooms</span>
+            </a>
+            <a
+              href="/admin/properties"
+              className="px-3.5 py-2 rounded-lg bg-neutral-800/80 hover:bg-neutral-800 text-neutral-200 font-medium text-xs flex items-center gap-1.5 transition-colors border border-neutral-700/60"
+            >
+              <Building2 className="w-3.5 h-3.5 text-[#FFCC00]" />
+              <span>Real Estate</span>
+            </a>
+            <a
+              href="/admin/leads"
+              className="px-3.5 py-2 rounded-lg bg-neutral-800/80 hover:bg-neutral-800 text-neutral-200 font-medium text-xs flex items-center gap-1.5 transition-colors border border-neutral-700/60"
+            >
+              <Users className="w-3.5 h-3.5 text-sky-400" />
+              <span>CRM Enquiries</span>
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* Operational Highlights Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* KPI Stats Overview */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* KPI 1: Occupancy */}
+        <div className="p-4 sm:p-5 rounded-xl bg-[#0E1015] border border-neutral-800/70 hover:border-neutral-700/80 transition-colors">
+          <div className="flex items-center justify-between text-neutral-400 mb-2.5">
+            <span className="text-xs font-medium">Hostel Occupancy</span>
+            <span className="p-1.5 rounded-lg bg-amber-500/10 text-[#FFCC00]">
+              <Bed className="w-4 h-4" />
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white tracking-tight">
+            {occupancyRate}%
+          </div>
+          <div className="mt-2.5 flex items-center justify-between text-[11px] text-neutral-400">
+            <span>{availableRoomsCount} rooms available</span>
+            <span className="font-mono text-neutral-500">{totalRoomsCount} Total</span>
+          </div>
+          {/* Progress bar */}
+          <div className="mt-2 w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#FFCC00] rounded-full transition-all duration-500"
+              style={{ width: `${occupancyRate}%` }}
+            />
+          </div>
+        </div>
+
+        {/* KPI 2: Monthly Rent Run-Rate */}
+        <div className="p-4 sm:p-5 rounded-xl bg-[#0E1015] border border-neutral-800/70 hover:border-neutral-700/80 transition-colors">
+          <div className="flex items-center justify-between text-neutral-400 mb-2.5">
+            <span className="text-xs font-medium">Monthly Rental Rate</span>
+            <span className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+              <TrendingUp className="w-4 h-4" />
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white tracking-tight">
+            ₹{monthlyRevenue.toLocaleString('en-IN')}
+          </div>
+          <div className="mt-2.5 flex items-center justify-between text-[11px] text-neutral-400">
+            <span className="text-emerald-400 font-medium">Western Stay PG</span>
+            <span className="text-neutral-500 font-mono">Monthly</span>
+          </div>
+          <div className="mt-2 w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+            <div className="h-full bg-emerald-400 rounded-full w-4/5" />
+          </div>
+        </div>
+
+        {/* KPI 3: Real Estate Portfolio */}
+        <div className="p-4 sm:p-5 rounded-xl bg-[#0E1015] border border-neutral-800/70 hover:border-neutral-700/80 transition-colors">
+          <div className="flex items-center justify-between text-neutral-400 mb-2.5">
+            <span className="text-xs font-medium">Real Estate Projects</span>
+            <span className="p-1.5 rounded-lg bg-sky-500/10 text-sky-400">
+              <Building2 className="w-4 h-4" />
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white tracking-tight">
+            {properties.length || 1}
+          </div>
+          <div className="mt-2.5 flex items-center justify-between text-[11px] text-neutral-400">
+            <span>Sanjay Gardens</span>
+            <span className="text-sky-400 font-medium">DTCP Approved</span>
+          </div>
+          <div className="mt-2 w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+            <div className="h-full bg-sky-400 rounded-full w-3/4" />
+          </div>
+        </div>
+
+        {/* KPI 4: Inquiries CRM */}
+        <div className="p-4 sm:p-5 rounded-xl bg-[#0E1015] border border-neutral-800/70 hover:border-neutral-700/80 transition-colors">
+          <div className="flex items-center justify-between text-neutral-400 mb-2.5">
+            <span className="text-xs font-medium">Total Inquiries</span>
+            <span className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400">
+              <Users className="w-4 h-4" />
+            </span>
+          </div>
+          <div className="text-2xl font-bold text-white tracking-tight">
+            {statsData?.total ?? leads.length}
+          </div>
+          <div className="mt-2.5 flex items-center justify-between text-[11px] text-neutral-400">
+            <span className="text-amber-400 font-medium">{statsData?.new ?? 1} New</span>
+            <span className="text-neutral-500 font-mono">Real-time</span>
+          </div>
+          <div className="mt-2 w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+            <div className="h-full bg-purple-400 rounded-full w-2/3" />
+          </div>
+        </div>
+      </div>
+
+      {/* Operational Divisions: Western Stay & Sanjay Properties */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Western Stay Hostel Box */}
-        <div className="p-6 rounded-3xl bg-neutral-900 border border-neutral-800 hover:border-[#FFCC00]/40 transition-colors flex flex-col justify-between">
+        <div className="p-5 sm:p-6 rounded-xl bg-[#0E1015] border border-neutral-800/70 hover:border-neutral-700/80 transition-all flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="px-2.5 py-0.5 rounded-full bg-[#FFCC00]/10 text-[#FFCC00] text-xs font-bold border border-[#FFCC00]/30 uppercase tracking-wider">
-                PG / Hostel Operation
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-[#FFCC00] border border-amber-500/20">
+                Hospitality & PG
               </span>
-              <span className="text-xs text-emerald-400 font-semibold flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <div className="flex items-center gap-1.5 text-[11px] text-emerald-400 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Live Sync
-              </span>
+              </div>
             </div>
 
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <Bed className="w-5 h-5 text-[#FFCC00]" />
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <Bed className="w-4 h-4 text-[#FFCC00]" />
               Western Stay – Sanjay Mansion
-            </h3>
+            </h2>
             <p className="text-xs text-neutral-400 mt-1">
-              Saravanampatti, Coimbatore • PG for working professionals & students
+              Saravanampatti, Coimbatore • Premium PG for professionals and students
             </p>
 
-            <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-neutral-800 text-center">
-              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
-                <div className="text-xs text-neutral-400">Total Rooms</div>
-                <div className="text-xl font-bold text-white mt-1">
-                  {westernStayStats?.totalRooms ?? 8}
+            <div className="grid grid-cols-3 gap-2.5 mt-5">
+              <div className="p-3 rounded-lg bg-neutral-900/80 border border-neutral-800/80">
+                <div className="text-[11px] text-neutral-400">Total Rooms</div>
+                <div className="text-lg font-bold text-white mt-0.5">
+                  {totalRoomsCount}
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <div className="text-xs text-emerald-400">Available</div>
-                <div className="text-xl font-bold text-emerald-400 mt-1">
-                  {westernStayStats?.availableRooms ?? 2}
+              <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/15">
+                <div className="text-[11px] text-emerald-400">Available</div>
+                <div className="text-lg font-bold text-emerald-400 mt-0.5">
+                  {availableRoomsCount}
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
-                <div className="text-xs text-neutral-400">Occupancy</div>
-                <div className="text-xl font-bold text-[#FFCC00] mt-1">
-                  {westernStayStats?.occupancyRate ?? 75}%
+              <div className="p-3 rounded-lg bg-neutral-900/80 border border-neutral-800/80">
+                <div className="text-[11px] text-neutral-400">Occupancy</div>
+                <div className="text-lg font-bold text-[#FFCC00] mt-0.5">
+                  {occupancyRate}%
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-neutral-800 flex items-center justify-between">
+          <div className="mt-5 pt-3.5 border-t border-neutral-800/70 flex items-center justify-between">
             <span className="text-xs text-neutral-400">
-              Monthly Rent Revenue: <strong className="text-white">₹{(westernStayStats?.currentMonthlyRevenue ?? 42300).toLocaleString('en-IN')}</strong>
+              Run-Rate: <strong className="text-white font-medium">₹{monthlyRevenue.toLocaleString('en-IN')}/mo</strong>
             </span>
             <a
               href="/admin/western-stay"
-              className="text-xs font-bold text-[#FFCC00] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#FFCC00] hover:text-[#ffe066] inline-flex items-center gap-1 transition-colors"
             >
-              Manage Western Stay <ArrowRight className="w-3.5 h-3.5" />
+              <span>Manage Rooms</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
 
-        {/* Sanjay Properties Real Estate Box */}
-        <div className="p-6 rounded-3xl bg-neutral-900 border border-neutral-800 hover:border-[#FFCC00]/40 transition-colors flex flex-col justify-between">
+        {/* Sanjay Properties Box */}
+        <div className="p-5 sm:p-6 rounded-xl bg-[#0E1015] border border-neutral-800/70 hover:border-neutral-700/80 transition-all flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-3">
-              <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/30 uppercase tracking-wider">
-                Real Estate Development
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                Real Estate Division
               </span>
-              <span className="text-xs text-neutral-400">Layouts & Plots</span>
+              <span className="text-[11px] text-neutral-400 font-mono">Villa Plots & Layouts</span>
             </div>
 
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-blue-400" />
+            <h2 className="text-base font-bold text-white flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-sky-400" />
               Sanjay Properties
-            </h3>
+            </h2>
             <p className="text-xs text-neutral-400 mt-1">
-              Saravanampatti, Coimbatore • DTCP Approved Villa Plots & Real Estate
+              Saravanampatti, Coimbatore • DTCP Approved gated villa plots & commercial lands
             </p>
 
-            <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-neutral-800 text-center">
-              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
-                <div className="text-xs text-neutral-400">Listed Projects</div>
-                <div className="text-xl font-bold text-white mt-1">
+            <div className="grid grid-cols-3 gap-2.5 mt-5">
+              <div className="p-3 rounded-lg bg-neutral-900/80 border border-neutral-800/80">
+                <div className="text-[11px] text-neutral-400">Listed Projects</div>
+                <div className="text-lg font-bold text-white mt-0.5">
                   {properties.length || 1}
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <div className="text-xs text-blue-400">Active Layouts</div>
-                <div className="text-xl font-bold text-blue-400 mt-1">
-                  1 (Sanjay Gardens)
+              <div className="p-3 rounded-lg bg-sky-500/5 border border-sky-500/15">
+                <div className="text-[11px] text-sky-400">Active Layouts</div>
+                <div className="text-lg font-bold text-sky-400 mt-0.5 truncate">
+                  Sanjay Gardens
                 </div>
               </div>
-              <div className="p-3 rounded-xl bg-neutral-800/60 border border-neutral-800">
-                <div className="text-xs text-neutral-400">Total Leads</div>
-                <div className="text-xl font-bold text-[#FFCC00] mt-1">
+              <div className="p-3 rounded-lg bg-neutral-900/80 border border-neutral-800/80">
+                <div className="text-[11px] text-neutral-400">Buyer Leads</div>
+                <div className="text-lg font-bold text-[#FFCC00] mt-0.5">
                   {statsData?.total ?? leads.length}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-neutral-800 flex items-center justify-between">
+          <div className="mt-5 pt-3.5 border-t border-neutral-800/70 flex items-center justify-between">
             <span className="text-xs text-neutral-400">
-              Flagship Project: <strong className="text-white">Sanjay Gardens</strong>
+              Flagship: <strong className="text-white font-medium">Sanjay Gardens (DTCP)</strong>
             </span>
             <a
               href="/admin/properties"
-              className="text-xs font-bold text-[#FFCC00] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#FFCC00] hover:text-[#ffe066] inline-flex items-center gap-1 transition-colors"
             >
-              Manage Property Listings <ArrowRight className="w-3.5 h-3.5" />
+              <span>Manage Properties</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
         </div>
       </div>
 
-      {/* Recent Enquiries & Leads */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 sm:p-6">
-        <div className="flex items-center justify-between mb-5 pb-4 border-b border-neutral-800">
+      {/* Recent Inquiries Table */}
+      <div className="rounded-xl bg-[#0E1015] border border-neutral-800/70 overflow-hidden">
+        <div className="p-4 sm:p-5 flex items-center justify-between border-b border-neutral-800/70">
           <div>
-            <h3 className="text-base font-bold text-white">Recent Customer Enquiries</h3>
-            <p className="text-xs text-neutral-400">Across Sanjay Properties and Western Stay</p>
+            <h2 className="text-sm font-bold text-white">Recent Customer Inquiries</h2>
+            <p className="text-xs text-neutral-400 mt-0.5">Prospects inquiring for hostel accommodation and property sales</p>
           </div>
           <a
             href="/admin/leads"
-            className="text-xs font-bold text-[#FFCC00] hover:underline flex items-center gap-1"
+            className="text-xs font-semibold text-[#FFCC00] hover:text-[#ffe066] inline-flex items-center gap-1 transition-colors"
           >
-            <span>View All Enquiries</span>
+            <span>View All</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </a>
         </div>
 
         {isLoadingLeads ? (
-          <div className="py-12 text-center text-xs text-neutral-500 animate-pulse">
+          <div className="py-12 text-center text-xs text-neutral-400 animate-pulse">
             Loading recent enquiries...
           </div>
         ) : recentLeads.length === 0 ? (
           <div className="py-12 text-center text-xs text-neutral-500">
-            No customer enquiries recorded yet.
+            No customer inquiries found.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="text-neutral-500 border-b border-neutral-800 pb-2 uppercase tracking-wider font-bold">
-                  <th className="pb-3 pl-2">Prospect</th>
-                  <th className="pb-3">Source / Property</th>
-                  <th className="pb-3">Date</th>
-                  <th className="pb-3">Status</th>
-                  <th className="pb-3 text-right pr-2">Quick Action</th>
+              <thead className="bg-[#12141A] text-neutral-400 uppercase text-[10px] font-semibold tracking-wider border-b border-neutral-800/70">
+                <tr>
+                  <th className="py-3 px-4">Customer</th>
+                  <th className="py-3 px-4">Inquiry Category</th>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4">CRM Status</th>
+                  <th className="py-3 px-4 text-right">Quick Contact</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800">
+              <tbody className="divide-y divide-neutral-800/50">
                 {recentLeads.map((lead) => {
                   const cleanPhone = lead.phone.replace(/[^0-9]/g, '');
                   const waNumber = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
 
                   return (
-                    <tr key={lead.id} className="hover:bg-neutral-800/40 transition-colors">
-                      <td className="py-3.5 pl-2 font-semibold text-white">
-                        <div>{lead.name}</div>
+                    <tr key={lead.id} className="hover:bg-neutral-800/30 transition-colors">
+                      <td className="py-3 px-4">
+                        <div className="font-semibold text-white">{lead.name}</div>
                         <div className="text-[11px] text-neutral-400 font-mono mt-0.5">
                           {lead.phone}
                         </div>
                       </td>
-                      <td className="py-3.5">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
                           lead.source.includes('Mansion') || lead.source.includes('Western')
-                            ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
-                            : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'
+                            ? 'bg-amber-500/10 text-[#FFCC00] border border-amber-500/20'
+                            : 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
                         }`}>
                           {lead.source}
                         </span>
                       </td>
-                      <td className="py-3.5 text-neutral-400 font-mono">
+                      <td className="py-3 px-4 text-neutral-400 font-mono text-[11px]">
                         {new Date(lead.created_at).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short'
                         })}
                       </td>
-                      <td className="py-3.5">
+                      <td className="py-3 px-4">
                         <select
                           value={lead.status}
                           onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
-                          className="bg-neutral-800 border border-neutral-700 rounded-lg px-2 py-1 text-xs text-neutral-200 focus:outline-none focus:border-[#FFCC00]"
+                          className="bg-[#14161C] border border-neutral-700/70 rounded-md px-2 py-1 text-[11px] text-neutral-200 focus:outline-none focus:border-[#FFCC00] cursor-pointer"
                         >
                           <option value="New">New</option>
                           <option value="Contacted">Contacted</option>
@@ -309,7 +406,7 @@ export const AdminDashboardHome: React.FC = () => {
                           <option value="Closed">Closed</option>
                         </select>
                       </td>
-                      <td className="py-3.5 text-right pr-2 space-x-2">
+                      <td className="py-3 px-4 text-right space-x-1.5">
                         <a
                           href={`https://wa.me/${waNumber}?text=Hi%20${encodeURIComponent(
                             lead.name
@@ -318,15 +415,17 @@ export const AdminDashboardHome: React.FC = () => {
                           )}.`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-semibold border border-emerald-500/30 transition-colors"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[11px] font-medium border border-emerald-500/20 transition-colors"
                         >
-                          WhatsApp
+                          <MessageSquare className="w-3 h-3" />
+                          <span>WhatsApp</span>
                         </a>
                         <a
                           href={`tel:${lead.phone}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold transition-colors"
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-neutral-800/80 hover:bg-neutral-800 text-neutral-300 text-[11px] font-medium border border-neutral-700/60 transition-colors"
                         >
-                          Call
+                          <Phone className="w-3 h-3" />
+                          <span>Call</span>
                         </a>
                       </td>
                     </tr>
@@ -340,3 +439,4 @@ export const AdminDashboardHome: React.FC = () => {
     </div>
   );
 };
+

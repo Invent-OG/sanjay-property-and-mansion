@@ -151,19 +151,22 @@ export const AdminLeadsManager: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-extrabold text-white tracking-tight">Leads & Enquiry CRM</h2>
-          <p className="text-xs text-neutral-400 mt-0.5">
-            Manage prospective tenant and real estate buyer enquiries in real time with TanStack Query
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
+            <Users className="w-5 h-5 text-[#FFCC00]" />
+            Leads & Enquiry CRM
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1">
+            Manage prospective tenant and real estate buyer inquiries with real-time status tracking
           </p>
         </div>
 
-        <div className="text-xs font-semibold text-neutral-400 bg-[#14161c] px-4 py-2 rounded-xl border border-neutral-800">
+        <div className="text-xs font-medium text-neutral-300 bg-[#0E1015] px-3.5 py-1.5 rounded-lg border border-neutral-800/80">
           Total Enquiries: <span className="text-[#FFCC00] font-bold">{filteredLeads.length}</span>
         </div>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3 bg-[#14161c] border border-neutral-800 p-3.5 rounded-2xl">
+      <div className="flex flex-col sm:flex-row gap-3 bg-[#0E1015] border border-neutral-800/80 p-3 rounded-xl">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
@@ -171,7 +174,7 @@ export const AdminLeadsManager: React.FC = () => {
             placeholder="Search by prospect name, phone, email or message..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#0e1014] border border-neutral-700/80 rounded-xl text-xs sm:text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00]"
+            className="w-full pl-10 pr-4 py-2 bg-[#14161C] border border-neutral-700/70 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00] transition-colors"
           />
         </div>
 
@@ -180,10 +183,11 @@ export const AdminLeadsManager: React.FC = () => {
           <select
             value={sourceFilter}
             onChange={(e) => setSourceFilter(e.target.value)}
-            className="bg-[#0e1014] border border-neutral-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00]"
+            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
           >
             <option value="all">All Sources</option>
             <option value="Sanjay Mansion">Sanjay Mansion</option>
+            <option value="Western Stay">Western Stay</option>
             <option value="Sanjay Properties">Sanjay Properties</option>
           </select>
 
@@ -191,7 +195,7 @@ export const AdminLeadsManager: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-[#0e1014] border border-neutral-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00]"
+            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="New">New</option>
@@ -206,7 +210,7 @@ export const AdminLeadsManager: React.FC = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
-            className="bg-[#0e1014] border border-neutral-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00]"
+            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -220,26 +224,26 @@ export const AdminLeadsManager: React.FC = () => {
           Loading CRM leads from database...
         </div>
       ) : filteredLeads.length === 0 ? (
-        <div className="py-20 text-center bg-[#14161c] border border-neutral-800 rounded-3xl p-8">
+        <div className="py-20 text-center bg-[#0E1015] border border-neutral-800/80 rounded-xl p-8">
           <Users className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
           <h3 className="text-base font-bold text-white">No leads match criteria</h3>
           <p className="text-xs text-neutral-400 mt-1">Try clearing your search or status filter.</p>
         </div>
       ) : (
-        <div className="bg-[#14161c] border border-neutral-800 rounded-3xl overflow-hidden">
+        <div className="bg-[#0E1015] border border-neutral-800/80 rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-neutral-800 text-neutral-400 uppercase tracking-wider font-bold bg-[#111317]">
-                  <th className="py-3.5 pl-5">Prospect Details</th>
-                  <th className="py-3.5">Source & Category</th>
-                  <th className="py-3.5">Preferences</th>
-                  <th className="py-3.5">Date</th>
-                  <th className="py-3.5">Status</th>
-                  <th className="py-3.5 text-right pr-5">Quick Actions</th>
+              <thead className="bg-[#12141A] text-neutral-400 uppercase text-[10px] font-semibold tracking-wider border-b border-neutral-800/70">
+                <tr>
+                  <th className="py-3 pl-4">Prospect Details</th>
+                  <th className="py-3">Source & Category</th>
+                  <th className="py-3">Preferences</th>
+                  <th className="py-3">Date</th>
+                  <th className="py-3">Status</th>
+                  <th className="py-3 text-right pr-4">Quick Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800/60">
+              <tbody className="divide-y divide-neutral-800/50">
                 {filteredLeads.map((lead) => (
                   <tr key={lead.id} className="hover:bg-neutral-800/30 transition-colors">
                     <td className="py-4 pl-5">

@@ -72,6 +72,35 @@ export const AdminLogin: React.FC = () => {
 
         {/* Login Box */}
         <div className="bg-[#15171e] border border-neutral-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/60">
+          {/* Demo Admin Credentials Quick Fill Box */}
+          <div className="mb-5 p-4 rounded-2xl bg-neutral-900/90 border border-neutral-800 flex items-center justify-between text-xs gap-3 shadow-inner">
+            <div className="space-y-1">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#FFCC00]" />
+                <span>Admin Login Credentials</span>
+              </div>
+              <div className="text-neutral-300 font-mono text-xs flex flex-col gap-0.5">
+                <span>
+                  <strong className="text-white">Email:</strong> admin@sanjayproperties.in
+                </span>
+                <span>
+                  <strong className="text-white">Password:</strong> sanjay123
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('admin@sanjayproperties.in');
+                setPassword('sanjay123');
+                setErrorMsg(null);
+              }}
+              className="px-3 py-1.5 rounded-xl bg-[#FFCC00]/15 hover:bg-[#FFCC00] text-[#FFCC00] hover:text-black font-bold text-xs transition-colors shrink-0 cursor-pointer"
+            >
+              Auto-fill
+            </button>
+          </div>
+
           {!supabaseReady && (
             <div className="mb-5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5">
               <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
@@ -83,9 +112,25 @@ export const AdminLogin: React.FC = () => {
           )}
 
           {errorMsg && (
-            <div className="mb-5 p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5 animate-shake">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
-              <span>{errorMsg}</span>
+            <div className="mb-5 p-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs space-y-2 animate-shake">
+              <div className="flex items-start gap-2.5">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
+                <span>{errorMsg}</span>
+              </div>
+              <div className="pt-2 border-t border-rose-500/20 flex items-center justify-between">
+                <span className="text-[11px] text-neutral-400">Click to fill the correct credentials:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('admin@sanjayproperties.in');
+                    setPassword('sanjay123');
+                    setErrorMsg(null);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-[#FFCC00] text-black font-bold text-[11px] hover:bg-[#FFE066] transition-colors cursor-pointer"
+                >
+                  Use sanjay123
+                </button>
+              </div>
             </div>
           )}
 

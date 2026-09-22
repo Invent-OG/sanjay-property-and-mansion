@@ -164,6 +164,32 @@ export function useUpdateRoomType() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.roomTypes() });
       qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.publicData() });
+      qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.rooms() });
+    },
+  });
+}
+
+export function useCreateRoomType() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (newType: Parameters<typeof westernStayService.createRoomType>[0]) =>
+      westernStayService.createRoomType(newType),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.roomTypes() });
+      qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.publicData() });
+      qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.rooms() });
+    },
+  });
+}
+
+export function useDeleteRoomType() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => westernStayService.deleteRoomType(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.roomTypes() });
+      qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.publicData() });
+      qc.invalidateQueries({ queryKey: WESTERN_STAY_KEYS.rooms() });
     },
   });
 }

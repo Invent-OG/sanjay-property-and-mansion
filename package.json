@@ -11,7 +11,8 @@
     "astro": "astro",
     "lint": "tsc --noEmit",
     "db:push": "drizzle-kit push",
-    "db:seed": "tsx scripts/seed-drizzle.ts"
+    "db:seed": "tsx scripts/seed-drizzle.ts",
+    "reset-admin": "tsx scripts/reset-admin-password.ts"
   },
   "dependencies": {
     "@astrojs/react": "^4.2.1",

@@ -182,7 +182,7 @@ export function WesternStayRooms() {
       </div>
 
       {/* Filters Bar */}
-      <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+      <div className="p-3.5 rounded-xl bg-[#0E1015] border border-neutral-800/80 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
           <input
@@ -190,19 +190,19 @@ export function WesternStayRooms() {
             placeholder="Search by room #, type or notes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00]"
+            className="w-full bg-[#14161C] border border-neutral-700/70 rounded-lg pl-10 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00] transition-colors"
           />
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Floor filter */}
-          <div className="flex items-center gap-1 text-xs text-neutral-400">
-            <Layers className="w-3.5 h-3.5" />
-            <span>Floor:</span>
+          <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+            <Layers className="w-3.5 h-3.5 text-neutral-500" />
+            <span className="text-[11px] font-medium">Floor:</span>
             <select
               value={selectedFloor}
               onChange={(e) => setSelectedFloor(e.target.value)}
-              className="bg-neutral-800 border border-neutral-700 rounded-lg px-2.5 py-1.5 text-xs text-neutral-200 focus:outline-none focus:border-[#FFCC00]"
+              className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-1.5 text-xs text-neutral-200 focus:outline-none focus:border-[#FFCC00] cursor-pointer"
             >
               {floors.map((f) => (
                 <option key={f} value={f}>
@@ -213,13 +213,13 @@ export function WesternStayRooms() {
           </div>
 
           {/* Status filter */}
-          <div className="flex items-center gap-1 text-xs text-neutral-400">
-            <Filter className="w-3.5 h-3.5" />
-            <span>Status:</span>
+          <div className="flex items-center gap-1.5 text-xs text-neutral-400">
+            <Filter className="w-3.5 h-3.5 text-neutral-500" />
+            <span className="text-[11px] font-medium">Status:</span>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-neutral-800 border border-neutral-700 rounded-lg px-2.5 py-1.5 text-xs text-neutral-200 focus:outline-none focus:border-[#FFCC00]"
+              className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-1.5 text-xs text-neutral-200 focus:outline-none focus:border-[#FFCC00] cursor-pointer"
             >
               {statuses.map((s) => (
                 <option key={s} value={s}>
@@ -232,19 +232,19 @@ export function WesternStayRooms() {
       </div>
 
       {/* Rooms Table */}
-      <div className="rounded-2xl bg-neutral-900 border border-neutral-800 overflow-hidden">
+      <div className="rounded-xl bg-[#0E1015] border border-neutral-800/80 overflow-hidden">
         {isLoading ? (
-          <div className="py-16 text-center text-neutral-500 text-sm">
+          <div className="py-16 text-center text-neutral-400 text-xs animate-pulse">
             Loading room inventory...
           </div>
         ) : filteredRooms?.length === 0 ? (
-          <div className="py-16 text-center text-neutral-500 text-sm">
+          <div className="py-16 text-center text-neutral-500 text-xs">
             No rooms found matching the criteria.
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-neutral-800/60 text-neutral-400 uppercase tracking-wider text-[11px] font-semibold border-b border-neutral-800">
+              <thead className="bg-[#12141A] text-neutral-400 uppercase text-[10px] font-semibold tracking-wider border-b border-neutral-800/70">
                 <tr>
                   <th className="py-3 px-4">Room #</th>
                   <th className="py-3 px-4">Accommodation Type</th>
@@ -255,58 +255,75 @@ export function WesternStayRooms() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-800 text-neutral-200">
-                {filteredRooms?.map((room) => (
-                  <tr key={room.id} className="hover:bg-neutral-800/40 transition-colors">
-                    <td className="py-3.5 px-4 font-mono font-bold text-white text-sm">
-                      {room.room_number}
-                    </td>
-                    <td className="py-3.5 px-4 font-medium text-neutral-300">
-                      {room.room_type_name}
-                    </td>
-                    <td className="py-3.5 px-4 text-neutral-400">{room.floor}</td>
-                    <td className="py-3.5 px-4 font-semibold text-white">
-                      ₹{room.monthly_price.toLocaleString('en-IN')}/mo
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <select
-                        value={room.status}
-                        onChange={(e) =>
-                          updateStatus.mutate({
-                            roomId: room.id,
-                            status: e.target.value as RoomStatus
-                          })
-                        }
-                        className="bg-neutral-800 border border-neutral-700 rounded-lg px-2 py-1 text-xs text-neutral-200 focus:outline-none focus:border-[#FFCC00]"
-                      >
-                        <option value="AVAILABLE">🟢 Available</option>
-                        <option value="OCCUPIED">🔴 Occupied</option>
-                        <option value="RESERVED">🟡 Reserved</option>
-                        <option value="MAINTENANCE">🔵 Maintenance</option>
-                        <option value="INACTIVE">⚪ Inactive</option>
-                      </select>
-                    </td>
-                    <td className="py-3.5 px-4 text-neutral-400 max-w-xs truncate">
-                      {room.notes || '—'}
-                    </td>
-                    <td className="py-3.5 px-4 text-right space-x-2">
-                      <button
-                        onClick={() => setEditingRoom(room)}
-                        className="p-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors"
-                        title="Edit Room"
-                      >
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteRoom(room.id, room.room_number)}
-                        className="p-1.5 rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 transition-colors"
-                        title="Delete Room"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-neutral-800/50 text-neutral-200">
+                {filteredRooms?.map((room) => {
+                  const getStatusClass = () => {
+                    switch (room.status) {
+                      case 'AVAILABLE':
+                        return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30';
+                      case 'OCCUPIED':
+                        return 'text-rose-400 bg-rose-500/10 border-rose-500/30';
+                      case 'RESERVED':
+                        return 'text-amber-400 bg-amber-500/10 border-amber-500/30';
+                      case 'MAINTENANCE':
+                        return 'text-sky-400 bg-sky-500/10 border-sky-500/30';
+                      default:
+                        return 'text-neutral-400 bg-neutral-800 border-neutral-700';
+                    }
+                  };
+
+                  return (
+                    <tr key={room.id} className="hover:bg-neutral-800/30 transition-colors">
+                      <td className="py-3 px-4 font-mono font-bold text-white text-xs">
+                        {room.room_number}
+                      </td>
+                      <td className="py-3 px-4 font-medium text-neutral-300">
+                        {room.room_type_name}
+                      </td>
+                      <td className="py-3 px-4 text-neutral-400 text-[11px]">{room.floor}</td>
+                      <td className="py-3 px-4 font-semibold text-white">
+                        ₹{room.monthly_price.toLocaleString('en-IN')}<span className="text-[10px] text-neutral-500 font-normal">/mo</span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <select
+                          value={room.status}
+                          onChange={(e) =>
+                            updateStatus.mutate({
+                              roomId: room.id,
+                              status: e.target.value as RoomStatus
+                            })
+                          }
+                          className={`rounded-md px-2.5 py-1 text-[11px] font-medium border focus:outline-none focus:ring-1 focus:ring-[#FFCC00] cursor-pointer ${getStatusClass()}`}
+                        >
+                          <option value="AVAILABLE" className="bg-[#14161C] text-emerald-400">Available</option>
+                          <option value="OCCUPIED" className="bg-[#14161C] text-rose-400">Occupied</option>
+                          <option value="RESERVED" className="bg-[#14161C] text-amber-400">Reserved</option>
+                          <option value="MAINTENANCE" className="bg-[#14161C] text-sky-400">Maintenance</option>
+                          <option value="INACTIVE" className="bg-[#14161C] text-neutral-400">Inactive</option>
+                        </select>
+                      </td>
+                      <td className="py-3 px-4 text-neutral-400 text-[11px] max-w-xs truncate">
+                        {room.notes || '—'}
+                      </td>
+                      <td className="py-3 px-4 text-right space-x-1.5">
+                        <button
+                          onClick={() => setEditingRoom(room)}
+                          className="p-1.5 rounded-md bg-neutral-800/80 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-colors border border-neutral-700/60"
+                          title="Edit Room"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRoom(room.id, room.room_number)}
+                          className="p-1.5 rounded-md bg-neutral-800/80 hover:bg-rose-500/20 text-neutral-400 hover:text-rose-400 transition-colors border border-neutral-700/60 hover:border-rose-500/30"
+                          title="Delete Room"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

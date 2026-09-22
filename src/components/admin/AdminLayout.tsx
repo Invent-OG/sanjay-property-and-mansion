@@ -113,29 +113,29 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const navItems = [
     { label: 'Overview', href: '/admin', icon: LayoutDashboard, exact: true },
     {
-      group: 'WESTERN STAY (PG & HOSTEL)',
+      group: 'WESTERN STAY HOSTEL',
       items: [
         { label: 'Hostel Dashboard', href: '/admin/western-stay', icon: LayoutDashboard, exact: true },
         { label: 'Room Inventory', href: '/admin/western-stay/rooms', icon: Bed },
         { label: 'Tariffs & Room Types', href: '/admin/western-stay/room-types', icon: Building2 },
         { label: 'Residents Directory', href: '/admin/western-stay/occupants', icon: Users },
-        { label: 'Amenities & Facilities', href: '/admin/western-stay/facilities', icon: Sparkles },
-        { label: 'Meals & 7-Day Menu', href: '/admin/western-stay/meals', icon: UtensilsCrossed },
-        { label: 'Hostel Gallery', href: '/admin/western-stay/gallery', icon: ImageIcon },
-        { label: 'Room Enquiries CRM', href: '/admin/western-stay/enquiries', icon: Bell },
-        { label: 'Hostel Settings', href: '/admin/western-stay/settings', icon: MapPin }
+        { label: 'Facilities & Amenities', href: '/admin/western-stay/facilities', icon: Sparkles },
+        { label: 'Dining & Weekly Menu', href: '/admin/western-stay/meals', icon: UtensilsCrossed },
+        { label: 'Photo Gallery', href: '/admin/western-stay/gallery', icon: ImageIcon },
+        { label: 'Room Inquiries CRM', href: '/admin/western-stay/enquiries', icon: Bell },
+        { label: 'Hostel Profile & Map', href: '/admin/western-stay/settings', icon: MapPin }
       ]
     },
     {
-      group: 'SANJAY PROPERTIES (REAL ESTATE)',
+      group: 'REAL ESTATE PROPERTIES',
       items: [
-        { label: 'Properties & Plots', href: '/admin/properties', icon: Building2 },
-        { label: 'Property Enquiries', href: '/admin/leads', icon: Users },
+        { label: 'Property Listings', href: '/admin/properties', icon: Building2 },
+        { label: 'Property Inquiries', href: '/admin/leads', icon: Users },
         { label: 'Media Library', href: '/admin/media', icon: ImageIcon }
       ]
     },
     {
-      group: 'SYSTEM',
+      group: 'SYSTEM & SETTINGS',
       items: [
         { label: 'Site Settings & SEO', href: '/admin/settings', icon: Settings }
       ]
@@ -342,21 +342,21 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   return (
     <QueryProvider>
       <AdminNavContext.Provider value={{ activePath, navigateTo }}>
-        <div className="min-h-screen bg-[#0f1115] text-neutral-100 flex flex-col antialiased selection:bg-[#FFCC00] selection:text-black">
+        <div className="min-h-screen bg-[#090a0d] text-neutral-100 flex flex-col antialiased selection:bg-[#FFCC00] selection:text-black">
           {/* Top Mobile Bar */}
-          <header className="lg:hidden h-16 bg-[#16181e] border-b border-neutral-800/80 px-4 flex items-center justify-between sticky top-0 z-40">
+          <header className="lg:hidden h-14 bg-[#0e1015] border-b border-neutral-800/60 px-4 flex items-center justify-between sticky top-0 z-40">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 rounded-lg bg-neutral-800 text-neutral-300 hover:text-white"
+                className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white"
                 aria-label="Toggle Navigation Menu"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               </button>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold tracking-wider text-sm text-white">SANJAY ADMIN</span>
-                <span className="text-[10px] bg-[#FFCC00]/20 text-[#FFCC00] border border-[#FFCC00]/30 px-1.5 py-0.5 rounded font-bold">
-                  PORTAL
+                <span className="font-bold tracking-wide text-xs text-white">SANJAY ADMIN</span>
+                <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded font-mono font-bold">
+                  v2.0
                 </span>
               </div>
             </div>
@@ -366,17 +366,17 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-neutral-800 text-neutral-300 hover:text-[#FFCC00] text-xs flex items-center gap-1"
+                className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-[#FFCC00] text-xs flex items-center gap-1"
                 title="View Public Website"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-3.5 h-3.5" />
               </a>
               <button
                 onClick={handleLogout}
-                className="p-2 rounded-lg bg-neutral-800 text-neutral-300 hover:text-rose-400"
+                className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-rose-400"
                 title="Logout"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-3.5 h-3.5" />
               </button>
             </div>
           </header>
@@ -384,29 +384,29 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           <div className="flex-1 flex">
             {/* Desktop Sidebar & Mobile Drawer */}
             <aside
-              className={`fixed lg:sticky top-0 lg:top-0 h-screen w-64 bg-[#14161b] border-r border-neutral-800/80 flex flex-col z-50 transition-transform duration-200 ${
+              className={`fixed lg:sticky top-0 lg:top-0 h-screen w-64 bg-[#0e1015] border-r border-neutral-800/60 flex flex-col z-50 transition-transform duration-200 ${
                 mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
               }`}
             >
               {/* Logo & Header */}
-              <div className="h-18 px-6 border-b border-neutral-800/80 flex items-center justify-between">
+              <div className="h-14 px-5 border-b border-neutral-800/60 flex items-center justify-between">
                 <a
                   href="/admin"
                   onClick={(e) => {
                     e.preventDefault();
                     navigateTo('/admin');
                   }}
-                  className="flex items-center gap-3 group cursor-pointer"
+                  className="flex items-center gap-2.5 group cursor-pointer"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-[#FFCC00]/40 flex items-center justify-center font-black text-sm text-[#FFCC00]">
+                  <div className="w-7 h-7 rounded-lg bg-neutral-900 border border-amber-500/30 flex items-center justify-center font-black text-xs text-[#FFCC00] shadow-sm">
                     SP
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-sm text-white tracking-wide leading-tight group-hover:text-[#FFCC00] transition-colors">
+                    <span className="font-bold text-xs text-white tracking-wide leading-tight group-hover:text-[#FFCC00] transition-colors">
                       Sanjay Properties
                     </span>
-                    <span className="text-[10px] text-neutral-400 font-medium tracking-wider uppercase">
-                      Admin Portal
+                    <span className="text-[9px] text-neutral-500 font-medium tracking-wider uppercase">
+                      Admin Control
                     </span>
                   </div>
                 </a>
@@ -415,13 +415,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     onClick={() => setMobileMenuOpen(false)}
                     className="lg:hidden text-neutral-400 hover:text-white"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4" />
                   </button>
                 )}
               </div>
 
               {/* Navigation Links */}
-              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
+              <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
                 {/* Overview Link */}
                 <div>
                   <a
@@ -430,21 +430,21 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                       e.preventDefault();
                       navigateTo('/admin');
                     }}
-                    className={`flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
                       isActiveRoute('/admin', true)
-                        ? 'bg-[#FFCC00] text-black font-bold shadow-md shadow-[#FFCC00]/10'
-                        : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
+                        ? 'bg-neutral-800/90 text-white font-semibold border border-neutral-700/60 shadow-sm relative pl-3.5 before:absolute before:left-1.5 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#FFCC00]'
+                        : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-850/50 font-medium'
                     }`}
                   >
-                    <LayoutDashboard className="w-4 h-4" />
+                    <LayoutDashboard className={`w-4 h-4 ${isActiveRoute('/admin', true) ? 'text-[#FFCC00]' : 'text-neutral-400'}`} />
                     <span>Overview</span>
                   </a>
                 </div>
 
                 {/* Groups */}
                 {navItems.slice(1).map((section: any, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="px-3.5 text-[10px] font-bold text-neutral-500 uppercase tracking-wider">
+                  <div key={idx} className="space-y-0.5">
+                    <div className="px-3 pt-2 pb-1 text-[10px] font-semibold text-neutral-500 uppercase tracking-widest">
                       {section.group}
                     </div>
                     <div className="space-y-0.5">
@@ -459,13 +459,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                               e.preventDefault();
                               navigateTo(item.href);
                             }}
-                            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                            className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs transition-all cursor-pointer ${
                               active
-                                ? 'bg-[#FFCC00] text-black font-bold shadow-md shadow-[#FFCC00]/10'
-                                : 'text-neutral-300 hover:text-white hover:bg-neutral-800/60'
+                                ? 'bg-neutral-800/90 text-white font-semibold border border-neutral-700/60 shadow-sm relative pl-3.5 before:absolute before:left-1.5 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#FFCC00]'
+                                : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-850/50 font-medium'
                             }`}
                           >
-                            <Icon className="w-4 h-4 shrink-0" />
+                            <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-[#FFCC00]' : 'text-neutral-400'}`} />
                             <span className="truncate">{item.label}</span>
                           </a>
                         );
@@ -476,15 +476,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               </div>
 
               {/* User Profile & Logout */}
-              <div className="p-4 border-t border-neutral-800/80 bg-[#111317]">
+              <div className="p-3.5 border-t border-neutral-800/60 bg-[#0b0c10]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-xs font-bold text-[#FFCC00] shrink-0">
-                      A
+                    <div className="relative">
+                      <div className="w-7 h-7 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-[11px] font-bold text-[#FFCC00] shrink-0">
+                        A
+                      </div>
+                      <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#0b0c10]" />
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-xs font-bold text-white truncate">Administrator</span>
-                      <span className="text-[10px] text-neutral-400 truncate">{adminEmail}</span>
+                      <span className="text-xs font-semibold text-neutral-200 truncate">Administrator</span>
+                      <span className="text-[10px] text-neutral-500 truncate">{adminEmail}</span>
                     </div>
                   </div>
                   <button
@@ -492,7 +495,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                     className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                     title="Sign Out"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -502,7 +505,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             {mobileMenuOpen && (
               <div
                 onClick={() => setMobileMenuOpen(false)}
-                className="fixed inset-0 bg-black/60 z-40 lg:hidden"
+                className="fixed inset-0 bg-black/70 z-40 lg:hidden backdrop-blur-sm"
               />
             )}
 
@@ -522,10 +525,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               }}
             >
               {/* Top Bar for Desktop */}
-              <header className="hidden lg:flex h-16 bg-[#14161b]/90 backdrop-blur-md border-b border-neutral-800/80 px-8 items-center justify-between sticky top-0 z-30">
-                <div>
-                  {currentMeta.breadcrumbs.length > 0 && (
-                    <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 mb-0.5">
+              <header className="hidden lg:flex h-14 bg-[#0e1015]/80 backdrop-blur-md border-b border-neutral-800/60 px-8 items-center justify-between sticky top-0 z-30">
+                <div className="flex items-center gap-3">
+                  {currentMeta.breadcrumbs.length > 0 ? (
+                    <div className="flex items-center gap-1.5 text-xs text-neutral-400">
                       <a
                         href="/admin"
                         onClick={(e) => {
@@ -556,36 +559,43 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                         </React.Fragment>
                       ))}
                     </div>
+                  ) : (
+                    <h1 className="text-sm font-semibold text-white tracking-wide">{currentMeta.title}</h1>
                   )}
-                  <h1 className="text-base font-bold text-white leading-tight">{currentMeta.title}</h1>
                 </div>
 
                 <div className="flex items-center gap-3">
+                  <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>System Online</span>
+                  </div>
+
                   <a
                     href="/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-700 bg-neutral-800/60 hover:bg-neutral-700/80 text-xs font-semibold text-neutral-200 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-medium text-neutral-300 hover:text-white transition-colors"
                   >
-                    <ExternalLink className="w-3.5 h-3.5 text-[#FFCC00]" />
-                    <span>View Website</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+                    <span>View Site</span>
                   </a>
 
                   <button
                     onClick={handleLogout}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-xs font-semibold text-rose-300 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-rose-500/10 hover:border-rose-500/30 text-xs font-medium text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer"
+                    title="Sign Out"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                    <span>Logout</span>
                   </button>
                 </div>
               </header>
 
               {/* Body Content */}
-              <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+              <main className="flex-1 p-5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
                 {currentMeta.subtitle && (
-                  <div className="mb-6">
-                    <p className="text-xs sm:text-sm text-neutral-400">{currentMeta.subtitle}</p>
+                  <div className="mb-6 pb-4 border-b border-neutral-800/40">
+                    <h1 className="text-lg font-bold text-white tracking-tight">{currentMeta.title}</h1>
+                    <p className="text-xs text-neutral-400 mt-1">{currentMeta.subtitle}</p>
                   </div>
                 )}
                 {renderActiveView()}

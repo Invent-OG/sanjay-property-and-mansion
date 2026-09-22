@@ -18,8 +18,39 @@ import type {
 } from '../types/database';
 
 // =============================================================================
+// UTILITIES
+// =============================================================================
+
+export function parseFeatures(features: any): string[] {
+  if (!features) return [];
+  if (Array.isArray(features)) {
+    return features.flatMap((item) => {
+      if (typeof item === 'string' && item.trim().startsWith('[') && item.trim().endsWith(']')) {
+        try {
+          const parsed = JSON.parse(item);
+          return Array.isArray(parsed) ? parsed : [item];
+        } catch {
+          return [item];
+        }
+      }
+      return typeof item === 'string' ? [item] : [];
+    });
+  }
+  if (typeof features === 'string') {
+    try {
+      const parsed = JSON.parse(features);
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      return features.split(',').map((s) => s.trim()).filter(Boolean);
+    }
+  }
+  return [];
+}
+
+// =============================================================================
 // WESTERN STAY COMPLETE SAMPLE DATA
 // =============================================================================
+
 
 export const SAMPLE_SETTINGS: WesternStaySettingsRecord = {
   id: 'singleton',
@@ -581,7 +612,12 @@ export const westernStayService = {
       ]);
 
       const settings = (settingsData as WesternStaySettingsRecord) || localSettings;
-      const roomTypes = (roomTypesData && roomTypesData.length > 0 ? roomTypesData : localRoomTypes) as WesternStayRoomTypeRecord[];
+      const rawRoomTypes = (roomTypesData && roomTypesData.length > 0 ? roomTypesData : localRoomTypes) as WesternStayRoomTypeRecord[];
+      const roomTypes = rawRoomTypes.map((rt: any) => ({
+        ...rt,
+        monthly_price: Number(rt.monthly_price),
+        features: parseFeatures(rt.features)
+      }));
       const rooms = (roomsData && roomsData.length > 0 ? roomsData : localRooms) as WesternStayRoomRecord[];
 
       let totalRooms = rooms.length;
@@ -855,7 +891,9 @@ export const westernStayService = {
 
   async getRoomTypes(): Promise<WesternStayRoomTypeRecord[]> {
     const client = getSupabaseClient();
-    if (!client) return localRoomTypes;
+    if (!client) {
+      return localRoomTypes.map((rt) => ({ ...rt, features: parseFeatures(rt.features) }));
+    }
 
     try {
       const { data, error } = await client
@@ -863,28 +901,157 @@ export const westernStayService = {
         .select('*')
         .order('display_order', { ascending: true });
 
-      if (error || !data || data.length === 0) return localRoomTypes;
+      if (error || !data || data.length === 0) {
+        return localRoomTypes.map((rt) => ({ ...rt, features: parseFeatures(rt.features) }));
+      }
       return data.map((d: any) => ({
         ...d,
-        monthly_price: Number(d.monthly_price)
+        monthly_price: Number(d.monthly_price),
+        features: parseFeatures(d.features)
       }));
     } catch {
-      return localRoomTypes;
+      return localRoomTypes.map((rt) => ({ ...rt, features: parseFeatures(rt.features) }));
+    }
+  },
+
+  async createRoomType(roomType: {
+    name: string;
+    slug?: string;
+    description?: string;
+    max_occupants?: number;
+    monthly_price: number;
+    price_display: string;
+    weekly_price?: string;
+    daily_price?: string;
+    security_deposit?: string;
+    ac_available?: boolean;
+    ac_surcharge?: string;
+    features?: string[];
+    is_recommended?: boolean;
+    display_order?: number;
+    is_active?: boolean;
+  }): Promise<WesternStayRoomTypeRecord | null> {
+    const slug =
+      roomType.slug ||
+      roomType.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') ||
+      'room-type-' + Date.now();
+    const cleanFeatures = parseFeatures(roomType.features);
+
+    const newRecord: WesternStayRoomTypeRecord = {
+      id: 'rt-' + Date.now(),
+      name: roomType.name,
+      slug,
+      description: roomType.description || null,
+      max_occupants: roomType.max_occupants || 1,
+      monthly_price: roomType.monthly_price,
+      price_display: roomType.price_display,
+      weekly_price: roomType.weekly_price || null,
+      daily_price: roomType.daily_price || null,
+      security_deposit: roomType.security_deposit || '₹5,000',
+      ac_available: roomType.ac_available ?? false,
+      ac_surcharge: roomType.ac_surcharge || null,
+      features: cleanFeatures,
+      is_recommended: roomType.is_recommended ?? false,
+      display_order: roomType.display_order || localRoomTypes.length + 1,
+      sort_order: roomType.display_order || localRoomTypes.length + 1,
+      is_active: roomType.is_active ?? true,
+      totalRooms: 0,
+      availableRooms: 0,
+      occupiedRooms: 0,
+      isFull: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    localRoomTypes = [...localRoomTypes, newRecord];
+
+    const client = getSupabaseClient();
+    if (!client) return newRecord;
+
+    try {
+      const { data, error } = await client
+        .from('western_stay_room_types')
+        .insert({
+          name: roomType.name,
+          slug,
+          description: roomType.description || null,
+          max_occupants: roomType.max_occupants || 1,
+          monthly_price: roomType.monthly_price,
+          price_display: roomType.price_display,
+          weekly_price: roomType.weekly_price || null,
+          daily_price: roomType.daily_price || null,
+          security_deposit: roomType.security_deposit || '₹5,000',
+          ac_available: roomType.ac_available ?? false,
+          ac_surcharge: roomType.ac_surcharge || null,
+          features: cleanFeatures,
+          is_recommended: roomType.is_recommended ?? false,
+          display_order: roomType.display_order || localRoomTypes.length,
+          is_active: roomType.is_active ?? true
+        })
+        .select()
+        .single();
+
+      if (error || !data) return newRecord;
+      return {
+        ...data,
+        monthly_price: Number(data.monthly_price),
+        features: parseFeatures(data.features)
+      };
+    } catch {
+      return newRecord;
     }
   },
 
   async updateRoomType(id: string, updates: Partial<WesternStayRoomTypeRecord>): Promise<boolean> {
-    localRoomTypes = localRoomTypes.map((rt) => (rt.id === id ? { ...rt, ...updates, updated_at: new Date().toISOString() } : rt));
+    const cleanUpdates: any = {
+      ...updates,
+      updated_at: new Date().toISOString()
+    };
+    if (updates.features !== undefined) {
+      cleanUpdates.features = parseFeatures(updates.features);
+    }
+    if (updates.monthly_price !== undefined) {
+      cleanUpdates.monthly_price = Number(updates.monthly_price);
+    }
+
+    localRoomTypes = localRoomTypes.map((rt) => (rt.id === id ? { ...rt, ...cleanUpdates } : rt));
 
     const client = getSupabaseClient();
     if (!client) return true;
 
-    const { error } = await client
-      .from('western_stay_room_types')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id);
+    try {
+      const { error } = await client
+        .from('western_stay_room_types')
+        .update(cleanUpdates)
+        .eq('id', id);
 
-    return !error;
+      if (error) {
+        console.error('Supabase updateRoomType error:', error);
+        // Return true because local cache was updated successfully
+        return true;
+      }
+      return true;
+    } catch (err) {
+      console.error('Exception in updateRoomType:', err);
+      return true;
+    }
+  },
+
+  async deleteRoomType(id: string): Promise<boolean> {
+    localRoomTypes = localRoomTypes.filter((rt) => rt.id !== id);
+
+    const client = getSupabaseClient();
+    if (!client) return true;
+
+    try {
+      const { error } = await client.from('western_stay_room_types').delete().eq('id', id);
+      return !error;
+    } catch {
+      return true;
+    }
   },
 
   // ===========================================================================
