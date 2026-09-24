@@ -222,13 +222,31 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Bottom copyright line */}
-        <div className="pt-6 border-t border-neutral-900 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-neutral-500">
-          <div>
-            © {new Date().getFullYear()} Sanjay Properties. All rights reserved.
+        <div className="pt-6 border-t border-neutral-900 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-neutral-500">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
+            <div>
+              © {new Date().getFullYear()} Sanjay Properties. All rights reserved.
+            </div>
+            <span className="hidden sm:inline text-neutral-700">·</span>
+            <div>Layout Reference: 42/2008 · Saravanampatti, Coimbatore</div>
           </div>
-          <div className="flex items-center gap-4">
-            <span>Layout Reference: 42/2008 · Saravanampatti, Coimbatore</span>
-            <span className="text-neutral-700">·</span>
+
+          <div className="flex items-center gap-4 sm:gap-5">
+            <a
+              href="https://inventog.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center opacity-80 hover:opacity-100 transition-opacity"
+              title="Powered by InventOG"
+            >
+              <img
+                src="/invent%20og%20logo%20powerd%20by.png"
+                alt="Powered by InventOG"
+                className="h-6 sm:h-7 w-auto object-contain"
+                loading="lazy"
+              />
+            </a>
+            <span className="text-neutral-800">|</span>
             <a
               href="/admin"
               className="text-neutral-400 hover:text-[#FFCC00] font-semibold transition-colors flex items-center gap-1"

@@ -164,26 +164,43 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
       {/* ========================================================================= */}
       {/* 1. TOP HEADER NAVIGATION (Matching Sanjay Properties Visual Language)   */}
       {/* ========================================================================= */}
-      <header className="sticky top-0 z-40 w-full bg-[#f5f6f8]/90 backdrop-blur-md border-b border-neutral-200/80">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-3">
+      <header className="sticky top-0 z-40 w-full bg-[#f5f6f8]/95 backdrop-blur-md border-b border-neutral-200/80">
+        <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 sm:gap-4">
           {/* Back Link & Brand Identity */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               type="button"
               onClick={onBackToHome}
               aria-label="Back to Sanjay Properties Home"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-neutral-200 text-neutral-800 text-xs font-bold hover:bg-neutral-100 active:scale-95 transition-all shadow-2xs"
+              className="shrink-0 inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-white border border-neutral-200 text-neutral-800 text-xs font-bold hover:bg-neutral-100 active:scale-95 transition-all shadow-2xs"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Back to Sanjay Properties</span>
-              <span className="sm:hidden">Home</span>
+              <span className="hidden md:inline">Back to Sanjay Properties</span>
+              <span className="md:hidden">Home</span>
             </button>
 
-            <div className="h-5 w-px bg-neutral-300 hidden sm:block" />
+            {/* Mobile Brand Identity (< md) */}
+            <div className="flex md:hidden items-center gap-2 min-w-0">
+              <img
+                src="/logo/logo-black.png"
+                alt="Sanjay Properties"
+                className="h-5 sm:h-6 w-auto object-contain shrink-0"
+              />
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold tracking-wider uppercase text-neutral-900 leading-tight truncate">
+                  SANJAY MANSION
+                </span>
+                <span className="text-[9px] text-neutral-500 font-medium tracking-wide truncate">
+                  Western Stay Residence
+                </span>
+              </div>
+            </div>
 
-            <div className="flex items-center gap-3">
+            {/* Desktop Brand Identity (>= md) */}
+            <div className="hidden md:flex items-center gap-3">
+              <div className="h-5 w-px bg-neutral-300" />
               <BrandLogo variant="black" size="sm" layout="horizontal" />
-              <div className="h-6 w-px bg-neutral-300 hidden sm:block" />
+              <div className="h-6 w-px bg-neutral-300" />
               <div className="flex flex-col">
                 <span className="text-xs sm:text-sm font-normal tracking-wider uppercase text-neutral-900 leading-none">
                   SANJAY MANSION
@@ -196,10 +213,10 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
           </div>
 
           {/* Quick Call & Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <a
               href="tel:8056889900"
-              className="hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-neutral-200 text-xs font-bold text-neutral-900 hover:bg-neutral-50 active:scale-95 transition-all shadow-2xs"
+              className="hidden lg:inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white border border-neutral-200 text-xs font-bold text-neutral-900 hover:bg-neutral-50 active:scale-95 transition-all shadow-2xs"
             >
               <Phone className="w-3.5 h-3.5 text-neutral-700" />
               <span>8056889900</span>
@@ -208,7 +225,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             <button
               type="button"
               onClick={() => onOpenBookingModal ? onOpenBookingModal() : onOpenEnquiryModal()}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FFCC00] text-black text-xs font-extrabold hover:bg-neutral-950 hover:text-white active:scale-95 transition-all shadow-2xs"
+              className="shrink-0 inline-flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-[#FFCC00] text-black text-xs font-extrabold hover:bg-neutral-950 hover:text-white active:scale-95 transition-all shadow-2xs whitespace-nowrap"
             >
               <span>Book Stay</span>
               <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -220,8 +237,8 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
       {/* ========================================================================= */}
       {/* 2. HERO SECTION                                                          */}
       {/* ========================================================================= */}
-      <section className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6">
-        <div className="relative w-full rounded-[32px] sm:rounded-[44px] overflow-hidden min-h-[580px] sm:min-h-[660px] lg:min-h-[700px] flex flex-col justify-between shadow-2xl bg-neutral-950 p-6 sm:p-12 lg:p-16">
+      <section className="w-full max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-6">
+        <div className="relative w-full rounded-[28px] sm:rounded-[44px] overflow-hidden min-h-[560px] sm:min-h-[660px] lg:min-h-[700px] flex flex-col justify-between shadow-2xl bg-neutral-950 p-5 sm:p-12 lg:p-16">
           {/* Background Image & Gradient */}
           <div className="absolute inset-0 z-0">
             <img
@@ -234,36 +251,36 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
           </div>
 
           {/* Top Hero Badges */}
-          <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#FFCC00] text-xs font-bold uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-[#FFCC00] animate-pulse" />
+          <div className="relative z-10 flex flex-wrap items-center justify-between gap-2 sm:gap-3">
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-[#FFCC00] text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#FFCC00] animate-pulse shrink-0" />
               <span>WESTERN STAY RESIDENCE · COIMBATORE</span>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs font-medium">
-              <MapPin className="w-3.5 h-3.5 text-[#FFCC00]" />
+            <div className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white text-[10px] sm:text-xs font-medium">
+              <MapPin className="w-3.5 h-3.5 text-[#FFCC00] shrink-0" />
               <span>{prop.area} · {prop.address_line2 || 'Opp. KCT Tech Park'}</span>
             </div>
           </div>
 
           {/* Main Hero Content */}
-          <div className="relative z-10 max-w-3xl my-auto py-8">
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.05] uppercase">
+          <div className="relative z-10 max-w-3xl my-auto py-6 sm:py-8">
+            <h1 className="text-3xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] sm:leading-[1.05] uppercase break-words">
               {prop.hero_title || prop.name}
             </h1>
 
             {prop.tagline && (
-              <p className="text-lg sm:text-2xl text-neutral-200 font-semibold mt-4 sm:mt-5 tracking-tight italic">
+              <p className="text-base sm:text-2xl text-neutral-200 font-semibold mt-3 sm:mt-5 tracking-tight italic">
                 &ldquo;{prop.tagline}&rdquo;
               </p>
             )}
 
-            <p className="text-xs sm:text-sm lg:text-base text-neutral-300 font-normal mt-3 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm lg:text-base text-neutral-300 font-normal mt-2.5 sm:mt-3 max-w-2xl leading-relaxed">
               {prop.hero_description || 'Quality & Comfort. A peaceful address for a comfortable stay. Wake up to nature.'}
             </p>
 
             {/* Address Banner */}
-            <div className="mt-6 p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs sm:text-sm flex items-start gap-3 max-w-xl">
+            <div className="mt-5 sm:mt-6 p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-white text-xs sm:text-sm flex items-start gap-2.5 sm:gap-3 max-w-xl">
               <MapPin className="w-4 h-4 text-[#FFCC00] shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold block text-white">Location Address:</span>
@@ -274,41 +291,43 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
             </div>
 
             {/* Hero CTA Buttons */}
-            <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-4 mt-6 sm:mt-8">
               <button
                 type="button"
                 onClick={() => onOpenBookingModal ? onOpenBookingModal('Single Occupancy') : onOpenEnquiryModal()}
-                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center gap-2 cursor-pointer"
+                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-[#FFCC00] text-black font-extrabold text-xs sm:text-sm hover:bg-white active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
               >
                 <span>BOOK YOUR STAY</span>
                 <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
               </button>
 
-              <a
-                href={prop.google_maps_url || 'https://maps.app.goo.gl/AJSivYbLohUfKxEA7'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all shadow-md flex items-center gap-2 cursor-pointer"
-              >
-                <Navigation className="w-4 h-4 text-[#FFCC00]" />
-                <span>GET DIRECTIONS</span>
-              </a>
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-2.5 sm:gap-4">
+                <a
+                  href={prop.google_maps_url || 'https://maps.app.goo.gl/AJSivYbLohUfKxEA7'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="py-3 sm:py-3.5 px-3 sm:px-7 rounded-full bg-white/15 backdrop-blur-md border border-white/30 text-white font-bold text-xs sm:text-sm hover:bg-white hover:text-black active:scale-95 transition-all shadow-md flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer text-center"
+                >
+                  <Navigation className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FFCC00] shrink-0" />
+                  <span className="whitespace-nowrap">DIRECTIONS</span>
+                </a>
 
-              <a
-                href={`tel:${prop.primary_phone || '8056889900'}`}
-                className="py-3 sm:py-3.5 px-6 sm:px-7 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <Phone className="w-4 h-4 text-[#FFCC00]" />
-                <span>CALL NOW</span>
-              </a>
+                <a
+                  href={`tel:${prop.primary_phone || '8056889900'}`}
+                  className="py-3 sm:py-3.5 px-3 sm:px-7 rounded-full bg-neutral-900 border border-neutral-700 text-white font-bold text-xs sm:text-sm hover:bg-neutral-800 active:scale-95 transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer text-center"
+                >
+                  <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#FFCC00] shrink-0" />
+                  <span className="whitespace-nowrap">CALL NOW</span>
+                </a>
+              </div>
             </div>
           </div>
 
           {/* Bottom Hero Stats Strip */}
-          <div className="relative z-10 pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-4 text-white">
+          <div className="relative z-10 pt-5 sm:pt-6 border-t border-white/15 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 text-white">
             <div>
               <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Pricing Starts</span>
-              <span className="text-base sm:text-xl font-black text-[#FFCC00]">{prop.pricing_start || '₹4,900'} / mo</span>
+              <span className="text-sm sm:text-xl font-black text-[#FFCC00]">{prop.pricing_start || '₹4,900'} / mo</span>
             </div>
             <div>
               <span className="text-[10px] text-neutral-400 uppercase font-semibold block">Key Landmark</span>
