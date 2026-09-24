@@ -72,7 +72,7 @@ export const SAMPLE_SETTINGS: WesternStaySettingsRecord = {
   hero_title: 'WESTERN STAY – SANJAY MANSION',
   hero_subtitle: 'Premium Gents & Executive Accommodation',
   hero_description: 'A peaceful, secure, and fully equipped stay in Saravanampatti. High-speed Wi-Fi, attached bathrooms, homestyle South Indian dining, and 24x7 security.',
-  hero_image_url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=85',
+  hero_image_url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.20.jpeg',
   seo_title: 'Western Stay – Sanjay Mansion | Hostel in Saravanampatti, Coimbatore',
   seo_description: 'Western Stay – Sanjay Mansion offers premium PG & hostel accommodation near KCT Tech Park, Saravanampatti, Coimbatore.',
   updated_at: new Date().toISOString()
@@ -168,7 +168,7 @@ export const SAMPLE_ROOMS: WesternStayRoomRecord[] = [
     monthly_price: 8000,
     status: 'OCCUPIED',
     notes: 'Facing east with quiet garden view',
-    images: ['https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80'],
+    images: ['/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.57.jpeg'],
     current_occupant_name: 'Rahul Sharma',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -182,7 +182,7 @@ export const SAMPLE_ROOMS: WesternStayRoomRecord[] = [
     monthly_price: 6000,
     status: 'AVAILABLE',
     notes: 'Ready for immediate check-in',
-    images: ['https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=800&q=80'],
+    images: ['/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.08%20(1).jpeg'],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
@@ -195,7 +195,7 @@ export const SAMPLE_ROOMS: WesternStayRoomRecord[] = [
     monthly_price: 6000,
     status: 'RESERVED',
     notes: 'Booking advance received from TCS employee',
-    images: [],
+    images: ['/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.47.jpeg'],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
@@ -208,7 +208,7 @@ export const SAMPLE_ROOMS: WesternStayRoomRecord[] = [
     monthly_price: 8000,
     status: 'OCCUPIED',
     notes: 'AC installed',
-    images: ['https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=800&q=80'],
+    images: ['/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.00.jpeg'],
     current_occupant_name: 'Karthik Raja',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -222,7 +222,7 @@ export const SAMPLE_ROOMS: WesternStayRoomRecord[] = [
     monthly_price: 6000,
     status: 'OCCUPIED',
     notes: 'Corner room with dual windows',
-    images: [],
+    images: ['/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.50.jpeg'],
     current_occupant_name: 'Arun Prakash',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
@@ -236,7 +236,7 @@ export const SAMPLE_ROOMS: WesternStayRoomRecord[] = [
     monthly_price: 4900,
     status: 'AVAILABLE',
     notes: '2 beds currently free',
-    images: ['https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80'],
+    images: ['/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.10.jpeg'],
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
@@ -485,14 +485,18 @@ export const SAMPLE_WEEKLY_MENU: WesternStayMenuRecord[] = [
 ];
 
 export const SAMPLE_GALLERY: WesternStayImageRecord[] = [
-  { id: 'gal-1', url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=85', title: 'Main Hostel Elevation', category: 'Exterior', alt_text: 'Main Building Front View', sort_order: 1, is_featured: true, created_at: new Date().toISOString() },
-  { id: 'gal-2', url: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=85', title: 'Deluxe Single Study Room', category: 'Rooms', alt_text: 'Single Room with Study Table', sort_order: 2, is_featured: true, created_at: new Date().toISOString() },
-  { id: 'gal-3', url: 'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=85', title: '2 Sharing Furnished Bedroom', category: 'Rooms', alt_text: '2 Sharing Room', sort_order: 3, is_featured: false, created_at: new Date().toISOString() },
-  { id: 'gal-4', url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=85', title: 'Attached Western Bathroom', category: 'Facilities', alt_text: 'Clean Bathroom with Geyser', sort_order: 4, is_featured: false, created_at: new Date().toISOString() },
-  { id: 'gal-5', url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=85', title: 'Clean & Hygienic Dining Hall', category: 'Dining', alt_text: 'Hostel Dining Hall', sort_order: 5, is_featured: false, created_at: new Date().toISOString() },
-  { id: 'gal-6', url: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=85', title: 'Quiet Reading & Study Lounge', category: 'Campus', alt_text: 'Study Zone', sort_order: 6, is_featured: false, created_at: new Date().toISOString() },
-  { id: 'gal-7', url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=85', title: 'Covered Parking & Entrance', category: 'Facilities', alt_text: 'Parking Area', sort_order: 7, is_featured: false, created_at: new Date().toISOString() },
-  { id: 'gal-8', url: 'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=85', title: 'Rooftop Open Terrace Garden', category: 'Campus', alt_text: 'Rooftop View', sort_order: 8, is_featured: false, created_at: new Date().toISOString() }
+  { id: 'gal-1', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.20.jpeg', title: 'Main Hostel Building & Entrance', category: 'Exterior', alt_text: 'Main Building Front View with Signboard', sort_order: 1, is_featured: true, created_at: new Date().toISOString() },
+  { id: 'gal-2', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.45.jpeg', title: 'Reception & Waiting Lounge', category: 'Facilities', alt_text: 'Spacious Reception with Sofa Seating', sort_order: 2, is_featured: true, created_at: new Date().toISOString() },
+  { id: 'gal-3', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.47.jpeg', title: '2 Sharing Furnished Bedroom', category: 'Rooms', alt_text: '2 Sharing Room with Study Table', sort_order: 3, is_featured: true, created_at: new Date().toISOString() },
+  { id: 'gal-4', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.10.jpeg', title: 'Comfortable Multi-Sharing Room', category: 'Rooms', alt_text: '4 Sharing Room with Storage Cupboards', sort_order: 4, is_featured: true, created_at: new Date().toISOString() },
+  { id: 'gal-5', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.57.jpeg', title: 'Single Study Bedroom', category: 'Rooms', alt_text: 'Single Private Room with Desk', sort_order: 5, is_featured: false, created_at: new Date().toISOString() },
+  { id: 'gal-6', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.12.jpeg', title: 'Spacious Dormitory with Bunk Beds', category: 'Rooms', alt_text: 'Dormitory Bunk Beds Setup', sort_order: 6, is_featured: false, created_at: new Date().toISOString() },
+  { id: 'gal-7', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.43.jpeg', title: 'Laundry Facility Room', category: 'Facilities', alt_text: 'Laundry Facility with Wash Area', sort_order: 7, is_featured: false, created_at: new Date().toISOString() },
+  { id: 'gal-8', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.44.jpeg', title: 'Automated Washing Machines', category: 'Facilities', alt_text: 'Modern Laundry Washing Machines', sort_order: 8, is_featured: false, created_at: new Date().toISOString() },
+  { id: 'gal-9', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.13.jpeg', title: 'Clean Granite Corridor', category: 'Facilities', alt_text: 'Polished Granite Hallway', sort_order: 9, is_featured: false, created_at: new Date().toISOString() },
+  { id: 'gal-10', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.37.jpeg', title: 'Building Elevation & Architecture', category: 'Exterior', alt_text: 'Full Exterior Elevation', sort_order: 10, is_featured: false, created_at: new Date().toISOString() },
+  { id: 'gal-11', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.42.jpeg', title: 'Entrance Portico & Signboard', category: 'Exterior', alt_text: 'Entrance Portico with Sanjay Mansion Sign', sort_order: 11, is_featured: false, created_at: new Date().toISOString() },
+  { id: 'gal-12', url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.35.jpeg', title: 'Tree Canopy & Parking Area', category: 'Campus', alt_text: 'Avenue Trees and Two-Wheeler Parking', sort_order: 12, is_featured: false, created_at: new Date().toISOString() }
 ];
 
 export const SAMPLE_ENQUIRIES: WesternStayEnquiryRecord[] = [

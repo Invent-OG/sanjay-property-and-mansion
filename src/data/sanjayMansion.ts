@@ -286,40 +286,79 @@ export const SANJAY_MANSION_DATA = {
   gallery: [
     {
       id: 'ext-main',
-      title: 'Main Building Elevation',
+      title: 'Main Building & Entrance Gate',
       category: 'Exterior',
-      url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=85',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.20.jpeg',
       featured: true
     },
     {
-      id: 'ext-angle',
-      title: 'Facade & Covered Parking',
-      category: 'Exterior',
-      url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=85'
+      id: 'rec-lounge',
+      title: 'Reception & Waiting Lounge',
+      category: 'Reception',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.45.jpeg',
+      featured: true
     },
     {
-      id: 'room-bed',
-      title: 'Comfortable Individual Room',
+      id: 'room-double',
+      title: 'Spacious 2-Sharing Bedroom',
       category: 'Rooms',
-      url: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=85'
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.47.jpeg',
+      featured: true
     },
     {
-      id: 'study-desk',
-      title: 'Dedicated Study & Work Desk',
-      category: 'Interiors',
-      url: 'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?auto=format&fit=crop&w=1200&q=85'
+      id: 'room-multi',
+      title: 'Comfortable Multi-Sharing Room',
+      category: 'Rooms',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.10.jpeg',
+      featured: true
     },
     {
-      id: 'green-surroundings',
-      title: 'Peaceful Natural Surroundings',
-      category: 'Campus',
-      url: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85'
+      id: 'room-single',
+      title: 'Single Private Room with Study Desk',
+      category: 'Rooms',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.57.jpeg'
     },
     {
-      id: 'bath-interior',
-      title: 'Attached Clean Bathroom',
+      id: 'room-bunk',
+      title: 'Spacious Dormitory with Bunk Beds',
+      category: 'Rooms',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.12.jpeg'
+    },
+    {
+      id: 'fac-laundry-1',
+      title: 'In-House Laundry Facility',
       category: 'Facilities',
-      url: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=85'
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.43.jpeg'
+    },
+    {
+      id: 'fac-laundry-2',
+      title: 'Automated Washing Machines',
+      category: 'Facilities',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.44.jpeg'
+    },
+    {
+      id: 'int-corridor',
+      title: 'Clean Granite Hallway & Corridors',
+      category: 'Interiors',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.13.jpeg'
+    },
+    {
+      id: 'ext-elevation',
+      title: 'Building Elevation & Frontage',
+      category: 'Exterior',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.37.jpeg'
+    },
+    {
+      id: 'ext-entrance-gate',
+      title: 'Front Entrance & Signboard',
+      category: 'Exterior',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.42.jpeg'
+    },
+    {
+      id: 'surroundings-parking',
+      title: 'Avenue Trees & Two-Wheeler Parking',
+      category: 'Campus',
+      url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.35.jpeg'
     }
   ]
 };

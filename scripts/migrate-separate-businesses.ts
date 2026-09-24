@@ -385,7 +385,7 @@ async function migrate() {
       'WESTERN STAY – SANJAY MANSION',
       'Your Home Away From Home',
       'A peaceful and comfortable stay in Saravanampatti, Coimbatore, with quality accommodation, modern amenities and clean surroundings.',
-      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=85'
+      '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.20.jpeg'
     )
     ON CONFLICT (id) DO UPDATE SET
       business_name = EXCLUDED.business_name,
@@ -594,10 +594,18 @@ async function migrate() {
   console.log('12. Seeding Western Stay Gallery...');
   await sql`DELETE FROM western_stay_images;`;
   const galleryList = [
-    { url: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=85', title: 'Main Elevation & Entrance', cat: 'Exterior', sort: 1, feat: true },
-    { url: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=85', title: 'Facade & Covered Two-Wheeler Parking', cat: 'Exterior', sort: 2, feat: false },
-    { url: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1200&q=85', title: 'Spacious Well-Ventilated Individual Room', cat: 'Rooms', sort: 3, feat: false },
-    { url: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=1200&q=85', title: 'Clean Campus Courtyard & Dining Hall', cat: 'Campus', sort: 4, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.20.jpeg', title: 'Main Building Elevation & Entrance Gate', cat: 'Exterior', sort: 1, feat: true },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.45.jpeg', title: 'Reception & Waiting Lounge', cat: 'Facilities', sort: 2, feat: true },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.47.jpeg', title: 'Spacious 2-Sharing Bedroom', cat: 'Rooms', sort: 3, feat: true },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.10.jpeg', title: 'Comfortable Multi-Sharing Room', cat: 'Rooms', sort: 4, feat: true },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.57.jpeg', title: 'Single Private Room with Study Desk', cat: 'Rooms', sort: 5, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.12.jpeg', title: 'Spacious Dormitory with Bunk Beds', cat: 'Rooms', sort: 6, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.43.jpeg', title: 'In-House Laundry Facility', cat: 'Facilities', sort: 7, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.44.jpeg', title: 'Automated Washing Machines', cat: 'Facilities', sort: 8, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.37.13.jpeg', title: 'Clean Granite Hallway & Corridors', cat: 'Facilities', sort: 9, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.37.jpeg', title: 'Building Elevation & Frontage', cat: 'Exterior', sort: 10, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.42.jpeg', title: 'Front Entrance Portico & Signboard', cat: 'Exterior', sort: 11, feat: false },
+    { url: '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.35.jpeg', title: 'Avenue Trees & Two-Wheeler Parking', cat: 'Campus', sort: 12, feat: false }
   ];
 
   for (const g of galleryList) {

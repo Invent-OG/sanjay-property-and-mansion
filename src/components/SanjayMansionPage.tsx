@@ -225,7 +225,7 @@ export const SanjayMansionPage: React.FC<SanjayMansionPageProps> = ({
           {/* Background Image & Gradient */}
           <div className="absolute inset-0 z-0">
             <img
-              src={prop.hero_image_url || data.images[0]?.url || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1600&q=85'}
+              src={prop.hero_image_url || data.images[0]?.url || '/sanjay%20mansion%20photos/WhatsApp%20Image%202026-09-23%20at%2013.36.20.jpeg'}
               alt={prop.name}
               className="w-full h-full object-cover opacity-50 scale-105"
             />
