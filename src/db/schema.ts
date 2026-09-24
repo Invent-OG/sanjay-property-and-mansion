@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, boolean, integer, numeric, jsonb, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, text, varchar, date, time, boolean, integer, numeric, jsonb, timestamp } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // =============================================================================
@@ -385,3 +385,39 @@ export type WesternStayEnquiryRecord = typeof westernStayEnquiries.$inferSelect;
 
 export type SiteSettingsRecord = typeof siteSettings.$inferSelect;
 export type LeadRecord = typeof leads.$inferSelect;
+
+// =============================================================================
+// JUSTDIAL CRM LEADS
+// =============================================================================
+
+export const justdialLeads = pgTable('justdial_leads', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  leadid: varchar('leadid', { length: 255 }).notNull().unique(),
+  leadtype: varchar('leadtype', { length: 255 }),
+  prefix: varchar('prefix', { length: 10 }),
+  name: varchar('name', { length: 255 }),
+  mobile: varchar('mobile', { length: 50 }),
+  phone: varchar('phone', { length: 50 }),
+  email: varchar('email', { length: 255 }),
+  leadDate: date('lead_date'),
+  category: varchar('category', { length: 255 }),
+  city: varchar('city', { length: 255 }),
+  area: varchar('area', { length: 255 }),
+  brancharea: varchar('brancharea', { length: 255 }),
+  dncmobile: integer('dncmobile').default(0),
+  dncphone: integer('dncphone').default(0),
+  company: varchar('company', { length: 255 }),
+  pincode: varchar('pincode', { length: 50 }),
+  leadTime: time('lead_time'),
+  branchpin: varchar('branchpin', { length: 50 }),
+  parentid: varchar('parentid', { length: 255 }),
+  source: varchar('source', { length: 50 }).default('justdial'),
+  status: varchar('status', { length: 50 }).default('new'),
+  rawPayload: jsonb('raw_payload'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type JustdialLeadRecord = typeof justdialLeads.$inferSelect;
+export type NewJustdialLeadRecord = typeof justdialLeads.$inferInsert;
+

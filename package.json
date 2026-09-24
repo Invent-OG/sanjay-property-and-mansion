@@ -12,9 +12,11 @@
     "lint": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed-drizzle.ts",
-    "reset-admin": "tsx scripts/reset-admin-password.ts"
+    "reset-admin": "tsx scripts/reset-admin-password.ts",
+    "clean:test-leads": "tsx scripts/clean-test-justdial-leads.ts"
   },
   "dependencies": {
+    "@astrojs/node": "^9.5.5",
     "@astrojs/react": "^4.2.1",
     "@google/genai": "^2.4.0",
     "@supabase/supabase-js": "^2.116.0",

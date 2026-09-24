@@ -16,7 +16,8 @@ import {
   Bed,
   UtensilsCrossed,
   MapPin,
-  FileText
+  FileText,
+  PhoneCall
 } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { QueryProvider } from '../common/QueryProvider';
@@ -24,6 +25,7 @@ import { AdminDashboardHome } from './AdminDashboardHome';
 import { AdminPropertiesList } from './AdminPropertiesList';
 import { AdminPropertyEditor } from './AdminPropertyEditor';
 import { AdminLeadsManager } from './AdminLeadsManager';
+import { AdminJustdialLeadsManager } from './AdminJustdialLeadsManager';
 import { AdminMediaLibrary } from './AdminMediaLibrary';
 import { AdminSettings } from './AdminSettings';
 
@@ -127,10 +129,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       ]
     },
     {
+      group: 'LEADS',
+      items: [
+        { label: 'Website Leads', href: '/admin/leads', icon: Users },
+        { label: 'Justdial Leads', href: '/admin/leads/justdial', icon: PhoneCall }
+      ]
+    },
+    {
       group: 'REAL ESTATE PROPERTIES',
       items: [
         { label: 'Property Listings', href: '/admin/properties', icon: Building2 },
-        { label: 'Property Inquiries', href: '/admin/leads', icon: Users },
         { label: 'Media Library', href: '/admin/media', icon: ImageIcon }
       ]
     },
@@ -251,9 +259,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     }
     if (cleanActive === '/admin/leads') {
       return {
-        title: 'Real Estate Inquiries & Leads',
-        subtitle: 'View land and plot buyer inquiries, call prospects directly, and send WhatsApp messages',
-        breadcrumbs: [{ label: 'Property Leads' }]
+        title: 'Website Inquiries & Leads',
+        subtitle: 'View land, plot, and hostel inquiries from website modals, call prospects directly, and send WhatsApp messages',
+        breadcrumbs: [{ label: 'Website Leads' }]
+      };
+    }
+    if (cleanActive === '/admin/leads/justdial') {
+      return {
+        title: 'Justdial Leads Pipeline',
+        subtitle: 'Real-time inbound telephony leads ingested from Justdial campaigns',
+        breadcrumbs: [{ label: 'Leads', href: '/admin/leads' }, { label: 'Justdial Leads' }]
       };
     }
     if (cleanActive === '/admin/media') {
@@ -328,6 +343,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     }
     if (cleanActive === '/admin/leads') {
       return <AdminLeadsManager />;
+    }
+    if (cleanActive === '/admin/leads/justdial') {
+      return <AdminJustdialLeadsManager />;
     }
     if (cleanActive === '/admin/media') {
       return <AdminMediaLibrary />;

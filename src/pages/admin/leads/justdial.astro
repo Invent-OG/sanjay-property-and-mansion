@@ -1,0 +1,23 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { AdminAuthGuard } from '../../../components/admin/AdminAuthGuard';
+import { AdminLayout } from '../../../components/admin/AdminLayout';
+import { AdminJustdialLeadsManager } from '../../../components/admin/AdminJustdialLeadsManager';
+---
+
+<Layout
+  title="Justdial Leads CRM | Sanjay Properties Admin Portal"
+  description="Manage incoming Justdial campaign leads, phone calls, WhatsApp messages, and conversion statuses in real time."
+>
+  <AdminAuthGuard client:only="react">
+    <AdminLayout
+      currentPath="/admin/leads/justdial"
+      title="Justdial Leads Pipeline"
+      subtitle="Manage real-time inbound leads delivered via Justdial telephony campaign webhook"
+      breadcrumbs={[{ label: 'Leads CRM', href: '/admin/leads' }, { label: 'Justdial Leads' }]}
+      client:only="react"
+    >
+      <AdminJustdialLeadsManager client:only="react" />
+    </AdminLayout>
+  </AdminAuthGuard>
+</Layout>
