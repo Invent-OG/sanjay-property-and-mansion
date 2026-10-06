@@ -36,6 +36,13 @@ import type {
   DayOfWeek,
   PropertyStatus
 } from '../../types/database';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 interface AdminPropertyEditorProps {
   propertyId?: string; // If 'new' or undefined, create mode
@@ -428,15 +435,19 @@ export const AdminPropertyEditor: React.FC<AdminPropertyEditorProps> = ({ proper
                 <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 mb-1.5">
                   Listing Status
                 </label>
-                <select
+                <Select
                   value={property.status}
-                  onChange={(e) => setProperty({ ...property, status: e.target.value as PropertyStatus })}
-                  className="w-full px-4 py-2.5 bg-[#0e1014] border border-neutral-700/80 rounded-xl text-sm text-white focus:outline-none focus:border-[#FFCC00]"
+                  onValueChange={(val) => setProperty({ ...property, status: val as PropertyStatus })}
                 >
-                  <option value="active">Active (Visible)</option>
-                  <option value="draft">Draft</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+                  <SelectTrigger className="w-full h-10 bg-[#0e1014] border-neutral-700/80">
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active (Visible)</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

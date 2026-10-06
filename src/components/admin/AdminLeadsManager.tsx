@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Users,
   Search,
-  Filter,
   Phone,
   Mail,
   MessageSquare,
@@ -10,10 +9,40 @@ import {
   Trash2,
   Eye,
   Send,
-  X,
+  Calendar,
+  Building2,
+  ArrowUpDown,
 } from 'lucide-react';
 import { useLeads, useUpdateLeadStatus, useAddLeadNote, useDeleteLead } from '../../hooks/useLeadsQuery';
 import type { Lead, LeadStatus } from '../../types/database';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Input } from '../ui/input';
+import { DataTablePagination } from '../ui/pagination';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
 
 export const AdminLeadsManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -110,23 +139,37 @@ export const AdminLeadsManager: React.FC = () => {
     return result;
   }, [rawLeads, searchQuery, sourceFilter, sortBy]);
 
-  const getStatusBadge = (status: LeadStatus) => {
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, sourceFilter, sortBy]);
+
+  const totalPages = Math.ceil(filteredLeads.length / pageSize) || 1;
+  const paginatedLeads = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredLeads.slice(start, start + pageSize);
+  }, [filteredLeads, currentPage, pageSize]);
+
+  const renderStatusBadge = (status: LeadStatus) => {
     switch (status) {
       case 'New':
-        return 'bg-amber-500/15 text-amber-400 border border-amber-500/30 font-semibold';
+        return <Badge variant="warning">New</Badge>;
       case 'Contacted':
-        return 'bg-blue-500/15 text-blue-400 border border-blue-500/30 font-semibold';
+        return <Badge variant="info">Contacted</Badge>;
       case 'In Discussion':
-        return 'bg-purple-500/15 text-purple-400 border border-purple-500/30 font-semibold';
+        return <Badge variant="secondary">In Discussion</Badge>;
       case 'Visit Scheduled':
-        return 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-semibold';
+        return <Badge variant="success">Visit Scheduled</Badge>;
       case 'Converted':
-        return 'bg-[#FFCC00]/20 text-[#FFCC00] border border-[#FFCC00]/40 font-bold';
+        return <Badge variant="default">Converted</Badge>;
       case 'Closed':
       case 'Lost':
-        return 'bg-neutral-800 text-neutral-400 border border-neutral-700';
+        return <Badge variant="outline">Closed</Badge>;
       default:
-        return 'bg-neutral-800 text-neutral-300';
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
@@ -143,7 +186,7 @@ export const AdminLeadsManager: React.FC = () => {
     <div className="space-y-6">
       {/* Toast */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1e222b] text-white px-5 py-3 rounded-2xl shadow-2xl border border-neutral-700 text-xs sm:text-sm font-semibold flex items-center gap-2 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-neutral-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-neutral-700 text-xs sm:text-sm font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
           <CheckCircle2 className="w-4 h-4 text-[#FFCC00]" />
           <span>{toastMsg}</span>
         </div>
@@ -154,70 +197,82 @@ export const AdminLeadsManager: React.FC = () => {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
             <Users className="w-5 h-5 text-[#FFCC00]" />
-            Leads & Enquiry CRM
+            Website Leads & Enquiries
           </h1>
           <p className="text-xs sm:text-sm text-neutral-400 mt-1">
             Manage prospective tenant and real estate buyer inquiries with real-time status tracking
           </p>
         </div>
 
-        <div className="text-xs font-medium text-neutral-300 bg-[#0E1015] px-3.5 py-1.5 rounded-lg border border-neutral-800/80">
-          Total Enquiries: <span className="text-[#FFCC00] font-bold">{filteredLeads.length}</span>
-        </div>
+        <Badge variant="outline" className="px-3 py-1.5 text-xs font-semibold self-start sm:self-auto border-neutral-700">
+          Total Enquiries: <span className="text-[#FFCC00] font-bold ml-1.5">{filteredLeads.length}</span>
+        </Badge>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row gap-3 bg-[#0E1015] border border-neutral-800/80 p-3 rounded-xl">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search by prospect name, phone, email or message..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#14161C] border border-neutral-700/70 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00] transition-colors"
-          />
-        </div>
+      <Card className="bg-neutral-900/60 border-neutral-800">
+        <CardContent className="p-3">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Input
+                placeholder="Search by prospect name, phone, email or message..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 h-9 text-xs"
+              />
+            </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Source Filter */}
-          <select
-            value={sourceFilter}
-            onChange={(e) => setSourceFilter(e.target.value)}
-            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
-          >
-            <option value="all">All Sources</option>
-            <option value="Sanjay Mansion">Sanjay Mansion</option>
-            <option value="Western Stay">Western Stay</option>
-            <option value="Sanjay Properties">Sanjay Properties</option>
-          </select>
+            <div className="flex flex-wrap items-center gap-2">
+              {/* Source Filter */}
+              <div className="w-[140px]">
+                <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                  <SelectTrigger className="h-9 bg-neutral-900 border-neutral-700/80">
+                    <SelectValue placeholder="All Sources" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Sources</SelectItem>
+                    <SelectItem value="Sanjay Mansion">Sanjay Mansion</SelectItem>
+                    <SelectItem value="Western Stay">Western Stay</SelectItem>
+                    <SelectItem value="Sanjay Properties">Sanjay Properties</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Status Filter */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="New">New</option>
-            <option value="Contacted">Contacted</option>
-            <option value="In Discussion">In Discussion</option>
-            <option value="Visit Scheduled">Visit Scheduled</option>
-            <option value="Converted">Converted</option>
-            <option value="Closed">Closed</option>
-          </select>
+              {/* Status Filter */}
+              <div className="w-[140px]">
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="h-9 bg-neutral-900 border-neutral-700/80">
+                    <SelectValue placeholder="All Statuses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="New">New</SelectItem>
+                    <SelectItem value="Contacted">Contacted</SelectItem>
+                    <SelectItem value="In Discussion">In Discussion</SelectItem>
+                    <SelectItem value="Visit Scheduled">Visit Scheduled</SelectItem>
+                    <SelectItem value="Converted">Converted</SelectItem>
+                    <SelectItem value="Closed">Closed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Sort */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
-            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-2.5 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-          </select>
-        </div>
-      </div>
+              {/* Sort */}
+              <div className="w-[130px]">
+                <Select value={sortBy} onValueChange={(val) => setSortBy(val as 'newest' | 'oldest')}>
+                  <SelectTrigger className="h-9 bg-neutral-900 border-neutral-700/80">
+                    <SelectValue placeholder="Sort" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="oldest">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Leads Table */}
       {isLoading ? (
@@ -225,204 +280,226 @@ export const AdminLeadsManager: React.FC = () => {
           Loading CRM leads from database...
         </div>
       ) : filteredLeads.length === 0 ? (
-        <div className="py-20 text-center bg-[#0E1015] border border-neutral-800/80 rounded-xl p-8">
-          <Users className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-white">No leads match criteria</h3>
-          <p className="text-xs text-neutral-400 mt-1">Try clearing your search or status filter.</p>
-        </div>
+        <Card className="text-center p-12 bg-neutral-900/40 border-dashed border-neutral-800">
+          <CardContent className="space-y-3 p-0">
+            <Users className="w-10 h-10 text-neutral-600 mx-auto" />
+            <h3 className="text-base font-bold text-white">No leads match criteria</h3>
+            <p className="text-xs text-neutral-400">Try clearing your search or status filter.</p>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="bg-[#0E1015] border border-neutral-800/80 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#12141A] text-neutral-400 uppercase text-[10px] font-semibold tracking-wider border-b border-neutral-800/70">
-                <tr>
-                  <th className="py-3 pl-4">Prospect Details</th>
-                  <th className="py-3">Source & Category</th>
-                  <th className="py-3">Preferences</th>
-                  <th className="py-3">Date</th>
-                  <th className="py-3">Status</th>
-                  <th className="py-3 text-right pr-4">Quick Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-800/50">
-                {filteredLeads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-neutral-800/30 transition-colors">
-                    <td className="py-4 pl-5">
-                      <div className="font-bold text-sm text-white">{lead.name}</div>
-                      <div className="text-[11px] text-neutral-400 flex items-center gap-2 mt-0.5">
-                        <a href={`tel:${lead.phone}`} className="hover:text-[#FFCC00] font-medium">
-                          {lead.phone}
-                        </a>
-                        {lead.email && <span>· {lead.email}</span>}
+        <Card className="overflow-hidden border-neutral-800 bg-neutral-900/60">
+          <Table>
+            <TableHeader className="bg-neutral-950/70 border-b border-neutral-800">
+              <TableRow className="border-neutral-800 hover:bg-transparent">
+                <TableHead className="w-[240px] text-neutral-400 font-semibold text-xs">Prospect Details</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Source & Category</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Preferences</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Date</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Status</TableHead>
+                <TableHead className="text-right text-neutral-400 font-semibold text-xs pr-6">Quick Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-neutral-800/60">
+              {paginatedLeads.map((lead) => (
+                <TableRow key={lead.id} className="hover:bg-neutral-800/30 transition-colors border-neutral-800/60">
+                  <TableCell className="font-medium">
+                    <div className="font-bold text-sm text-white">{lead.name}</div>
+                    <div className="text-[11px] text-neutral-400 flex items-center gap-2 mt-0.5">
+                      <a href={`tel:${lead.phone}`} className="hover:text-[#FFCC00] font-medium transition-colors">
+                        {lead.phone}
+                      </a>
+                      {lead.email && <span>· {lead.email}</span>}
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge
+                      variant={lead.source === 'Sanjay Mansion' ? 'secondary' : 'default'}
+                      className="text-[10px] font-semibold"
+                    >
+                      {lead.source}
+                    </Badge>
+                    <div className="text-[11px] text-neutral-400 mt-1 truncate max-w-[180px]">
+                      {lead.enquiry_type}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="text-neutral-300">
+                    {lead.preferred_accommodation ? (
+                      <div className="font-medium text-white">{lead.preferred_accommodation}</div>
+                    ) : (
+                      <div className="text-neutral-500">—</div>
+                    )}
+                    {lead.preferred_date && (
+                      <div className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
+                        <Calendar className="w-3 h-3 text-neutral-500" />
+                        <span>Move-in: {lead.preferred_date}</span>
                       </div>
-                    </td>
+                    )}
+                  </TableCell>
 
-                    <td className="py-4">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          lead.source === 'Sanjay Mansion'
-                            ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
-                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-                        }`}
-                      >
-                        {lead.source}
-                      </span>
-                      <div className="text-[11px] text-neutral-400 mt-1 truncate max-w-[180px]">
-                        {lead.enquiry_type}
-                      </div>
-                    </td>
+                  <TableCell className="text-neutral-400 text-xs">
+                    {new Date(lead.created_at).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </TableCell>
 
-                    <td className="py-4 text-neutral-300">
-                      {lead.preferred_accommodation ? (
-                        <div className="font-medium text-white">{lead.preferred_accommodation}</div>
-                      ) : (
-                        <div className="text-neutral-500">—</div>
-                      )}
-                      {lead.preferred_date && (
-                        <div className="text-[11px] text-neutral-400">Move-in: {lead.preferred_date}</div>
-                      )}
-                    </td>
-
-                    <td className="py-4 text-neutral-400">
-                      {new Date(lead.created_at).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </td>
-
-                    <td className="py-4">
-                      <select
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {renderStatusBadge(lead.status as LeadStatus)}
+                      <Select
                         value={lead.status}
-                        onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
-                        className={`px-2.5 py-1 rounded-full text-[11px] cursor-pointer focus:outline-none ${getStatusBadge(
-                          lead.status as LeadStatus
-                        )}`}
+                        onValueChange={(val) => handleStatusChange(lead.id, val as LeadStatus)}
                       >
-                        <option value="New">New</option>
-                        <option value="Contacted">Contacted</option>
-                        <option value="In Discussion">In Discussion</option>
-                        <option value="Visit Scheduled">Visit Scheduled</option>
-                        <option value="Converted">Converted</option>
-                        <option value="Closed">Closed</option>
-                      </select>
-                    </td>
+                        <SelectTrigger className="h-7 text-[11px] w-[125px] bg-neutral-900 border-neutral-700/80">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="New">New</SelectItem>
+                          <SelectItem value="Contacted">Contacted</SelectItem>
+                          <SelectItem value="In Discussion">In Discussion</SelectItem>
+                          <SelectItem value="Visit Scheduled">Visit Scheduled</SelectItem>
+                          <SelectItem value="Converted">Converted</SelectItem>
+                          <SelectItem value="Closed">Closed</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </TableCell>
 
-                    <td className="py-4 text-right pr-5">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => setSelectedLead(lead)}
-                          className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition-colors cursor-pointer"
-                          title="View Full Profile & Notes"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href={`tel:${lead.phone}`}
-                          className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-[#FFCC00] transition-colors cursor-pointer"
-                          title="Call"
-                        >
+                  <TableCell className="text-right pr-6">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        onClick={() => setSelectedLead(lead)}
+                        className="h-8 w-8"
+                        title="View Full Profile & Notes"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        asChild
+                        className="h-8 w-8 text-[#FFCC00] hover:text-[#FFCC00]"
+                      >
+                        <a href={`tel:${lead.phone}`} title="Call Phone">
                           <Phone className="w-3.5 h-3.5" />
                         </a>
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        asChild
+                        className="h-8 w-8 text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20"
+                      >
                         <a
                           href={generateWhatsAppUrl(lead.phone, lead.name, lead.source)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 transition-colors cursor-pointer"
                           title="WhatsApp"
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
                         </a>
-                        <button
-                          onClick={() => setDeleteConfirmId(lead.id)}
-                          className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors cursor-pointer"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => setDeleteConfirmId(lead.id)}
+                        className="h-8 w-8 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20"
+                        title="Delete Lead"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <DataTablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredLeads.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
+            pageSizeOptions={[10, 25, 50, 100]}
+          />
+        </Card>
       )}
 
-      {/* Lead Detail & Internal Notes Drawer/Modal */}
-      {selectedLead && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-[#171a22] border border-neutral-700 rounded-3xl max-w-2xl w-full p-6 text-white shadow-2xl relative max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between pb-4 border-b border-neutral-800 shrink-0">
-              <div>
-                <span className="text-[10px] font-bold text-[#FFCC00] uppercase tracking-wider">
-                  Lead Profile · {selectedLead.source}
-                </span>
-                <h3 className="text-xl font-extrabold mt-0.5">{selectedLead.name}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedLead(null)}
-                className="w-8 h-8 rounded-full bg-neutral-800 hover:bg-neutral-700 flex items-center justify-center text-neutral-400 hover:text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto py-5 space-y-5 text-xs">
-              {/* Info Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-[#101217] border border-neutral-800">
+      {/* Lead Detail & Internal Notes Dialog */}
+      <Dialog open={!!selectedLead} onOpenChange={(open) => !open && setSelectedLead(null)}>
+        {selectedLead && (
+          <DialogContent className="max-w-2xl bg-neutral-900 border-neutral-800 text-white">
+            <DialogHeader className="border-b border-neutral-800 pb-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-neutral-500 block">Phone</span>
-                  <a href={`tel:${selectedLead.phone}`} className="font-bold text-white hover:text-[#FFCC00]">
+                  <Badge variant="outline" className="text-[10px] uppercase font-bold text-[#FFCC00] border-[#FFCC00]/30 mb-1">
+                    Lead Profile · {selectedLead.source}
+                  </Badge>
+                  <DialogTitle className="text-xl font-bold">{selectedLead.name}</DialogTitle>
+                </div>
+              </div>
+            </DialogHeader>
+
+            <div className="py-3 space-y-4 text-xs">
+              {/* Info Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3.5 rounded-lg bg-neutral-950/60 border border-neutral-800">
+                <div>
+                  <span className="text-neutral-500 block text-[11px]">Phone</span>
+                  <a href={`tel:${selectedLead.phone}`} className="font-semibold text-white hover:text-[#FFCC00]">
                     {selectedLead.phone}
                   </a>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block">Email</span>
-                  <span className="font-bold text-neutral-200">{selectedLead.email || 'None'}</span>
+                  <span className="text-neutral-500 block text-[11px]">Email</span>
+                  <span className="font-semibold text-neutral-200">{selectedLead.email || 'None'}</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block">Status</span>
-                  <span className={`inline-block px-2 py-0.5 rounded text-[10px] ${getStatusBadge(selectedLead.status as LeadStatus)}`}>
-                    {selectedLead.status}
-                  </span>
+                  <span className="text-neutral-500 block text-[11px] mb-1">Status</span>
+                  {renderStatusBadge(selectedLead.status as LeadStatus)}
                 </div>
                 <div>
-                  <span className="text-neutral-500 block">Category</span>
+                  <span className="text-neutral-500 block text-[11px]">Category</span>
                   <span className="font-semibold text-neutral-200">{selectedLead.enquiry_type}</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block">Room Preference</span>
+                  <span className="text-neutral-500 block text-[11px]">Room Preference</span>
                   <span className="font-semibold text-neutral-200">{selectedLead.preferred_accommodation || 'N/A'}</span>
                 </div>
                 <div>
-                  <span className="text-neutral-500 block">Move-in Date</span>
+                  <span className="text-neutral-500 block text-[11px]">Move-in Date</span>
                   <span className="font-semibold text-neutral-200">{selectedLead.preferred_date || 'Flexible'}</span>
                 </div>
               </div>
 
               {selectedLead.message && (
-                <div className="p-4 rounded-2xl bg-[#101217] border border-neutral-800">
-                  <span className="text-neutral-500 block mb-1">Customer Enquiry Message</span>
-                  <p className="text-neutral-200 italic font-medium leading-relaxed">
+                <div className="p-3.5 rounded-lg bg-neutral-950/60 border border-neutral-800">
+                  <span className="text-neutral-500 block text-[11px] mb-1">Customer Enquiry Message</span>
+                  <p className="text-neutral-200 italic leading-relaxed">
                     "{selectedLead.message}"
                   </p>
                 </div>
               )}
 
               {/* Internal Notes History */}
-              <div className="space-y-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 block">
+              <div className="space-y-2.5">
+                <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 block">
                   Staff Notes Timeline
                 </span>
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                   {(!selectedLead.notes || selectedLead.notes.length === 0) ? (
-                    <p className="text-neutral-500 italic">No notes added yet.</p>
+                    <p className="text-neutral-500 italic text-xs">No notes added yet.</p>
                   ) : (
                     selectedLead.notes.map((note) => (
-                      <div key={note.id} className="p-3 rounded-xl bg-[#101217] border border-neutral-800 text-xs">
+                      <div key={note.id} className="p-2.5 rounded-lg bg-neutral-950/60 border border-neutral-800 text-xs">
                         <div className="flex items-center justify-between text-[10px] text-neutral-400 mb-1">
                           <span className="font-bold text-[#FFCC00]">{note.author || 'Admin'}</span>
                           <span>{new Date((note as any).createdAt || (note as any).date || Date.now()).toLocaleString()}</span>
@@ -434,88 +511,82 @@ export const AdminLeadsManager: React.FC = () => {
                 </div>
 
                 {/* Add Note Form */}
-                <form onSubmit={handleAddNote} className="flex gap-2 pt-2">
-                  <input
-                    type="text"
+                <form onSubmit={handleAddNote} className="flex gap-2 pt-1">
+                  <Input
                     placeholder="Add an internal follow-up note..."
                     value={newNoteText}
                     onChange={(e) => setNewNoteText(e.target.value)}
-                    className="flex-1 px-3.5 py-2 bg-[#101217] border border-neutral-700/80 rounded-xl text-xs text-white focus:outline-none focus:border-[#FFCC00]"
+                    className="flex-1 h-9 text-xs"
                   />
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded-xl bg-[#FFCC00] text-black font-bold text-xs flex items-center gap-1 cursor-pointer"
-                  >
-                    <Send className="w-3.5 h-3.5" />
+                  <Button type="submit" size="sm" className="h-9 font-semibold">
+                    <Send className="w-3.5 h-3.5 mr-1" />
                     <span>Add</span>
-                  </button>
+                  </Button>
                 </form>
               </div>
             </div>
 
-            {/* Bottom Actions */}
-            <div className="pt-4 border-t border-neutral-800 flex flex-wrap gap-2.5 shrink-0">
-              <a
-                href={`tel:${selectedLead.phone}`}
-                className="flex-1 py-2.5 px-4 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Phone className="w-4 h-4 text-[#FFCC00]" />
-                <span>Call Phone</span>
-              </a>
-
-              <a
-                href={generateWhatsAppUrl(selectedLead.phone, selectedLead.name, selectedLead.source)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <MessageSquare className="w-4 h-4" />
-                <span>Open WhatsApp</span>
-              </a>
-
-              <button
+            <DialogFooter className="border-t border-neutral-800 pt-3 flex flex-wrap gap-2">
+              <Button asChild variant="secondary" size="sm">
+                <a href={`tel:${selectedLead.phone}`} className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5 text-[#FFCC00]" />
+                  <span>Call Phone</span>
+                </a>
+              </Button>
+              <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold">
+                <a
+                  href={generateWhatsAppUrl(selectedLead.phone, selectedLead.name, selectedLead.source)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Open WhatsApp</span>
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => handleStatusChange(selectedLead.id, 'Contacted')}
-                className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs cursor-pointer"
               >
                 Mark Contacted
-              </button>
-
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => handleStatusChange(selectedLead.id, 'Closed')}
-                className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-white font-bold text-xs cursor-pointer"
+                className="text-neutral-400 hover:text-white"
               >
                 Close Lead
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        )}
+      </Dialog>
 
-      {/* Delete Confirmation */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-[#171a22] border border-neutral-700 rounded-3xl max-w-md w-full p-6 text-white shadow-2xl">
-            <h3 className="text-lg font-bold">Delete Enquiry?</h3>
-            <p className="text-xs text-neutral-400 mt-2">
-              Are you sure you want to remove this lead record permanently?
-            </p>
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-neutral-800 text-xs text-neutral-300 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 font-bold text-xs text-white cursor-pointer"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <DialogContent className="max-w-md bg-neutral-900 border-neutral-800 text-white">
+          <DialogHeader>
+            <DialogTitle>Delete Enquiry Record?</DialogTitle>
+            <DialogDescription className="text-neutral-400 text-xs">
+              Are you sure you want to permanently delete this lead? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-4 flex justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={() => setDeleteConfirmId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

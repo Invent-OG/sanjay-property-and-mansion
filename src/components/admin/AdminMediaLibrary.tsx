@@ -14,6 +14,13 @@ import {
 } from 'lucide-react';
 import { mediaService } from '../../services/mediaService';
 import type { PropertyImageRecord, ImageCategory } from '../../types/database';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 export const AdminMediaLibrary: React.FC = () => {
   const [mediaList, setMediaList] = useState<PropertyImageRecord[]>([]);
@@ -148,18 +155,19 @@ export const AdminMediaLibrary: React.FC = () => {
           />
         </div>
 
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="bg-[#0e1014] border border-neutral-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00]"
-        >
-          <option value="all">All Categories</option>
-          <option value="Exterior">Exterior</option>
-          <option value="Rooms">Rooms</option>
-          <option value="Interiors">Interiors</option>
-          <option value="Facilities">Facilities</option>
-          <option value="Campus">Campus</option>
-        </select>
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-full sm:w-[170px] h-9 bg-[#0e1014] border-neutral-700/80">
+            <SelectValue placeholder="All Categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="Exterior">Exterior</SelectItem>
+            <SelectItem value="Rooms">Rooms</SelectItem>
+            <SelectItem value="Interiors">Interiors</SelectItem>
+            <SelectItem value="Facilities">Facilities</SelectItem>
+            <SelectItem value="Campus">Campus</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Media Grid */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Building2,
   Plus,
@@ -13,6 +13,34 @@ import {
 } from 'lucide-react';
 import { useProperties, useDeleteProperty, useSaveProperty } from '../../hooks/usePropertiesQuery';
 import type { Property } from '../../types/database';
+import { Card, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Input } from '../ui/input';
+import { DataTablePagination } from '../ui/pagination';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 
 export const AdminPropertiesList: React.FC = () => {
   const { data: properties = [], isLoading } = useProperties();
@@ -66,11 +94,25 @@ export const AdminPropertiesList: React.FC = () => {
     return true;
   });
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
+
+  const totalPages = Math.ceil(filteredProperties.length / pageSize) || 1;
+  const paginatedProperties = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredProperties.slice(start, start + pageSize);
+  }, [filteredProperties, currentPage, pageSize]);
+
   return (
     <div className="space-y-6">
       {/* Toast */}
       {toastMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#1e222b] text-white px-5 py-3 rounded-2xl shadow-2xl border border-neutral-700 text-xs sm:text-sm font-semibold flex items-center gap-2 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-neutral-900 text-white px-5 py-3 rounded-xl shadow-2xl border border-neutral-700 text-xs sm:text-sm font-semibold flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
           <CheckCircle2 className="w-4 h-4 text-[#FFCC00]" />
           <span>{toastMsg}</span>
         </div>
@@ -84,46 +126,47 @@ export const AdminPropertiesList: React.FC = () => {
             Properties Portfolio
           </h1>
           <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-            Manage your real estate listings, gated villa plots, and residential communities
+            Manage real estate listings, gated villa plots, and residential communities
           </p>
         </div>
 
-        <a
-          href="/admin/properties/new"
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#FFCC00] hover:bg-[#ffe066] text-black font-semibold text-xs transition-all shadow-sm shrink-0 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Property</span>
-        </a>
+        <Button asChild className="font-bold text-xs h-9">
+          <a href="/admin/properties/new">
+            <Plus className="w-4 h-4 mr-1.5" />
+            <span>Add Property</span>
+          </a>
+        </Button>
       </div>
 
       {/* Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 bg-[#0E1015] border border-neutral-800/80 p-3 rounded-xl">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Search by property name, area or city..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-[#14161C] border border-neutral-700/70 rounded-lg text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00] transition-colors"
-          />
-        </div>
+      <Card className="bg-neutral-900/60 border-neutral-800">
+        <CardContent className="p-3 flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-neutral-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Input
+              placeholder="Search by property name, area or city..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9 text-xs"
+            />
+          </div>
 
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-neutral-500" />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-[#14161C] border border-neutral-700/70 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#FFCC00] cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="draft">Draft</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-      </div>
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-neutral-500" />
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="h-9 w-[140px] bg-neutral-900 border-neutral-700/80">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Properties Table / Cards */}
       {isLoading ? (
@@ -131,176 +174,192 @@ export const AdminPropertiesList: React.FC = () => {
           Loading properties portfolio...
         </div>
       ) : filteredProperties.length === 0 ? (
-        <div className="py-16 text-center bg-[#0E1015] border border-neutral-800/80 rounded-xl p-8">
-          <Building2 className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
-          <h3 className="text-base font-bold text-white">No properties found</h3>
-          <p className="text-xs text-neutral-400 mt-1 max-w-sm mx-auto">
-            Try adjusting your search query or add a new property listing to get started.
-          </p>
-          <a
-            href="/admin/properties/new"
-            className="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-lg bg-[#FFCC00] text-black font-semibold text-xs cursor-pointer shadow-sm"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create First Property</span>
-          </a>
-        </div>
+        <Card className="text-center p-12 bg-neutral-900/40 border-dashed border-neutral-800">
+          <CardContent className="space-y-3 p-0">
+            <Building2 className="w-10 h-10 text-neutral-600 mx-auto" />
+            <h3 className="text-base font-bold text-white">No properties found</h3>
+            <p className="text-xs text-neutral-400 max-w-sm mx-auto">
+              Try adjusting your search query or add a new property listing to get started.
+            </p>
+            <div className="pt-2">
+              <Button asChild size="sm" className="font-bold text-xs">
+                <a href="/admin/properties/new">
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  <span>Create First Property</span>
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="bg-[#0E1015] border border-neutral-800/80 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-[#12141A] text-neutral-400 uppercase text-[10px] font-semibold tracking-wider border-b border-neutral-800/70">
-                <tr>
-                  <th className="py-3 pl-4">Property</th>
-                  <th className="py-3">Location</th>
-                  <th className="py-3">Status</th>
-                  <th className="py-3">Featured on Home</th>
-                  <th className="py-3">Starting Price</th>
-                  <th className="py-3">Last Updated</th>
-                  <th className="py-3 text-right pr-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-800/50">
-                {filteredProperties.map((prop) => (
-                  <tr key={prop.id} className="hover:bg-neutral-800/30 transition-colors">
-                    <td className="py-4 pl-5">
-                      <div className="flex items-center gap-3.5">
-                        <div className="w-12 h-12 rounded-xl bg-neutral-900 border border-neutral-700/80 overflow-hidden shrink-0">
-                          {prop.hero_image_url ? (
-                            <img
-                              src={prop.hero_image_url}
-                              alt={prop.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-neutral-600">
-                              <Building2 className="w-5 h-5" />
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <span className="text-[10px] font-bold text-[#FFCC00] uppercase tracking-wider block">
-                            {prop.short_name}
-                          </span>
-                          <span className="font-bold text-sm text-white leading-tight block">
-                            {prop.name}
-                          </span>
-                          <span className="text-[11px] text-neutral-400">/{prop.slug}</span>
-                        </div>
+        <Card className="overflow-hidden border-neutral-800 bg-neutral-900/60">
+          <Table>
+            <TableHeader className="bg-neutral-950/70 border-b border-neutral-800">
+              <TableRow className="border-neutral-800 hover:bg-transparent">
+                <TableHead className="w-[280px] text-neutral-400 font-semibold text-xs">Property</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Location</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Status</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Homepage Feature</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Starting Price</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Last Updated</TableHead>
+                <TableHead className="text-right text-neutral-400 font-semibold text-xs pr-6">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-neutral-800/60">
+              {paginatedProperties.map((prop) => (
+                <TableRow key={prop.id} className="hover:bg-neutral-800/30 transition-colors border-neutral-800/60">
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-lg bg-neutral-950 border border-neutral-800 overflow-hidden shrink-0">
+                        {prop.hero_image_url ? (
+                          <img
+                            src={prop.hero_image_url}
+                            alt={prop.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-neutral-600">
+                            <Building2 className="w-4 h-4" />
+                          </div>
+                        )}
                       </div>
-                    </td>
-
-                    <td className="py-4 text-neutral-300">
-                      <div className="flex items-center gap-1.5 font-medium">
-                        <MapPin className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-                        <span>{prop.area}, {prop.city}</span>
+                      <div>
+                        <span className="text-[10px] font-bold text-[#FFCC00] uppercase tracking-wider block">
+                          {prop.short_name}
+                        </span>
+                        <span className="font-bold text-xs text-white leading-tight block">
+                          {prop.name}
+                        </span>
+                        <span className="text-[11px] text-neutral-400">/{prop.slug}</span>
                       </div>
-                    </td>
+                    </div>
+                  </TableCell>
 
-                    <td className="py-4">
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          prop.status === 'active'
-                            ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                            : prop.status === 'draft'
-                            ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                            : 'bg-neutral-800 text-neutral-400 border border-neutral-700'
-                        }`}
+                  <TableCell className="text-neutral-300">
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <MapPin className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
+                      <span>{prop.area}, {prop.city}</span>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <Badge
+                      variant={
+                        prop.status === 'active'
+                          ? 'success'
+                          : prop.status === 'draft'
+                          ? 'warning'
+                          : 'outline'
+                      }
+                      className="text-[10px] uppercase font-bold"
+                    >
+                      {prop.status}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant={prop.is_featured_homepage ? 'default' : 'outline'}
+                      onClick={() => handleToggleFeatured(prop)}
+                      className="h-7 text-[11px] font-semibold"
+                      title="Click to toggle homepage featured status"
+                    >
+                      {prop.is_featured_homepage ? 'Featured' : 'Standard'}
+                    </Button>
+                  </TableCell>
+
+                  <TableCell className="font-bold text-white text-xs">
+                    {prop.pricing_start || '₹4,900'}
+                  </TableCell>
+
+                  <TableCell className="text-neutral-400 text-xs font-mono">
+                    {new Date(prop.updated_at || prop.created_at).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+                  </TableCell>
+
+                  <TableCell className="text-right pr-6">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        asChild
+                        className="h-8 w-8"
+                        title="Edit Property"
                       >
-                        {prop.status}
-                      </span>
-                    </td>
-
-                    <td className="py-4">
-                      <button
-                        onClick={() => handleToggleFeatured(prop)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-                          prop.is_featured_homepage
-                            ? 'bg-[#FFCC00]/20 text-[#FFCC00] border border-[#FFCC00]/40'
-                            : 'bg-neutral-800 text-neutral-400 border border-neutral-700 hover:text-white'
-                        }`}
-                        title="Click to toggle homepage featured status"
-                      >
-                        {prop.is_featured_homepage ? 'Yes (Featured)' : 'No'}
-                      </button>
-                    </td>
-
-                    <td className="py-4 font-bold text-white">
-                      {prop.pricing_start || '₹4,900'}
-                    </td>
-
-                    <td className="py-4 text-neutral-400">
-                      {new Date(prop.updated_at || prop.created_at).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </td>
-
-                    <td className="py-4 text-right pr-5">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <a
-                          href={`/admin/properties/${prop.slug || prop.id}`}
-                          className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 hover:text-white transition-colors cursor-pointer"
-                          title="Edit Property"
-                        >
+                        <a href={`/admin/properties/${prop.slug || prop.id}`}>
                           <Edit3 className="w-3.5 h-3.5" />
                         </a>
-                        <a
-                          href={`/${prop.slug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 hover:text-[#FFCC00] transition-colors cursor-pointer"
-                          title="View Public Page"
-                        >
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        asChild
+                        className="h-8 w-8 text-neutral-400 hover:text-[#FFCC00]"
+                        title="View Public Page"
+                      >
+                        <a href={`/${prop.slug}`} target="_blank" rel="noopener noreferrer">
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
-                        <button
-                          onClick={() => setDeleteConfirmId(prop.id)}
-                          className="p-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors cursor-pointer"
-                          title="Delete Property"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => setDeleteConfirmId(prop.id)}
+                        className="h-8 w-8 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20"
+                        title="Delete Property"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <DataTablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredProperties.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
+            pageSizeOptions={[5, 10, 20]}
+          />
+        </Card>
       )}
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-[#171a22] border border-neutral-700 rounded-3xl max-w-md w-full p-6 text-white shadow-2xl">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mb-4">
-              <AlertCircle className="w-6 h-6" />
+      <Dialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <DialogContent className="max-w-md bg-neutral-900 border-neutral-800 text-white">
+          <DialogHeader>
+            <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center mb-2">
+              <AlertCircle className="w-5 h-5" />
             </div>
-            <h3 className="text-lg font-bold">Delete Property?</h3>
-            <p className="text-xs text-neutral-400 mt-2 leading-relaxed">
+            <DialogTitle>Delete Property Listing?</DialogTitle>
+            <DialogDescription className="text-neutral-400 text-xs">
               Are you sure you want to delete this property? This will also remove its associated accommodations, facilities, meal plans, and gallery images.
-            </p>
+            </DialogDescription>
+          </DialogHeader>
 
-            <div className="mt-6 flex items-center justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-300 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white shadow-lg shadow-rose-600/20 cursor-pointer"
-              >
-                Confirm Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          <DialogFooter className="mt-4 flex justify-end gap-2">
+            <Button variant="outline" size="sm" onClick={() => setDeleteConfirmId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+            >
+              Confirm Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

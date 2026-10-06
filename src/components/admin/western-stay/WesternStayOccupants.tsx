@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   useWesternStayOccupantsQuery,
   useWesternStayRoomsQuery,
@@ -13,15 +13,37 @@ import {
   Mail,
   Calendar,
   DollarSign,
-  Shield,
-  FileText,
-  UserCheck,
-  UserX,
-  X,
   Bed,
-  Check
 } from 'lucide-react';
 import type { WesternStayOccupantRecord } from '../../../types/database';
+import { Card, CardContent } from '../../ui/card';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
+import { Input } from '../../ui/input';
+import { DataTablePagination } from '../../ui/pagination';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../../ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../ui/select';
 
 export function WesternStayOccupants() {
   const { data: occupants, isLoading, refetch } = useWesternStayOccupantsQuery();
@@ -31,7 +53,6 @@ export function WesternStayOccupants() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterActive, setFilterActive] = useState<string>('active');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [editingOccupant, setEditingOccupant] = useState<WesternStayOccupantRecord | null>(null);
 
   // New occupant form
   const [name, setName] = useState('');
@@ -43,8 +64,6 @@ export function WesternStayOccupants() {
   const [expectedCheckOutDate, setExpectedCheckOutDate] = useState('');
   const [monthlyRent, setMonthlyRent] = useState<number>(5900);
   const [securityDeposit, setSecurityDeposit] = useState<number>(5000);
-  const [idProofType, setIdProofType] = useState('Aadhaar');
-  const [idProofNumber, setIdProofNumber] = useState('');
   const [notes, setNotes] = useState('');
 
   const availableRooms = rooms?.filter((r) => r.status === 'AVAILABLE') || [];
@@ -60,6 +79,22 @@ export function WesternStayOccupants() {
 
     return matchesSearch && matchesActive;
   });
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterActive]);
+
+  const totalOccupants = filteredOccupants?.length || 0;
+  const totalPages = Math.ceil(totalOccupants / pageSize) || 1;
+  const paginatedOccupants = useMemo(() => {
+    if (!filteredOccupants) return [];
+    const start = (currentPage - 1) * pageSize;
+    return filteredOccupants.slice(start, start + pageSize);
+  }, [filteredOccupants, currentPage, pageSize]);
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,20 +140,20 @@ export function WesternStayOccupants() {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2.5">
-            <Users className="w-6 h-6 text-[#FFCC00]" />
+          <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight flex items-center gap-2.5">
+            <Users className="w-5 h-5 text-[#FFCC00]" />
             Occupants & Resident Directory
           </h1>
-          <p className="text-sm text-neutral-400 mt-1">
+          <p className="text-xs sm:text-sm text-neutral-400 mt-1">
             Private management of active PG residents, room assignments, monthly rent dues, and check-in/out records.
           </p>
         </div>
 
-        <button
+        <Button
           onClick={() => {
             if (availableRooms.length > 0) {
               setRoomId(availableRooms[0].id);
@@ -126,303 +161,296 @@ export function WesternStayOccupants() {
             }
             setIsAddModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FFCC00] hover:bg-[#FFE066] text-black text-xs font-bold transition-all shadow-md"
+          className="font-bold text-xs"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-1.5" />
           Check In Resident
-        </button>
+        </Button>
       </div>
 
       {/* Filters Bar */}
-      <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-800 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
-          <input
-            type="text"
-            placeholder="Search residents by name, phone, or room..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-800 border border-neutral-700 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#FFCC00]"
-          />
-        </div>
+      <Card className="bg-neutral-900/60 border-neutral-800">
+        <CardContent className="p-3 flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+            <Input
+              placeholder="Search residents by name, phone, or room..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9 text-xs"
+            />
+          </div>
 
-        <div className="flex items-center gap-2 text-xs">
-          <button
-            onClick={() => setFilterActive('active')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-              filterActive === 'active'
-                ? 'bg-[#FFCC00] text-black font-bold'
-                : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
-            }`}
-          >
-            Active Residents
-          </button>
-          <button
-            onClick={() => setFilterActive('all')}
-            className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-              filterActive === 'all'
-                ? 'bg-[#FFCC00] text-black font-bold'
-                : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
-            }`}
-          >
-            All Records
-          </button>
-        </div>
-      </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant={filterActive === 'active' ? 'default' : 'secondary'}
+              size="sm"
+              onClick={() => setFilterActive('active')}
+              className="h-9 text-xs"
+            >
+              Active Residents
+            </Button>
+            <Button
+              variant={filterActive === 'all' ? 'default' : 'secondary'}
+              size="sm"
+              onClick={() => setFilterActive('all')}
+              className="h-9 text-xs"
+            >
+              All Records
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Residents Table */}
-      <div className="rounded-2xl bg-neutral-900 border border-neutral-800 overflow-hidden">
-        {isLoading ? (
-          <div className="py-16 text-center text-neutral-500 text-sm">
-            Loading resident records...
-          </div>
-        ) : filteredOccupants?.length === 0 ? (
-          <div className="py-16 text-center text-neutral-500 text-sm">
-            No resident records found.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-neutral-800/60 text-neutral-400 uppercase tracking-wider text-[11px] font-semibold border-b border-neutral-800">
-                <tr>
-                  <th className="py-3 px-4">Resident</th>
-                  <th className="py-3 px-4">Contact</th>
-                  <th className="py-3 px-4">Assigned Room</th>
-                  <th className="py-3 px-4">Check-In Date</th>
-                  <th className="py-3 px-4">Monthly Rent</th>
-                  <th className="py-3 px-4">Deposit</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-neutral-800 text-neutral-200">
-                {filteredOccupants?.map((occ) => (
-                  <tr key={occ.id} className="hover:bg-neutral-800/40 transition-colors">
-                    <td className="py-3.5 px-4 font-semibold text-white">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#FFCC00]/10 border border-[#FFCC00]/30 flex items-center justify-center text-[#FFCC00] font-bold text-xs">
-                          {occ.name.charAt(0)}
-                        </div>
-                        <div>
-                          <div className="font-bold">{occ.name}</div>
-                          <div className="text-[11px] text-neutral-400">{occ.occupancy_type}</div>
-                        </div>
+      {isLoading ? (
+        <div className="py-16 text-center text-neutral-400 text-xs animate-pulse">
+          Loading resident records...
+        </div>
+      ) : filteredOccupants?.length === 0 ? (
+        <Card className="text-center p-12 bg-neutral-900/40 border-dashed border-neutral-800">
+          <CardContent className="space-y-3 p-0">
+            <Users className="w-10 h-10 text-neutral-600 mx-auto" />
+            <h3 className="text-base font-bold text-white">No resident records found</h3>
+            <p className="text-xs text-neutral-400">Try adjusting your search criteria or register a new resident.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="overflow-hidden border-neutral-800 bg-neutral-900/60">
+          <Table>
+            <TableHeader className="bg-neutral-950/70 border-b border-neutral-800">
+              <TableRow className="border-neutral-800 hover:bg-transparent">
+                <TableHead className="text-neutral-400 font-semibold text-xs">Resident</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Contact</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Assigned Room</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Check-In Date</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Monthly Rent</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Deposit</TableHead>
+                <TableHead className="text-neutral-400 font-semibold text-xs">Status</TableHead>
+                <TableHead className="text-right text-neutral-400 font-semibold text-xs pr-6">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-neutral-800/60">
+              {paginatedOccupants.map((occ) => (
+                <TableRow key={occ.id} className="hover:bg-neutral-800/30 transition-colors border-neutral-800/60">
+                  <TableCell className="font-semibold text-white">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-full bg-[#FFCC00]/10 border border-[#FFCC00]/30 flex items-center justify-center text-[#FFCC00] font-bold text-xs shrink-0">
+                        {occ.name.charAt(0)}
                       </div>
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-1.5 text-neutral-300 font-mono">
-                        <Phone className="w-3 h-3 text-[#FFCC00]" />
-                        <a href={`tel:${occ.phone}`} className="hover:underline">
-                          {occ.phone}
-                        </a>
+                      <div>
+                        <div className="font-bold text-xs">{occ.name}</div>
+                        <div className="text-[11px] text-neutral-400">{occ.occupancy_type}</div>
                       </div>
-                      {occ.email && (
-                        <div className="flex items-center gap-1.5 text-neutral-500 text-[11px] mt-0.5">
-                          <Mail className="w-3 h-3" />
-                          <span>{occ.email}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 font-mono font-bold text-white px-2 py-0.5 rounded bg-neutral-800 border border-neutral-700">
-                        <Bed className="w-3 h-3 text-[#FFCC00]" />
-                        Room {occ.room_number}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-4 text-neutral-300 font-mono">
-                      {occ.check_in_date}
-                    </td>
-                    <td className="py-3.5 px-4 font-bold text-emerald-400">
-                      ₹{occ.monthly_rent.toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3.5 px-4 text-neutral-400">
-                      ₹{occ.security_deposit.toLocaleString('en-IN')}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      {occ.is_active ? (
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[11px] font-semibold border border-emerald-500/20">
-                          Active Resident
-                        </span>
-                      ) : (
-                        <span className="px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-400 text-[11px] font-semibold">
-                          Checked Out
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      {occ.is_active && (
-                        <button
-                          onClick={() => handleCheckout(occ)}
-                          className="px-2.5 py-1 rounded-lg bg-neutral-800 hover:bg-rose-500/20 text-neutral-300 hover:text-rose-400 font-medium transition-colors"
-                        >
-                          Check Out
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1.5 text-neutral-300 font-mono text-xs">
+                      <Phone className="w-3 h-3 text-[#FFCC00]" />
+                      <a href={`tel:${occ.phone}`} className="hover:underline">
+                        {occ.phone}
+                      </a>
+                    </div>
+                    {occ.email && (
+                      <div className="flex items-center gap-1.5 text-neutral-500 text-[11px] mt-0.5">
+                        <Mail className="w-3 h-3" />
+                        <span>{occ.email}</span>
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="font-mono text-xs font-semibold border-neutral-700 bg-neutral-950/60">
+                      <Bed className="w-3 h-3 text-[#FFCC00] mr-1.5" />
+                      Room {occ.room_number}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-neutral-300 font-mono text-xs">
+                    {occ.check_in_date}
+                  </TableCell>
+                  <TableCell className="font-bold text-emerald-400 text-xs">
+                    ₹{occ.monthly_rent.toLocaleString('en-IN')}
+                  </TableCell>
+                  <TableCell className="text-neutral-400 text-xs">
+                    ₹{occ.security_deposit.toLocaleString('en-IN')}
+                  </TableCell>
+                  <TableCell>
+                    {occ.is_active ? (
+                      <Badge variant="success">Active Resident</Badge>
+                    ) : (
+                      <Badge variant="outline">Checked Out</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right pr-6">
+                    {occ.is_active && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleCheckout(occ)}
+                        className="text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 text-xs"
+                      >
+                        Check Out
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <DataTablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalOccupants}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={setPageSize}
+            pageSizeOptions={[10, 25, 50, 100]}
+          />
+        </Card>
+      )}
 
       {/* Check In Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4 my-8">
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-800">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Plus className="w-5 h-5 text-[#FFCC00]" />
-                Check In Resident
-              </h3>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-neutral-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="max-w-lg bg-neutral-900 border-neutral-800 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <Plus className="w-5 h-5 text-[#FFCC00]" />
+              Check In Resident
+            </DialogTitle>
+            <DialogDescription className="text-neutral-400 text-xs">
+              Assign an available PG room and record resident contact and tenancy details.
+            </DialogDescription>
+          </DialogHeader>
 
-            <form onSubmit={handleAddSubmit} className="space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Resident Full Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Rahul Sharma"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Phone Number *</label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="+91 98765 43210"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Email Address</label>
-                  <input
-                    type="email"
-                    placeholder="rahul@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Assign Room *</label>
-                  <select
-                    value={roomId}
-                    onChange={(e) => {
-                      setRoomId(e.target.value);
-                      const sel = rooms?.find((r) => r.id === e.target.value);
-                      if (sel) setMonthlyRent(sel.monthly_price);
-                    }}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  >
-                    {availableRooms.length === 0 ? (
-                      <option value="">No available rooms</option>
-                    ) : (
-                      availableRooms.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          Room {r.room_number} ({r.room_type_name} • ₹{r.monthly_price}/mo)
-                        </option>
-                      ))
-                    )}
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Check-In Date *</label>
-                  <input
-                    type="date"
-                    required
-                    value={checkInDate}
-                    onChange={(e) => setCheckInDate(e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Expected Check-Out Date</label>
-                  <input
-                    type="date"
-                    value={expectedCheckOutDate}
-                    onChange={(e) => setExpectedCheckOutDate(e.target.value)}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Monthly Rent (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={monthlyRent}
-                    onChange={(e) => setMonthlyRent(Number(e.target.value))}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-neutral-400 mb-1 font-medium">Security Deposit (₹)</label>
-                  <input
-                    type="number"
-                    value={securityDeposit}
-                    onChange={(e) => setSecurityDeposit(Number(e.target.value))}
-                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-neutral-400 mb-1 font-medium">Notes / Occupation</label>
-                <textarea
-                  rows={2}
-                  placeholder="e.g. Software engineer at KCT Tech Park, college student..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
+          <form onSubmit={handleAddSubmit} className="space-y-3.5 text-xs">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Resident Full Name *</label>
+                <Input
+                  required
+                  placeholder="e.g. Rahul Sharma"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-9"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-800">
-                <button
-                  type="button"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#FFCC00] hover:bg-[#FFE066] text-black text-xs font-bold"
-                >
-                  Confirm Check-In
-                </button>
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Phone Number *</label>
+                <Input
+                  type="tel"
+                  required
+                  placeholder="+91 98765 43210"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="h-9"
+                />
               </div>
-            </form>
-          </div>
-        </div>
-      )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Email Address</label>
+                <Input
+                  type="email"
+                  placeholder="rahul@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Assign Room *</label>
+                <Select
+                  value={roomId}
+                  onValueChange={(val) => {
+                    setRoomId(val);
+                    const sel = rooms?.find((r) => r.id === val);
+                    if (sel) setMonthlyRent(sel.monthly_price);
+                  }}
+                >
+                  <SelectTrigger className="w-full h-9 bg-neutral-950/70 border-neutral-700/80">
+                    <SelectValue placeholder={availableRooms.length === 0 ? "No available rooms" : "Select a room"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableRooms.map((r) => (
+                      <SelectItem key={r.id} value={r.id}>
+                        Room {r.room_number} ({r.room_type_name} • ₹{r.monthly_price}/mo)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Check-In Date *</label>
+                <Input
+                  type="date"
+                  required
+                  value={checkInDate}
+                  onChange={(e) => setCheckInDate(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Expected Check-Out Date</label>
+                <Input
+                  type="date"
+                  value={expectedCheckOutDate}
+                  onChange={(e) => setExpectedCheckOutDate(e.target.value)}
+                  className="h-9"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Monthly Rent (₹) *</label>
+                <Input
+                  type="number"
+                  required
+                  value={monthlyRent}
+                  onChange={(e) => setMonthlyRent(Number(e.target.value))}
+                  className="h-9"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-neutral-400 font-medium">Security Deposit (₹)</label>
+                <Input
+                  type="number"
+                  value={securityDeposit}
+                  onChange={(e) => setSecurityDeposit(Number(e.target.value))}
+                  className="h-9"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-neutral-400 font-medium">Notes / Occupation</label>
+              <Input
+                placeholder="e.g. Software engineer at KCT Tech Park, college student..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="h-9"
+              />
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" size="sm" onClick={() => setIsAddModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm" className="font-bold">
+                Confirm Check-In
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

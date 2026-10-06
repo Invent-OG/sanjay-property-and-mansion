@@ -17,7 +17,8 @@ import {
   UtensilsCrossed,
   MapPin,
   FileText,
-  PhoneCall
+  PhoneCall,
+  ChevronDown
 } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { QueryProvider } from '../common/QueryProvider';
@@ -28,6 +29,17 @@ import { AdminLeadsManager } from './AdminLeadsManager';
 import { AdminJustdialLeadsManager } from './AdminJustdialLeadsManager';
 import { AdminMediaLibrary } from './AdminMediaLibrary';
 import { AdminSettings } from './AdminSettings';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Avatar } from '../ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '../ui/dropdown-menu';
 
 // Western Stay Business Components
 import { WesternStayDashboard } from './western-stay/WesternStayDashboard';
@@ -131,8 +143,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     {
       group: 'LEADS',
       items: [
-        { label: 'Website Leads', href: '/admin/leads', icon: Users },
-        { label: 'Justdial Leads', href: '/admin/leads/justdial', icon: PhoneCall }
+        { label: 'Website Leads', href: '/admin/leads', icon: Users, exact: true },
+        { label: 'Justdial Leads', href: '/admin/leads/justdial', icon: PhoneCall, exact: true }
       ]
     },
     {
@@ -360,42 +372,50 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   return (
     <QueryProvider>
       <AdminNavContext.Provider value={{ activePath, navigateTo }}>
-        <div className="min-h-screen bg-[#090a0d] text-neutral-100 flex flex-col antialiased selection:bg-[#FFCC00] selection:text-black">
+        <div className="admin-root min-h-screen bg-[#090a0d] text-neutral-100 flex flex-col antialiased selection:bg-[#FFCC00] selection:text-black">
           {/* Top Mobile Bar */}
           <header className="lg:hidden h-14 bg-[#0e1015] border-b border-neutral-800/60 px-4 flex items-center justify-between sticky top-0 z-40">
             <div className="flex items-center gap-3">
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white"
                 aria-label="Toggle Navigation Menu"
               >
                 {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-              </button>
+              </Button>
               <div className="flex items-center gap-2">
                 <span className="font-bold tracking-wide text-xs text-white">SANJAY ADMIN</span>
-                <span className="text-[9px] bg-amber-500/10 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded font-mono font-bold">
+                <Badge variant="warning" className="text-[9px] font-mono font-bold px-1.5 py-0.2">
                   v2.0
-                </span>
+                </Badge>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <a
-                href="/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-[#FFCC00] text-xs flex items-center gap-1"
-                title="View Public Website"
+              <Button
+                variant="outline"
+                size="icon"
+                asChild
               >
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-              <button
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="View Public Website"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-[#FFCC00]" />
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={handleLogout}
-                className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-rose-400"
+                className="hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10"
                 title="Logout"
               >
                 <LogOut className="w-3.5 h-3.5" />
-              </button>
+              </Button>
             </div>
           </header>
 
@@ -498,9 +518,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="relative">
-                      <div className="w-7 h-7 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-[11px] font-bold text-[#FFCC00] shrink-0">
-                        A
-                      </div>
+                      <Avatar fallback="A" className="w-8 h-8 bg-neutral-900 border border-neutral-700/80 text-[11px] font-bold text-[#FFCC00]" />
                       <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#0b0c10]" />
                     </div>
                     <div className="flex flex-col min-w-0">
@@ -508,13 +526,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                       <span className="text-[10px] text-neutral-500 truncate">{adminEmail}</span>
                     </div>
                   </div>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={handleLogout}
-                    className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                    className="text-neutral-400 hover:text-rose-400 hover:bg-rose-500/10"
                     title="Sign Out"
                   >
                     <LogOut className="w-3.5 h-3.5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             </aside>
@@ -583,39 +603,71 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-medium">
+                  <Badge variant="success" className="hidden sm:inline-flex gap-1.5 normal-case font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     <span>System Online</span>
-                  </div>
+                  </Badge>
 
-                  <a
-                    href="/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-neutral-800 text-xs font-medium text-neutral-300 hover:text-white transition-colors"
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
                   >
-                    <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
-                    <span>View Site</span>
-                  </a>
+                    <a
+                      href="/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-neutral-300 hover:text-white"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+                      <span>View Site</span>
+                    </a>
+                  </Button>
 
-                  <button
-                    onClick={handleLogout}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-neutral-800 bg-neutral-900 hover:bg-rose-500/10 hover:border-rose-500/30 text-xs font-medium text-neutral-400 hover:text-rose-400 transition-colors cursor-pointer"
-                    title="Sign Out"
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                  </button>
+                  {/* Profile Dropdown Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-2 gap-2 text-xs hover:bg-neutral-800 border border-neutral-800"
+                      >
+                        <div className="relative">
+                          <Avatar fallback="A" className="w-5 h-5 bg-neutral-900 border border-neutral-700/80 text-[10px] font-bold text-[#FFCC00]" />
+                          <span className="absolute bottom-0 right-0 w-1.5 h-1.5 rounded-full bg-emerald-400 ring-1 ring-neutral-900" />
+                        </div>
+                        <span className="hidden sm:inline font-medium text-neutral-200">Admin</span>
+                        <ChevronDown className="w-3 h-3 text-neutral-400" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                          <p className="text-xs font-semibold text-white leading-none">Administrator</p>
+                          <p className="text-[10px] text-neutral-400 leading-none truncate">{adminEmail}</p>
+                        </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigateTo('/admin/settings')}>
+                        <Settings className="w-3.5 h-3.5 mr-2 text-neutral-400" />
+                        <span>Site Settings &amp; SEO</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => window.open('/', '_blank')}>
+                        <ExternalLink className="w-3.5 h-3.5 mr-2 text-neutral-400" />
+                        <span>View Public Website</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem destructive onClick={handleLogout}>
+                        <LogOut className="w-3.5 h-3.5 mr-2 text-rose-400" />
+                        <span>Sign Out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </header>
 
               {/* Body Content */}
               <main className="flex-1 p-5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-                {currentMeta.subtitle && (
-                  <div className="mb-6 pb-4 border-b border-neutral-800/40">
-                    <h1 className="text-lg font-bold text-white tracking-tight">{currentMeta.title}</h1>
-                    <p className="text-xs text-neutral-400 mt-1">{currentMeta.subtitle}</p>
-                  </div>
-                )}
                 {renderActiveView()}
               </main>
             </div>

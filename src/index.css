@@ -28,14 +28,56 @@
 }
 
 @layer base {
-  *, ::before, ::after {
+  body:not(.admin-root) *, body:not(.admin-root) ::before, body:not(.admin-root) ::after {
     font-family: 'Lapidaria Maior SemiBold', 'Lapidaria Maior', 'Lapidaria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400 !important;
   }
-  html, body, h1, h2, h3, h4, h5, h6, p, span, a, button, input, textarea, select, strong, b, div {
-    font-family: 'Lapidaria Maior SemiBold', 'Lapidaria Maior', 'Lapidaria', 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 400 !important;
-  }
+}
+
+/* Shadcn UI Design System tokens (Scoped strictly to Admin Panel) */
+.admin-root {
+  --background: #090a0d;
+  --foreground: #f4f4f5;
+  --card: #12141a;
+  --card-foreground: #f4f4f5;
+  --popover: #12141a;
+  --popover-foreground: #f4f4f5;
+  --primary: #FFCC00;
+  --primary-foreground: #090a0d;
+  --secondary: #1e222b;
+  --secondary-foreground: #f4f4f5;
+  --muted: #1e222b;
+  --muted-foreground: #a1a1aa;
+  --accent: #1e222b;
+  --accent-foreground: #f4f4f5;
+  --destructive: #ef4444;
+  --destructive-foreground: #f4f4f5;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #FFCC00;
+  --radius: 0.75rem;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+.admin-root *, .admin-root *::before, .admin-root *::after {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  font-weight: revert;
+}
+
+.admin-root ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.admin-root ::-webkit-scrollbar-track {
+  background: #0e1015;
+}
+.admin-root ::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+.admin-root ::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
 }
 
 /* Custom scrollbar and smooth scroll */

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   PhoneCall,
   Search,
@@ -29,14 +29,34 @@ import {
   useDeleteJustdialLead,
 } from '../../hooks/useJustdialLeadsQuery';
 import type { JustdialLeadRecord } from '../../db/schema';
-
-const STATUS_OPTIONS = [
-  { label: 'New', value: 'new', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' },
-  { label: 'Contacted', value: 'contacted', color: 'bg-blue-500/10 text-blue-400 border-blue-500/30' },
-  { label: 'Follow-up', value: 'follow-up', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' },
-  { label: 'Converted', value: 'converted', color: 'bg-[#FFCC00]/15 text-[#FFCC00] border-[#FFCC00]/40' },
-  { label: 'Closed', value: 'closed', color: 'bg-neutral-800 text-neutral-400 border-neutral-700' },
-];
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Input } from '../ui/input';
+import { DataTablePagination } from '../ui/pagination';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '../ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '../ui/dialog';
 
 export const AdminJustdialLeadsManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -54,6 +74,20 @@ export const AdminJustdialLeadsManager: React.FC = () => {
   const displayLeads = useMemo(() => {
     return rawLeads.filter((l) => !l.leadid?.toUpperCase().startsWith('TEST'));
   }, [rawLeads]);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter, sortBy]);
+
+  const totalPages = Math.ceil(displayLeads.length / pageSize) || 1;
+  const paginatedLeads = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return displayLeads.slice(start, start + pageSize);
+  }, [displayLeads, currentPage, pageSize]);
 
   const { data: stats } = useJustdialLeadStats();
   const updateStatusMutation = useUpdateJustdialLeadStatus();
@@ -95,13 +129,20 @@ export const AdminJustdialLeadsManager: React.FC = () => {
 
   const getStatusBadge = (status: string | null) => {
     const s = (status || 'new').toLowerCase();
-    const opt = STATUS_OPTIONS.find((o) => o.value === s) || STATUS_OPTIONS[0];
-    return (
-      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider border ${opt.color}`}>
-        <span className="w-1.5 h-1.5 rounded-full bg-current" />
-        {opt.label}
-      </span>
-    );
+    switch (s) {
+      case 'new':
+        return <Badge variant="success">New</Badge>;
+      case 'contacted':
+        return <Badge variant="info">Contacted</Badge>;
+      case 'follow-up':
+        return <Badge variant="warning">Follow-up</Badge>;
+      case 'converted':
+        return <Badge variant="default">Converted</Badge>;
+      case 'closed':
+        return <Badge variant="secondary">Closed</Badge>;
+      default:
+        return <Badge variant="outline">{s}</Badge>;
+    }
   };
 
   return (
@@ -115,12 +156,12 @@ export const AdminJustdialLeadsManager: React.FC = () => {
       )}
 
       {/* Top Banner & Refresh */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-neutral-900 via-neutral-900/90 to-neutral-950 border border-neutral-800">
+      <Card className="p-5 bg-gradient-to-r from-neutral-900 via-neutral-900/90 to-neutral-950 border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-md bg-[#FFCC00]/20 text-[#FFCC00] text-xs font-bold uppercase tracking-wider">
+            <Badge variant="default" className="text-[11px] font-bold">
               Automated Ingestion
-            </span>
+            </Badge>
             <span className="text-xs text-neutral-400">Endpoint: /api/leads/justdial</span>
           </div>
           <h2 className="text-lg font-bold text-white mt-1">Justdial Telephony &amp; CRM Pipeline</h2>
@@ -129,343 +170,366 @@ export const AdminJustdialLeadsManager: React.FC = () => {
           </p>
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="sm"
           onClick={() => refetch()}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold transition-all self-start sm:self-auto"
+          className="self-start sm:self-auto gap-2"
         >
           <RefreshCw className="w-3.5 h-3.5 text-[#FFCC00]" />
           <span>Refresh Leads</span>
-        </button>
-      </div>
+        </Button>
+      </Card>
 
       {/* Stats Counters */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
+        <Card className="p-4 bg-[#14161b] border-neutral-800">
           <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">Total Justdial</span>
           <div className="text-2xl font-black text-white mt-1">{stats?.total ?? displayLeads.length}</div>
-        </div>
+        </Card>
 
-        <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
+        <Card className="p-4 bg-[#14161b] border-neutral-800">
           <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">New</span>
           <div className="text-2xl font-black text-emerald-400 mt-1">{stats?.newCount ?? 0}</div>
-        </div>
+        </Card>
 
-        <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
-          <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">Contacted</span>
-          <div className="text-2xl font-black text-blue-400 mt-1">{stats?.contactedCount ?? 0}</div>
-        </div>
+        <Card className="p-4 bg-[#14161b] border-neutral-800">
+          <span className="text-[11px] font-semibold text-sky-400 uppercase tracking-wider">Contacted</span>
+          <div className="text-2xl font-black text-sky-400 mt-1">{stats?.contactedCount ?? 0}</div>
+        </Card>
 
-        <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
+        <Card className="p-4 bg-[#14161b] border-neutral-800">
           <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">Follow-up</span>
           <div className="text-2xl font-black text-amber-400 mt-1">{stats?.followUpCount ?? 0}</div>
-        </div>
+        </Card>
 
-        <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
+        <Card className="p-4 bg-[#14161b] border-neutral-800">
           <span className="text-[11px] font-semibold text-[#FFCC00] uppercase tracking-wider">Converted</span>
           <div className="text-2xl font-black text-[#FFCC00] mt-1">{stats?.convertedCount ?? 0}</div>
-        </div>
+        </Card>
 
-        <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
+        <Card className="p-4 bg-[#14161b] border-neutral-800">
           <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">Closed</span>
           <div className="text-2xl font-black text-neutral-300 mt-1">{stats?.closedCount ?? 0}</div>
-        </div>
+        </Card>
       </div>
 
       {/* Filter and Search Controls */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#14161b] border border-neutral-800">
+      <Card className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3.5 bg-[#14161b] border-neutral-800">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-neutral-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
+          <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by lead ID, prospect name, phone, city, or category..."
-            className="w-full pl-9 pr-4 py-2 bg-neutral-900 border border-neutral-700/80 rounded-xl text-xs text-white placeholder-neutral-500 focus:outline-hidden focus:border-[#FFCC00]"
+            className="pl-9 bg-neutral-900 border-neutral-700/80"
           />
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto">
           {/* Status Filter */}
-          <div className="flex items-center gap-1.5 bg-neutral-900 px-3 py-1.5 rounded-xl border border-neutral-700/80 shrink-0">
-            <Filter className="w-3.5 h-3.5 text-neutral-400" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-transparent text-xs text-neutral-200 focus:outline-hidden cursor-pointer"
-            >
-              <option value="all" className="bg-neutral-900 text-white">All Statuses</option>
-              <option value="new" className="bg-neutral-900 text-white">New</option>
-              <option value="contacted" className="bg-neutral-900 text-white">Contacted</option>
-              <option value="follow-up" className="bg-neutral-900 text-white">Follow-up</option>
-              <option value="converted" className="bg-neutral-900 text-white">Converted</option>
-              <option value="closed" className="bg-neutral-900 text-white">Closed</option>
-            </select>
+          <div className="w-[140px] shrink-0">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="h-9 bg-neutral-900 border-neutral-700/80">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="new">New</SelectItem>
+                <SelectItem value="contacted">Contacted</SelectItem>
+                <SelectItem value="follow-up">Follow-up</SelectItem>
+                <SelectItem value="converted">Converted</SelectItem>
+                <SelectItem value="closed">Closed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Sort Order */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-neutral-900 px-3 py-2 rounded-xl border border-neutral-700/80 text-xs text-neutral-200 focus:outline-hidden cursor-pointer shrink-0"
-          >
-            <option value="newest" className="bg-neutral-900 text-white">Newest First</option>
-            <option value="oldest" className="bg-neutral-900 text-white">Oldest First</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Leads Table */}
-      <div className="rounded-2xl bg-[#14161b] border border-neutral-800 overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-[#0c0d0e] border-b border-neutral-800 text-[11px] uppercase tracking-wider text-neutral-400 font-bold">
-              <tr>
-                <th className="py-3.5 px-4">Lead ID</th>
-                <th className="py-3.5 px-4">Prospect</th>
-                <th className="py-3.5 px-4">Contact</th>
-                <th className="py-3.5 px-4">Category &amp; Location</th>
-                <th className="py-3.5 px-4">Lead Date / Time</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-800/60">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-neutral-500">
-                    <RefreshCw className="w-6 h-6 mx-auto animate-spin mb-2 text-[#FFCC00]" />
-                    <span>Loading Justdial leads...</span>
-                  </td>
-                </tr>
-              ) : displayLeads.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-neutral-500">
-                    <PhoneCall className="w-8 h-8 mx-auto mb-2 text-neutral-600" />
-                    <p className="font-semibold text-neutral-300">No Justdial leads found</p>
-                    <p className="text-[11px] text-neutral-500 mt-1">
-                      Incoming leads from GET /api/leads/justdial will automatically populate here.
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                displayLeads.map((lead) => {
-                  const hasMobile = Boolean(lead.mobile && lead.mobile.trim());
-                  const hasPhone = Boolean(lead.phone && lead.phone.trim());
-                  const primaryPhone = lead.mobile || lead.phone || '';
-                  const cleanPhone = primaryPhone.replace(/\D/g, '');
-                  const hasEmail = Boolean(lead.email && lead.email.trim());
-
-                  return (
-                    <tr key={lead.id} className="hover:bg-neutral-800/30 transition-colors">
-                      {/* Lead ID */}
-                      <td className="py-3.5 px-4 font-mono font-bold text-neutral-200">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[#FFCC00] font-semibold">{lead.leadid}</span>
-                        </div>
-                        {lead.leadtype && (
-                          <span className="text-[10px] text-neutral-500 block uppercase mt-0.5">
-                            {lead.leadtype}
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Prospect Name */}
-                      <td className="py-3.5 px-4">
-                        <div className="font-bold text-white text-sm">
-                          {lead.prefix ? `${lead.prefix} ` : ''}
-                          {lead.name || 'Unnamed Prospect'}
-                        </div>
-                        {lead.company && (
-                          <div className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
-                            <Building className="w-3 h-3 text-neutral-500" />
-                            <span>{lead.company}</span>
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Contact Info with DND indicators */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex flex-col gap-1">
-                          {hasMobile && (
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-mono text-neutral-300 font-semibold">{lead.mobile}</span>
-                              {lead.dncmobile === 1 ? (
-                                <span
-                                  className="inline-flex items-center text-[10px] px-1.5 py-0.2 rounded bg-rose-500/10 text-rose-400 border border-rose-500/30"
-                                  title="DND Active on Mobile"
-                                >
-                                  DND
-                                </span>
-                              ) : (
-                                <span
-                                  className="inline-flex items-center text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
-                                  title="Mobile clear for outreach"
-                                >
-                                  OK
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          {hasPhone && (
-                            <div className="flex items-center gap-1.5 text-neutral-400 text-[11px]">
-                              <span>Ph: {lead.phone}</span>
-                              {lead.dncphone === 1 && (
-                                <span className="text-[9px] text-rose-400">DND</span>
-                              )}
-                            </div>
-                          )}
-
-                          {hasEmail && (
-                            <div className="text-[11px] text-neutral-400 truncate max-w-[180px]">
-                              {lead.email}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Category & Location */}
-                      <td className="py-3.5 px-4">
-                        <div className="font-semibold text-neutral-200">
-                          {lead.category || 'General'}
-                        </div>
-                        <div className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3 text-neutral-500 shrink-0" />
-                          <span>
-                            {[lead.area, lead.city].filter(Boolean).join(', ') || 'Tamil Nadu'}
-                            {lead.pincode ? ` - ${lead.pincode}` : ''}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Lead Date / Time */}
-                      <td className="py-3.5 px-4 text-neutral-300">
-                        <div className="flex items-center gap-1.5">
-                          <Calendar className="w-3 h-3 text-neutral-500" />
-                          <span>{lead.leadDate ? String(lead.leadDate).split('T')[0] : 'N/A'}</span>
-                        </div>
-                        {lead.leadTime && (
-                          <div className="flex items-center gap-1.5 text-[11px] text-neutral-500 mt-0.5">
-                            <Clock className="w-3 h-3" />
-                            <span>{lead.leadTime}</span>
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Status Dropdown */}
-                      <td className="py-3.5 px-4">
-                        <select
-                          value={(lead.status || 'new').toLowerCase()}
-                          onChange={(e) => handleStatusChange(lead.id, e.target.value)}
-                          className="bg-neutral-900 border border-neutral-700/80 rounded-lg px-2.5 py-1 text-xs text-neutral-200 focus:outline-hidden focus:border-[#FFCC00] cursor-pointer"
-                        >
-                          <option value="new">New</option>
-                          <option value="contacted">Contacted</option>
-                          <option value="follow-up">Follow-up</option>
-                          <option value="converted">Converted</option>
-                          <option value="closed">Closed</option>
-                        </select>
-                      </td>
-
-                      {/* Quick Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="inline-flex items-center gap-1.5">
-                          {/* Call Button */}
-                          {cleanPhone && (
-                            <a
-                              href={`tel:${cleanPhone}`}
-                              className="p-1.5 rounded-lg bg-neutral-800 hover:bg-emerald-500/20 hover:text-emerald-400 text-neutral-300 transition-colors"
-                              title={`Call ${primaryPhone}`}
-                            >
-                              <Phone className="w-3.5 h-3.5" />
-                            </a>
-                          )}
-
-                          {/* WhatsApp Button */}
-                          {cleanPhone && (
-                            <a
-                              href={`https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`}?text=Hi%20${encodeURIComponent(lead.name || 'there')},%20greetings%20from%20Sanjay%20Properties.`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg bg-neutral-800 hover:bg-emerald-500/20 hover:text-emerald-400 text-neutral-300 transition-colors"
-                              title="Send WhatsApp Message"
-                            >
-                              <MessageSquare className="w-3.5 h-3.5" />
-                            </a>
-                          )}
-
-                          {/* Email Button */}
-                          {hasEmail && (
-                            <a
-                              href={`mailto:${lead.email}?subject=Sanjay%20Properties%20Enquiry`}
-                              className="p-1.5 rounded-lg bg-neutral-800 hover:bg-blue-500/20 hover:text-blue-400 text-neutral-300 transition-colors"
-                              title="Send Email"
-                            >
-                              <Mail className="w-3.5 h-3.5" />
-                            </a>
-                          )}
-
-                          {/* Inspect Detail Button */}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedLead(lead);
-                              setShowRawPayload(false);
-                            }}
-                            className="p-1.5 rounded-lg bg-neutral-800 hover:bg-[#FFCC00]/20 hover:text-[#FFCC00] text-neutral-300 transition-colors"
-                            title="View Full Lead Details"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Delete Lead Button */}
-                          <button
-                            type="button"
-                            onClick={() => setDeleteConfirmId(lead.id)}
-                            className="p-1.5 rounded-lg bg-neutral-800 hover:bg-rose-500/20 hover:text-rose-400 text-neutral-400 transition-colors"
-                            title="Delete Lead"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Delete Confirmation Modal */}
-      {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#14161b] border border-neutral-800 rounded-2xl p-6 max-w-sm w-full space-y-4">
-            <h3 className="text-base font-bold text-white">Delete Justdial Lead?</h3>
-            <p className="text-xs text-neutral-400">
-              This action cannot be undone. The lead record will be permanently removed from the Supabase database.
-            </p>
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 rounded-xl bg-neutral-800 text-xs font-semibold text-neutral-300 hover:bg-neutral-700"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 rounded-xl bg-rose-600 text-xs font-semibold text-white hover:bg-rose-700"
-              >
-                Confirm Delete
-              </button>
-            </div>
+          <div className="w-[130px] shrink-0">
+            <Select value={sortBy} onValueChange={(val) => setSortBy(val as any)}>
+              <SelectTrigger className="h-9 bg-neutral-900 border-neutral-700/80">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest First</SelectItem>
+                <SelectItem value="oldest">Oldest First</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-      )}
+      </Card>
+
+      {/* Leads Table */}
+      <Card className="overflow-hidden border-neutral-800 bg-neutral-900/60">
+        <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Lead ID</TableHead>
+            <TableHead>Prospect</TableHead>
+            <TableHead>Contact</TableHead>
+            <TableHead>Category &amp; Location</TableHead>
+            <TableHead>Lead Date / Time</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={7} className="py-12 text-center text-neutral-500">
+                <RefreshCw className="w-6 h-6 mx-auto animate-spin mb-2 text-[#FFCC00]" />
+                <span>Loading Justdial leads...</span>
+              </TableCell>
+            </TableRow>
+          ) : displayLeads.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={7} className="py-12 text-center text-neutral-500">
+                <PhoneCall className="w-8 h-8 mx-auto mb-2 text-neutral-600" />
+                <p className="font-semibold text-neutral-300">No Justdial leads found</p>
+                <p className="text-[11px] text-neutral-500 mt-1">
+                  Incoming leads from GET /api/leads/justdial will automatically populate here.
+                </p>
+              </TableCell>
+            </TableRow>
+          ) : (
+            paginatedLeads.map((lead) => {
+              const hasMobile = Boolean(lead.mobile && lead.mobile.trim());
+              const hasPhone = Boolean(lead.phone && lead.phone.trim());
+              const primaryPhone = lead.mobile || lead.phone || '';
+              const cleanPhone = primaryPhone.replace(/\D/g, '');
+              const hasEmail = Boolean(lead.email && lead.email.trim());
+
+              return (
+                <TableRow key={lead.id}>
+                  {/* Lead ID */}
+                  <TableCell className="font-mono font-bold text-neutral-200">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[#FFCC00] font-semibold">{lead.leadid}</span>
+                    </div>
+                    {lead.leadtype && (
+                      <span className="text-[10px] text-neutral-500 block uppercase mt-0.5">
+                        {lead.leadtype}
+                      </span>
+                    )}
+                  </TableCell>
+
+                  {/* Prospect Name */}
+                  <TableCell>
+                    <div className="font-bold text-white text-sm">
+                      {lead.prefix ? `${lead.prefix} ` : ''}
+                      {lead.name || 'Unnamed Prospect'}
+                    </div>
+                    {lead.company && (
+                      <div className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
+                        <Building className="w-3 h-3 text-neutral-500" />
+                        <span>{lead.company}</span>
+                      </div>
+                    )}
+                  </TableCell>
+
+                  {/* Contact Info with DND indicators */}
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      {hasMobile && (
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-mono text-neutral-300 font-semibold">{lead.mobile}</span>
+                          {lead.dncmobile === 1 ? (
+                            <Badge variant="destructive" className="text-[10px] px-1.5 py-0 font-normal">
+                              DND
+                            </Badge>
+                          ) : (
+                            <Badge variant="success" className="text-[10px] px-1.5 py-0 font-normal">
+                              OK
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+
+                      {hasPhone && (
+                        <div className="flex items-center gap-1.5 text-neutral-400 text-[11px]">
+                          <span>Ph: {lead.phone}</span>
+                          {lead.dncphone === 1 && (
+                            <span className="text-[9px] text-rose-400">DND</span>
+                          )}
+                        </div>
+                      )}
+
+                      {hasEmail && (
+                        <div className="text-[11px] text-neutral-400 truncate max-w-[180px]">
+                          {lead.email}
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
+
+                  {/* Category & Location */}
+                  <TableCell>
+                    <div className="font-semibold text-neutral-200">
+                      {lead.category || 'General'}
+                    </div>
+                    <div className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
+                      <MapPin className="w-3 h-3 text-neutral-500 shrink-0" />
+                      <span>
+                        {[lead.area, lead.city].filter(Boolean).join(', ') || 'Tamil Nadu'}
+                        {lead.pincode ? ` - ${lead.pincode}` : ''}
+                      </span>
+                    </div>
+                  </TableCell>
+
+                  {/* Lead Date / Time */}
+                  <TableCell className="text-neutral-300">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3 h-3 text-neutral-500" />
+                      <span>{lead.leadDate ? String(lead.leadDate).split('T')[0] : 'N/A'}</span>
+                    </div>
+                    {lead.leadTime && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-neutral-500 mt-0.5">
+                        <Clock className="w-3 h-3" />
+                        <span>{lead.leadTime}</span>
+                      </div>
+                    )}
+                  </TableCell>
+
+                  {/* Status Dropdown */}
+                  <TableCell>
+                    <Select
+                      value={(lead.status || 'new').toLowerCase()}
+                      onValueChange={(val) => handleStatusChange(lead.id, val)}
+                    >
+                      <SelectTrigger className="h-7 text-xs w-[120px] bg-neutral-900 border-neutral-700/80">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="new">New</SelectItem>
+                        <SelectItem value="contacted">Contacted</SelectItem>
+                        <SelectItem value="follow-up">Follow-up</SelectItem>
+                        <SelectItem value="converted">Converted</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+
+                  {/* Quick Actions */}
+                  <TableCell className="text-right">
+                    <div className="inline-flex items-center gap-1.5">
+                      {/* Call Button */}
+                      {cleanPhone && (
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          asChild
+                          title={`Call ${primaryPhone}`}
+                        >
+                          <a href={`tel:${cleanPhone}`}>
+                            <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                          </a>
+                        </Button>
+                      )}
+
+                      {/* WhatsApp Button */}
+                      {cleanPhone && (
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          asChild
+                          title="Send WhatsApp Message"
+                        >
+                          <a
+                            href={`https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`}?text=Hi%20${encodeURIComponent(lead.name || 'there')},%20greetings%20from%20Sanjay%20Properties.`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+                          </a>
+                        </Button>
+                      )}
+
+                      {/* Email Button */}
+                      {hasEmail && (
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          asChild
+                          title="Send Email"
+                        >
+                          <a href={`mailto:${lead.email}?subject=Sanjay%20Properties%20Enquiry`}>
+                            <Mail className="w-3.5 h-3.5 text-sky-400" />
+                          </a>
+                        </Button>
+                      )}
+
+                      {/* Inspect Detail Button */}
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        onClick={() => {
+                          setSelectedLead(lead);
+                          setShowRawPayload(false);
+                        }}
+                        title="View Full Lead Details"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-[#FFCC00]" />
+                      </Button>
+
+                      {/* Delete Lead Button */}
+                      <Button
+                        variant="secondary"
+                        size="icon"
+                        onClick={() => setDeleteConfirmId(lead.id)}
+                        className="hover:text-rose-400 hover:border-rose-500/30 text-neutral-400"
+                        title="Delete Lead"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
+        </TableBody>
+      </Table>
+
+      <DataTablePagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={displayLeads.length}
+        pageSize={pageSize}
+        onPageChange={setCurrentPage}
+        onPageSizeChange={setPageSize}
+        pageSizeOptions={[10, 25, 50, 100]}
+      />
+    </Card>
+
+      {/* Delete Confirmation Modal using shadcn Dialog */}
+      <Dialog open={Boolean(deleteConfirmId)} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Justdial Lead?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. The lead record will be permanently removed from the Supabase database.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setDeleteConfirmId(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => deleteConfirmId && handleDelete(deleteConfirmId)}
+            >
+              Confirm Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Comprehensive Lead Detail Modal */}
       {selectedLead && (
@@ -536,17 +600,21 @@ export const AdminJustdialLeadsManager: React.FC = () => {
 
                 <div className="ml-auto flex items-center gap-2">
                   <span className="text-xs text-neutral-400 font-medium">Status:</span>
-                  <select
+                  <Select
                     value={(selectedLead.status || 'new').toLowerCase()}
-                    onChange={(e) => handleStatusChange(selectedLead.id, e.target.value)}
-                    className="bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-hidden focus:border-[#FFCC00]"
+                    onValueChange={(val) => handleStatusChange(selectedLead.id, val)}
                   >
-                    <option value="new">New</option>
-                    <option value="contacted">Contacted</option>
-                    <option value="follow-up">Follow-up</option>
-                    <option value="converted">Converted</option>
-                    <option value="closed">Closed</option>
-                  </select>
+                    <SelectTrigger className="h-8 text-xs w-[130px] bg-neutral-800 border-neutral-700">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="contacted">Contacted</SelectItem>
+                      <SelectItem value="follow-up">Follow-up</SelectItem>
+                      <SelectItem value="converted">Converted</SelectItem>
+                      <SelectItem value="closed">Closed</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 

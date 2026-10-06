@@ -18,6 +18,13 @@ import {
   BookOpen
 } from 'lucide-react';
 import type { WesternStayFacilityRecord } from '../../../types/database';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../ui/select';
 
 export function WesternStayFacilities() {
   const { data: facilities, isLoading, refetch } = useWesternStayFacilitiesQuery();
@@ -209,17 +216,18 @@ export function WesternStayFacilities() {
 
               <div>
                 <label className="block text-neutral-400 mb-1 font-medium">Icon Category</label>
-                <select
-                  value={iconName}
-                  onChange={(e) => setIconName(e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-[#FFCC00]"
-                >
-                  {icons.map((i) => (
-                    <option key={i.val} value={i.val}>
-                      {i.label}
-                    </option>
-                  ))}
-                </select>
+                <Select value={iconName} onValueChange={setIconName}>
+                  <SelectTrigger className="w-full bg-neutral-800 border-neutral-700">
+                    <SelectValue placeholder="Select icon category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {icons.map((i) => (
+                      <SelectItem key={i.val} value={i.val}>
+                        {i.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-800">

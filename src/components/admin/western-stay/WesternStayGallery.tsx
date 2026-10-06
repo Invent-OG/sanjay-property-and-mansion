@@ -11,6 +11,13 @@ import {
   Check
 } from 'lucide-react';
 import type { WesternStayImageRecord } from '../../../types/database';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../ui/select';
 
 export function WesternStayGallery() {
   const { data: gallery, isLoading, refetch } = useWesternStayGalleryQuery();
@@ -146,17 +153,18 @@ export function WesternStayGallery() {
 
               <div>
                 <label className="block text-neutral-400 mb-1 font-medium">Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-white"
-                >
-                  {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="w-full bg-neutral-800 border-neutral-700">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-neutral-800">
