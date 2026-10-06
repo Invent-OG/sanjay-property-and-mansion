@@ -32,6 +32,9 @@ export const justdialLeadService = {
         .from('justdial_leads')
         .select('*');
 
+      // Exclude synthetic test leads created during dev/testing (e.g. TEST001, TEST002 with mock website company details)
+      query = query.not('leadid', 'ilike', 'TEST%');
+
       if (filters.status && filters.status !== 'all') {
         query = query.eq('status', filters.status.toLowerCase());
       }
@@ -54,7 +57,9 @@ export const justdialLeadService = {
         return [];
       }
 
-      let results = (data || []) as JustdialLeadRecord[];
+      let results = ((data || []) as JustdialLeadRecord[]).filter(
+        (item) => !item.leadid?.toUpperCase().startsWith('TEST')
+      );
 
       if (filters.search && filters.search.trim()) {
         const q = filters.search.toLowerCase().trim();

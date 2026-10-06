@@ -83,7 +83,8 @@ export const AdminLeadsManager: React.FC = () => {
   };
 
   const filteredLeads = useMemo(() => {
-    let result = [...rawLeads];
+    // Strictly isolate website leads from Justdial leads
+    let result = rawLeads.filter((l) => (l.source as string)?.toLowerCase() !== 'justdial');
 
     if (sourceFilter !== 'all') {
       result = result.filter((l) => l.source === sourceFilter);

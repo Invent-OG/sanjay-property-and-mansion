@@ -50,6 +50,11 @@ export const AdminJustdialLeadsManager: React.FC = () => {
     sortBy,
   });
 
+  // Filter out any synthetic test leads with TEST prefix
+  const displayLeads = useMemo(() => {
+    return rawLeads.filter((l) => !l.leadid?.toUpperCase().startsWith('TEST'));
+  }, [rawLeads]);
+
   const { data: stats } = useJustdialLeadStats();
   const updateStatusMutation = useUpdateJustdialLeadStatus();
   const deleteLeadMutation = useDeleteJustdialLead();
@@ -138,7 +143,7 @@ export const AdminJustdialLeadsManager: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
           <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider">Total Justdial</span>
-          <div className="text-2xl font-black text-white mt-1">{stats?.total ?? rawLeads.length}</div>
+          <div className="text-2xl font-black text-white mt-1">{stats?.total ?? displayLeads.length}</div>
         </div>
 
         <div className="p-4 rounded-xl bg-[#14161b] border border-neutral-800/80">
@@ -233,7 +238,7 @@ export const AdminJustdialLeadsManager: React.FC = () => {
                     <span>Loading Justdial leads...</span>
                   </td>
                 </tr>
-              ) : rawLeads.length === 0 ? (
+              ) : displayLeads.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-neutral-500">
                     <PhoneCall className="w-8 h-8 mx-auto mb-2 text-neutral-600" />
@@ -244,7 +249,7 @@ export const AdminJustdialLeadsManager: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                rawLeads.map((lead) => {
+                displayLeads.map((lead) => {
                   const hasMobile = Boolean(lead.mobile && lead.mobile.trim());
                   const hasPhone = Boolean(lead.phone && lead.phone.trim());
                   const primaryPhone = lead.mobile || lead.phone || '';

@@ -94,7 +94,7 @@ export const leadService = {
   // Get all leads with optional filters
   async getLeads(filters: LeadFilters = {}): Promise<LeadRecord[]> {
     const getLocalFormattedLeads = (): LeadRecord[] => {
-      const localLeads = leadStore.getLeads();
+      const localLeads = leadStore.getLeads().filter((l) => !(l.source as string)?.toLowerCase().includes('justdial'));
       return localLeads.map((l) => ({
         id: l.id,
         name: l.name,
@@ -139,6 +139,9 @@ export const leadService = {
 
     try {
       let query = client.from('leads').select('*');
+
+      // Exclude Justdial leads (handled in the dedicated Justdial pipeline)
+      query = query.not('source', 'ilike', 'justdial%');
 
       if (filters.source && filters.source !== 'all') {
         query = query.eq('source', filters.source);
@@ -287,7 +290,7 @@ export const leadService = {
     try {
       const [{ data: props }, { data: leads }] = await Promise.all([
         client.from('properties').select('id, status'),
-        client.from('leads').select('id, status')
+        client.from('leads').select('id, status').not('source', 'ilike', 'justdial%')
       ]);
 
       const propList = props || [];
