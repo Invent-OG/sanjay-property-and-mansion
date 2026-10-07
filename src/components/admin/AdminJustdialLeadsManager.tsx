@@ -58,6 +58,68 @@ import {
   DialogFooter,
 } from '../ui/dialog';
 
+const formatLeadDate = (dateVal?: string | Date | null, fallbackVal?: string | Date | null): string => {
+  const val = dateVal || (fallbackVal ? String(fallbackVal).split('T')[0] : null);
+  if (!val) return 'N/A';
+  try {
+    const str = String(val).trim();
+    const parts = str.split('T')[0].split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const d = new Date(year, month, day);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        });
+      }
+    }
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+    return str.split('T')[0];
+  } catch {
+    return String(val);
+  }
+};
+
+const formatLeadTime = (timeVal?: string | null, fallbackVal?: string | Date | null): string => {
+  if (timeVal) {
+    const trimmed = String(timeVal).trim();
+    const match = trimmed.match(/^([01]?\d|2[0-3]):([0-5]\d)(:([0-5]\d))?$/);
+    if (match) {
+      const hh = parseInt(match[1], 10);
+      const mm = match[2];
+      const ampm = hh >= 12 ? 'PM' : 'AM';
+      const hour12 = hh % 12 || 12;
+      return `${hour12}:${mm} ${ampm}`;
+    }
+    return trimmed;
+  }
+  if (fallbackVal) {
+    try {
+      const d = new Date(fallbackVal);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleTimeString('en-IN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+          timeZone: 'Asia/Kolkata',
+        });
+      }
+    } catch {}
+  }
+  return '';
+};
+
 export const AdminJustdialLeadsManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -223,7 +285,7 @@ export const AdminJustdialLeadsManager: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by lead ID, prospect name, phone, city, or category..."
+            placeholder="Search by prospect name, phone, city, or category..."
             className="pl-9 bg-neutral-900 border-neutral-700/80"
           />
         </div>
@@ -266,7 +328,6 @@ export const AdminJustdialLeadsManager: React.FC = () => {
         <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Lead ID</TableHead>
             <TableHead>Prospect</TableHead>
             <TableHead>Contact</TableHead>
             <TableHead>Category &amp; Location</TableHead>
@@ -278,14 +339,14 @@ export const AdminJustdialLeadsManager: React.FC = () => {
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={7} className="py-12 text-center text-neutral-500">
+              <TableCell colSpan={6} className="py-12 text-center text-neutral-500">
                 <RefreshCw className="w-6 h-6 mx-auto animate-spin mb-2 text-[#FFCC00]" />
                 <span>Loading Justdial leads...</span>
               </TableCell>
             </TableRow>
           ) : displayLeads.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="py-12 text-center text-neutral-500">
+              <TableCell colSpan={6} className="py-12 text-center text-neutral-500">
                 <PhoneCall className="w-8 h-8 mx-auto mb-2 text-neutral-600" />
                 <p className="font-semibold text-neutral-300">No Justdial leads found</p>
                 <p className="text-[11px] text-neutral-500 mt-1">
@@ -301,20 +362,17 @@ export const AdminJustdialLeadsManager: React.FC = () => {
               const cleanPhone = primaryPhone.replace(/\D/g, '');
               const hasEmail = Boolean(lead.email && lead.email.trim());
 
+              const displayDate = formatLeadDate(
+                lead.leadDate || (lead as any).lead_date,
+                lead.createdAt || (lead as any).created_at
+              );
+              const displayTime = formatLeadTime(
+                lead.leadTime || (lead as any).lead_time,
+                lead.createdAt || (lead as any).created_at
+              );
+
               return (
                 <TableRow key={lead.id}>
-                  {/* Lead ID */}
-                  <TableCell className="font-mono font-bold text-neutral-200">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[#FFCC00] font-semibold">{lead.leadid}</span>
-                    </div>
-                    {lead.leadtype && (
-                      <span className="text-[10px] text-neutral-500 block uppercase mt-0.5">
-                        {lead.leadtype}
-                      </span>
-                    )}
-                  </TableCell>
-
                   {/* Prospect Name */}
                   <TableCell>
                     <div className="font-bold text-white text-sm">
@@ -366,8 +424,15 @@ export const AdminJustdialLeadsManager: React.FC = () => {
 
                   {/* Category & Location */}
                   <TableCell>
-                    <div className="font-semibold text-neutral-200">
-                      {lead.category || 'General'}
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="font-semibold text-neutral-200">
+                        {lead.category || 'General'}
+                      </span>
+                      {lead.leadtype && (
+                        <Badge variant="outline" className="text-[9px] uppercase px-1.5 py-0 text-neutral-400 border-neutral-700">
+                          {lead.leadtype}
+                        </Badge>
+                      )}
                     </div>
                     <div className="text-[11px] text-neutral-400 flex items-center gap-1 mt-0.5">
                       <MapPin className="w-3 h-3 text-neutral-500 shrink-0" />
@@ -380,14 +445,14 @@ export const AdminJustdialLeadsManager: React.FC = () => {
 
                   {/* Lead Date / Time */}
                   <TableCell className="text-neutral-300">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3 h-3 text-neutral-500" />
-                      <span>{lead.leadDate ? String(lead.leadDate).split('T')[0] : 'N/A'}</span>
+                    <div className="flex items-center gap-1.5 font-medium text-xs text-neutral-200">
+                      <Calendar className="w-3.5 h-3.5 text-[#FFCC00]/90 shrink-0" />
+                      <span>{displayDate}</span>
                     </div>
-                    {lead.leadTime && (
-                      <div className="flex items-center gap-1.5 text-[11px] text-neutral-500 mt-0.5">
-                        <Clock className="w-3 h-3" />
-                        <span>{lead.leadTime}</span>
+                    {displayTime && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-neutral-400 mt-0.5">
+                        <Clock className="w-3 h-3 text-neutral-500 shrink-0" />
+                        <span>{displayTime}</span>
                       </div>
                     )}
                   </TableCell>
@@ -542,7 +607,11 @@ export const AdminJustdialLeadsManager: React.FC = () => {
                   <span className="px-2.5 py-0.5 rounded-full bg-[#FFCC00]/20 text-[#FFCC00] text-[11px] font-bold uppercase tracking-wider">
                     Justdial Lead Detail
                   </span>
-                  <span className="font-mono text-xs text-neutral-400">ID: {selectedLead.leadid}</span>
+                  {selectedLead.leadtype && (
+                    <Badge variant="outline" className="text-[10px] uppercase text-neutral-400 border-neutral-700">
+                      {selectedLead.leadtype}
+                    </Badge>
+                  )}
                 </div>
                 <h3 className="text-xl font-bold text-white mt-1">
                   {selectedLead.prefix ? `${selectedLead.prefix} ` : ''}
@@ -620,13 +689,13 @@ export const AdminJustdialLeadsManager: React.FC = () => {
 
               {/* Data Grid: Complete Justdial Fields */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                {/* Field 1: Lead ID & Type */}
+                {/* Field 1: Campaign Channel & Type */}
                 <div className="p-3.5 rounded-xl bg-neutral-900/60 border border-neutral-800">
                   <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
-                    Lead ID &amp; Type
+                    Campaign Channel &amp; Type
                   </span>
-                  <div className="text-neutral-200 font-mono font-semibold">{selectedLead.leadid}</div>
-                  <div className="text-neutral-400 text-[11px] mt-0.5">Type: {selectedLead.leadtype || 'N/A'}</div>
+                  <div className="text-neutral-200 font-semibold capitalize">{selectedLead.leadtype || 'Standard Lead'}</div>
+                  <div className="text-neutral-400 text-[11px] mt-0.5">Source: {selectedLead.source || 'Justdial'}</div>
                 </div>
 
                 {/* Field 2: Parent ID */}
@@ -716,11 +785,11 @@ export const AdminJustdialLeadsManager: React.FC = () => {
                   <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider block mb-1">
                     Justdial Timestamp
                   </span>
-                  <div className="text-neutral-200">
-                    Date: {selectedLead.leadDate ? String(selectedLead.leadDate).split('T')[0] : 'N/A'}
+                  <div className="text-neutral-200 font-medium">
+                    Date: {formatLeadDate(selectedLead.leadDate || (selectedLead as any).lead_date, selectedLead.createdAt || (selectedLead as any).created_at)}
                   </div>
                   <div className="text-neutral-400 text-[11px] mt-0.5">
-                    Time: {selectedLead.leadTime || 'N/A'}
+                    Time: {formatLeadTime(selectedLead.leadTime || (selectedLead as any).lead_time, selectedLead.createdAt || (selectedLead as any).created_at) || 'N/A'}
                   </div>
                 </div>
 
@@ -730,12 +799,27 @@ export const AdminJustdialLeadsManager: React.FC = () => {
                     System Ingestion
                   </span>
                   <div className="text-neutral-200">
-                    {new Date(selectedLead.createdAt).toLocaleString('en-IN', {
-                      timeZone: 'Asia/Kolkata',
-                    })}
+                    {(() => {
+                      const ts = selectedLead.createdAt || (selectedLead as any).created_at;
+                      if (!ts) return 'N/A';
+                      try {
+                        return new Date(ts).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                      } catch {
+                        return String(ts);
+                      }
+                    })()}
                   </div>
                   <div className="text-[10px] text-neutral-500 mt-0.5">
-                    Updated: {new Date(selectedLead.updatedAt).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                    Updated:{' '}
+                    {(() => {
+                      const ts = selectedLead.updatedAt || (selectedLead as any).updated_at;
+                      if (!ts) return 'N/A';
+                      try {
+                        return new Date(ts).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+                      } catch {
+                        return String(ts);
+                      }
+                    })()}
                   </div>
                 </div>
               </div>

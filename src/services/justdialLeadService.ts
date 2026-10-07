@@ -57,9 +57,32 @@ export const justdialLeadService = {
         return [];
       }
 
-      let results = ((data || []) as JustdialLeadRecord[]).filter(
+      let results = ((data || []) as any[]).map((item) => {
+        const leadDate =
+          item.leadDate ??
+          item.lead_date ??
+          item.raw_payload?.date ??
+          (item.created_at ? String(item.created_at).split('T')[0] : null);
+
+        const leadTime =
+          item.leadTime ??
+          item.lead_time ??
+          item.raw_payload?.time ??
+          null;
+
+        return {
+          ...item,
+          leadDate,
+          leadTime,
+          lead_date: leadDate,
+          lead_time: leadTime,
+          createdAt: item.createdAt ?? item.created_at,
+          updatedAt: item.updatedAt ?? item.updated_at,
+          rawPayload: item.rawPayload ?? item.raw_payload,
+        };
+      }).filter(
         (item) => !item.leadid?.toUpperCase().startsWith('TEST')
-      );
+      ) as JustdialLeadRecord[];
 
       if (filters.search && filters.search.trim()) {
         const q = filters.search.toLowerCase().trim();
