@@ -98,7 +98,7 @@ export const AdminMediaLibrary: React.FC = () => {
   };
 
   const filteredMedia = mediaList.filter((item) => {
-    if (categoryFilter !== 'all' && item.category !== categoryFilter) return false;
+    if (categoryFilter !== 'all' && (item.category || '').toLowerCase() !== categoryFilter.toLowerCase()) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (
@@ -166,6 +166,8 @@ export const AdminMediaLibrary: React.FC = () => {
             <SelectItem value="Interiors">Interiors</SelectItem>
             <SelectItem value="Facilities">Facilities</SelectItem>
             <SelectItem value="Campus">Campus</SelectItem>
+            <SelectItem value="Dining">Dining</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
           </SelectContent>
         </Select>
       </div>

@@ -46,7 +46,7 @@ export function WesternStayEnquiries() {
         item.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
         item.room_type.toLowerCase().includes(searchQuery.toLowerCase());
 
-      const matchesStatus = statusFilter === 'ALL' || item.status === statusFilter;
+      const matchesStatus = statusFilter === 'ALL' || (item.status || '').toUpperCase() === statusFilter.toUpperCase();
       return matchesSearch && matchesStatus;
     }) || [];
   }, [enquiries, searchQuery, statusFilter]);
@@ -67,15 +67,22 @@ export function WesternStayEnquiries() {
   }, [filtered, currentPage, pageSize]);
 
   const renderStatusBadge = (status: string) => {
-    switch (status) {
+    const s = (status || '').toUpperCase();
+    switch (s) {
       case 'NEW':
         return <Badge variant="warning">New</Badge>;
       case 'CONTACTED':
         return <Badge variant="info">Contacted</Badge>;
+      case 'FOLLOW-UP':
+        return <Badge variant="warning" className="bg-amber-500/15 text-amber-400 border border-amber-500/30">Follow-up</Badge>;
+      case 'BOOKED':
+        return <Badge variant="success" className="bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Booked</Badge>;
       case 'CONVERTED':
         return <Badge variant="success">Converted</Badge>;
       case 'CANCELLED':
         return <Badge variant="outline">Cancelled</Badge>;
+      case 'CLOSED':
+        return <Badge variant="secondary">Closed</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -122,8 +129,11 @@ export function WesternStayEnquiries() {
                   <SelectItem value="ALL">All Statuses</SelectItem>
                   <SelectItem value="NEW">New</SelectItem>
                   <SelectItem value="CONTACTED">Contacted</SelectItem>
+                  <SelectItem value="FOLLOW-UP">Follow-up</SelectItem>
+                  <SelectItem value="BOOKED">Booked</SelectItem>
                   <SelectItem value="CONVERTED">Converted</SelectItem>
                   <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                  <SelectItem value="CLOSED">Closed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -208,8 +218,11 @@ export function WesternStayEnquiries() {
                           <SelectContent>
                             <SelectItem value="NEW">New</SelectItem>
                             <SelectItem value="CONTACTED">Contacted</SelectItem>
+                            <SelectItem value="FOLLOW-UP">Follow-up</SelectItem>
+                            <SelectItem value="BOOKED">Booked</SelectItem>
                             <SelectItem value="CONVERTED">Converted</SelectItem>
                             <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                            <SelectItem value="CLOSED">Closed</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

@@ -68,7 +68,7 @@ export function WesternStayRooms() {
   const [newNotes, setNewNotes] = useState('');
 
   const floors = ['ALL', 'Ground Floor', '1st Floor', '2nd Floor', '3rd Floor'];
-  const statuses = ['ALL', 'AVAILABLE', 'OCCUPIED', 'RESERVED', 'MAINTENANCE'];
+  const statuses = ['ALL', 'AVAILABLE', 'OCCUPIED', 'RESERVED', 'MAINTENANCE', 'INACTIVE'];
 
   const filteredRooms = rooms?.filter((room) => {
     const matchesSearch =
@@ -77,7 +77,7 @@ export function WesternStayRooms() {
       (room.notes && room.notes.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesFloor = selectedFloor === 'ALL' || room.floor === selectedFloor;
-    const matchesStatus = selectedStatus === 'ALL' || room.status === selectedStatus;
+    const matchesStatus = selectedStatus === 'ALL' || (room.status || '').toUpperCase() === selectedStatus.toUpperCase();
 
     return matchesSearch && matchesFloor && matchesStatus;
   });
@@ -153,8 +153,8 @@ export function WesternStayRooms() {
     }
   };
 
-  const renderStatusBadge = (status: RoomStatus) => {
-    switch (status) {
+  const renderStatusBadge = (status: RoomStatus | string) => {
+    switch ((status || '').toUpperCase()) {
       case 'AVAILABLE':
         return (
           <Badge variant="success" className="gap-1.5">
@@ -318,7 +318,7 @@ export function WesternStayRooms() {
                     <div className="flex items-center gap-2">
                       {renderStatusBadge(room.status)}
                       <select
-                        value={room.status}
+                        value={(room.status || 'AVAILABLE').toUpperCase()}
                         onChange={(e) =>
                           updateStatus.mutate({
                             roomId: room.id,
@@ -564,7 +564,7 @@ export function WesternStayRooms() {
               <div className="space-y-1">
                 <label className="text-neutral-400 font-medium">Availability Status</label>
                 <select
-                  value={editingRoom.status}
+                  value={(editingRoom.status || 'AVAILABLE').toUpperCase()}
                   onChange={(e) =>
                     setEditingRoom({ ...editingRoom, status: e.target.value as RoomStatus })
                   }

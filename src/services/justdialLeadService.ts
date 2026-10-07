@@ -36,7 +36,7 @@ export const justdialLeadService = {
       query = query.not('leadid', 'ilike', 'TEST%');
 
       if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status.toLowerCase());
+        query = query.ilike('status', filters.status);
       }
 
       if (filters.category && filters.category !== 'all') {

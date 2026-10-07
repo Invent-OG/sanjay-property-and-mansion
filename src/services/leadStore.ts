@@ -16,7 +16,8 @@ export type LeadStatus =
   | 'In Discussion'
   | 'Visit Scheduled'
   | 'Converted'
-  | 'Lost';
+  | 'Lost'
+  | 'Closed';
 
 export interface LeadNote {
   id: string;

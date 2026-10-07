@@ -122,7 +122,8 @@ export const leadService = {
         results = results.filter((l) => l.source === filters.source);
       }
       if (filters.status && filters.status !== 'all') {
-        results = results.filter((l) => l.status === filters.status);
+        const targetStatus = filters.status.toLowerCase();
+        results = results.filter((l) => (l.status || '').toLowerCase() === targetStatus);
       }
       if (filters.search && filters.search.trim()) {
         const q = filters.search.toLowerCase().trim();
@@ -147,7 +148,7 @@ export const leadService = {
         query = query.eq('source', filters.source);
       }
       if (filters.status && filters.status !== 'all') {
-        query = query.eq('status', filters.status);
+        query = query.ilike('status', filters.status);
       }
 
       if (filters.sortBy === 'oldest') {
@@ -163,7 +164,8 @@ export const leadService = {
           results = results.filter((l) => l.source === filters.source);
         }
         if (filters.status && filters.status !== 'all') {
-          results = results.filter((l) => l.status === filters.status);
+          const targetStatus = filters.status.toLowerCase();
+          results = results.filter((l) => (l.status || '').toLowerCase() === targetStatus);
         }
         return results;
       }

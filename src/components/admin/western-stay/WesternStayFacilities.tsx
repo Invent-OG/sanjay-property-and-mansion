@@ -45,7 +45,8 @@ export function WesternStayFacilities() {
     { label: 'CCTV Surveillance', val: 'video' },
     { label: 'Covered Bike Parking', val: 'bike' },
     { label: 'Study & Workspace', val: 'book-open' },
-    { label: 'Security & Safety', val: 'shield-check' }
+    { label: 'Security & Safety', val: 'shield-check' },
+    { label: 'Laundry / Washing', val: 'waves' }
   ];
 
   const handleOpenAdd = () => {

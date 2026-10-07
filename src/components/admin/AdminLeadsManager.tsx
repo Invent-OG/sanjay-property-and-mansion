@@ -153,23 +153,25 @@ export const AdminLeadsManager: React.FC = () => {
     return filteredLeads.slice(start, start + pageSize);
   }, [filteredLeads, currentPage, pageSize]);
 
-  const renderStatusBadge = (status: LeadStatus) => {
-    switch (status) {
-      case 'New':
+  const renderStatusBadge = (status: LeadStatus | string) => {
+    const s = (status || '').toLowerCase();
+    switch (s) {
+      case 'new':
         return <Badge variant="warning">New</Badge>;
-      case 'Contacted':
+      case 'contacted':
         return <Badge variant="info">Contacted</Badge>;
-      case 'In Discussion':
+      case 'in discussion':
         return <Badge variant="secondary">In Discussion</Badge>;
-      case 'Visit Scheduled':
+      case 'visit scheduled':
         return <Badge variant="success">Visit Scheduled</Badge>;
-      case 'Converted':
+      case 'converted':
         return <Badge variant="default">Converted</Badge>;
-      case 'Closed':
-      case 'Lost':
+      case 'lost':
+        return <Badge variant="outline" className="text-rose-400 border-rose-500/30 bg-rose-500/10">Lost</Badge>;
+      case 'closed':
         return <Badge variant="outline">Closed</Badge>;
       default:
-        return <Badge variant="secondary">{status}</Badge>;
+        return <Badge variant="secondary">{status ? status.charAt(0).toUpperCase() + status.slice(1) : ''}</Badge>;
     }
   };
 
@@ -252,6 +254,7 @@ export const AdminLeadsManager: React.FC = () => {
                     <SelectItem value="In Discussion">In Discussion</SelectItem>
                     <SelectItem value="Visit Scheduled">Visit Scheduled</SelectItem>
                     <SelectItem value="Converted">Converted</SelectItem>
+                    <SelectItem value="Lost">Lost</SelectItem>
                     <SelectItem value="Closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
@@ -364,6 +367,7 @@ export const AdminLeadsManager: React.FC = () => {
                           <SelectItem value="In Discussion">In Discussion</SelectItem>
                           <SelectItem value="Visit Scheduled">Visit Scheduled</SelectItem>
                           <SelectItem value="Converted">Converted</SelectItem>
+                          <SelectItem value="Lost">Lost</SelectItem>
                           <SelectItem value="Closed">Closed</SelectItem>
                         </SelectContent>
                       </Select>

@@ -81,7 +81,7 @@ export const AdminPropertiesList: React.FC = () => {
   };
 
   const filteredProperties = properties.filter((p) => {
-    if (statusFilter !== 'all' && p.status !== statusFilter) return false;
+    if (statusFilter !== 'all' && (p.status || '').toLowerCase() !== statusFilter.toLowerCase()) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return (

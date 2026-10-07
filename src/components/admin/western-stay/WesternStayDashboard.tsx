@@ -41,8 +41,8 @@ export function WesternStayDashboard() {
     refetchRooms();
   };
 
-  const renderStatusBadge = (status: RoomStatus) => {
-    switch (status) {
+  const renderStatusBadge = (status: RoomStatus | string) => {
+    switch ((status || '').toUpperCase()) {
       case 'AVAILABLE':
         return (
           <Badge variant="success" className="gap-1 px-2 py-0 text-[10px]">
@@ -325,7 +325,7 @@ export function WesternStayDashboard() {
                     {/* Status Toggle Quick Buttons */}
                     <div className="mt-2.5 pt-2 border-t border-neutral-800/80">
                       <Select
-                        value={room.status}
+                        value={(room.status || 'AVAILABLE').toUpperCase()}
                         onValueChange={(val) =>
                           updateStatus.mutate({
                             roomId: room.id,

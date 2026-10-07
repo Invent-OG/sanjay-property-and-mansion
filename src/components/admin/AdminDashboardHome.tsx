@@ -396,6 +396,7 @@ export const AdminDashboardHome: React.FC = () => {
                           <SelectItem value="In Discussion">In Discussion</SelectItem>
                           <SelectItem value="Visit Scheduled">Visit Scheduled</SelectItem>
                           <SelectItem value="Converted">Converted</SelectItem>
+                          <SelectItem value="Lost">Lost</SelectItem>
                           <SelectItem value="Closed">Closed</SelectItem>
                         </SelectContent>
                       </Select>

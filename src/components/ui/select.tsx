@@ -10,6 +10,7 @@ interface SelectContextType {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   labels: Record<string, React.ReactNode>;
   registerLabel: (val: string, label: React.ReactNode) => void;
+  getLabel: (val: string) => React.ReactNode | undefined;
   triggerRef: React.RefObject<HTMLButtonElement | null>;
 }
 
@@ -72,6 +73,21 @@ const Select: React.FC<SelectProps> = ({
     setLabels((prev) => (prev[val] === label ? prev : { ...prev, [val]: label }));
   }, []);
 
+  const getLabel = React.useCallback(
+    (val: string) => {
+      if (!val) return undefined;
+      if (labels[val] !== undefined) return labels[val];
+      const valLower = String(val).toLowerCase();
+      for (const [k, node] of Object.entries(labels)) {
+        if (k.toLowerCase() === valLower) {
+          return node;
+        }
+      }
+      return undefined;
+    },
+    [labels]
+  );
+
   return (
     <SelectContext.Provider
       value={{
@@ -81,6 +97,7 @@ const Select: React.FC<SelectProps> = ({
         setOpen,
         labels,
         registerLabel,
+        getLabel,
         triggerRef,
       }}
     >
@@ -97,6 +114,13 @@ const SelectGroup = React.forwardRef<
 ));
 SelectGroup.displayName = "SelectGroup";
 
+function capitalizeWords(str: string): string {
+  if (!str) return str;
+  return str
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 const SelectValue = React.forwardRef<
   HTMLSpanElement,
   React.HTMLAttributes<HTMLSpanElement> & { placeholder?: string }
@@ -104,7 +128,9 @@ const SelectValue = React.forwardRef<
   const context = React.useContext(SelectContext);
   if (!context) throw new Error("SelectValue must be used within Select");
 
-  const currentDisplay = context.labels[context.value] || context.value || placeholder;
+  const matchedLabel = context.getLabel(context.value);
+  const fallbackDisplay = context.value ? capitalizeWords(String(context.value)) : placeholder;
+  const currentDisplay = matchedLabel || fallbackDisplay;
 
   return (
     <span
@@ -167,6 +193,25 @@ const SelectTrigger = React.forwardRef<
 });
 SelectTrigger.displayName = "SelectTrigger";
 
+function hasMatchingValue(nodes: React.ReactNode, targetVal: string): boolean {
+  if (!targetVal) return true;
+  let found = false;
+  React.Children.forEach(nodes, (node) => {
+    if (found || !React.isValidElement(node)) return;
+    const props = node.props as any;
+    if (props?.value !== undefined && String(props.value).toLowerCase() === String(targetVal).toLowerCase()) {
+      found = true;
+      return;
+    }
+    if (props?.children) {
+      if (hasMatchingValue(props.children, targetVal)) {
+        found = true;
+      }
+    }
+  });
+  return found;
+}
+
 const SelectContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & { position?: "popper" | "item-aligned" }
@@ -198,6 +243,11 @@ const SelectContent = React.forwardRef<
   }, [context?.triggerRef]);
 
   const [coords, setCoords] = React.useState(calculateCoords);
+
+  const hasActiveInList = React.useMemo(() => {
+    if (!context?.value) return true;
+    return hasMatchingValue(children, context.value);
+  }, [children, context?.value]);
 
   React.useImperativeHandle(ref, () => contentRef.current!);
 
@@ -266,7 +316,14 @@ const SelectContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="p-1">{children}</div>
+      <div className="p-1">
+        {children}
+        {!hasActiveInList && context?.value && (
+          <SelectItem value={context.value}>
+            {capitalizeWords(String(context.value))}
+          </SelectItem>
+        )}
+      </div>
     </div>
   );
 
@@ -293,7 +350,10 @@ const SelectItem = React.forwardRef<
   const context = React.useContext(SelectContext);
   if (!context) throw new Error("SelectItem must be used within Select");
 
-  const isSelected = context.value === value;
+  const isSelected =
+    context.value !== undefined &&
+    value !== undefined &&
+    String(context.value).toLowerCase() === String(value).toLowerCase();
 
   React.useEffect(() => {
     context.registerLabel(value, children);

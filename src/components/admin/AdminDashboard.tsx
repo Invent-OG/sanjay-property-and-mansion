@@ -88,9 +88,22 @@ export function AdminDashboard() {
     setTimeout(() => setToastMsg(null), 3000);
   };
 
+  const normalizeLeadStatus = (status: string | null | undefined): LeadStatus => {
+    if (!status) return 'New';
+    const s = status.toLowerCase();
+    if (s === 'new') return 'New';
+    if (s === 'contacted') return 'Contacted';
+    if (s === 'in discussion') return 'In Discussion';
+    if (s === 'visit scheduled') return 'Visit Scheduled';
+    if (s === 'converted') return 'Converted';
+    if (s === 'lost') return 'Lost';
+    if (s === 'closed') return 'Closed';
+    return (status.charAt(0).toUpperCase() + status.slice(1)) as LeadStatus;
+  };
+
   // Status badge styling helper
-  const getStatusBadge = (status: LeadStatus) => {
-    switch (status) {
+  const getStatusBadge = (status: LeadStatus | string) => {
+    switch (normalizeLeadStatus(status)) {
       case 'New':
         return 'bg-amber-500/15 text-amber-400 border border-amber-500/30';
       case 'Contacted':
@@ -103,6 +116,8 @@ export function AdminDashboard() {
         return 'bg-[#FFCC00]/20 text-[#FFCC00] border border-[#FFCC00]/40 font-bold';
       case 'Lost':
         return 'bg-rose-500/15 text-rose-400 border border-rose-500/30';
+      case 'Closed':
+        return 'bg-neutral-800 text-neutral-300 border border-neutral-700';
       default:
         return 'bg-neutral-800 text-neutral-300 border border-neutral-700';
     }
@@ -155,7 +170,7 @@ export function AdminDashboard() {
         }
 
         // Status filter
-        if (statusFilter !== 'all' && lead.status !== statusFilter) return false;
+        if (statusFilter !== 'all' && normalizeLeadStatus(lead.status) !== statusFilter) return false;
 
         // Source filter
         if (sourceFilter !== 'all' && lead.source !== sourceFilter) return false;
@@ -530,6 +545,7 @@ export function AdminDashboard() {
                 <option value="Visit Scheduled">Visit Scheduled</option>
                 <option value="Converted">Converted</option>
                 <option value="Lost">Lost</option>
+                <option value="Closed">Closed</option>
               </select>
 
               {/* Sort Filter */}
@@ -828,7 +844,7 @@ export function AdminDashboard() {
                           {/* 5. Status Selector */}
                           <td className="py-4 px-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                             <select
-                              value={lead.status}
+                              value={normalizeLeadStatus(lead.status)}
                               onChange={(e) => handleStatusChange(lead.id, e.target.value as LeadStatus)}
                               className={`text-[11px] font-bold rounded-lg px-2.5 py-1 focus:outline-none cursor-pointer ${getStatusBadge(
                                 lead.status
@@ -840,6 +856,7 @@ export function AdminDashboard() {
                               <option value="Visit Scheduled" className="bg-neutral-900 text-emerald-400">Visit Scheduled</option>
                               <option value="Converted" className="bg-neutral-900 text-[#FFCC00]">Converted</option>
                               <option value="Lost" className="bg-neutral-900 text-rose-400">Lost</option>
+                              <option value="Closed" className="bg-neutral-900 text-neutral-400">Closed</option>
                             </select>
                           </td>
 
@@ -958,7 +975,7 @@ export function AdminDashboard() {
                       Lead Pipeline Stage
                     </label>
                     <select
-                      value={selectedLead.status}
+                      value={normalizeLeadStatus(selectedLead.status)}
                       onChange={(e) => handleStatusChange(selectedLead.id, e.target.value as LeadStatus)}
                       className={`text-xs font-extrabold rounded-xl px-3 py-1.5 focus:outline-none ${getStatusBadge(
                         selectedLead.status
@@ -970,6 +987,7 @@ export function AdminDashboard() {
                       <option value="Visit Scheduled" className="bg-neutral-900 text-emerald-400">Visit Scheduled</option>
                       <option value="Converted" className="bg-neutral-900 text-[#FFCC00]">Converted</option>
                       <option value="Lost" className="bg-neutral-900 text-rose-400">Lost</option>
+                      <option value="Closed" className="bg-neutral-900 text-neutral-400">Closed</option>
                     </select>
                   </div>
 
@@ -1268,7 +1286,7 @@ export function AdminDashboard() {
                       Initial Status
                     </label>
                     <select
-                      value={manualLead.status}
+                      value={normalizeLeadStatus(manualLead.status)}
                       onChange={(e) => setManualLead({ ...manualLead, status: e.target.value as LeadStatus })}
                       className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-neutral-100 focus:outline-none focus:border-[#FFCC00]"
                     >
@@ -1277,6 +1295,8 @@ export function AdminDashboard() {
                       <option value="In Discussion">In Discussion</option>
                       <option value="Visit Scheduled">Visit Scheduled</option>
                       <option value="Converted">Converted</option>
+                      <option value="Lost">Lost</option>
+                      <option value="Closed">Closed</option>
                     </select>
                   </div>
                 </div>

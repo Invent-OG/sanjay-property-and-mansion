@@ -118,7 +118,7 @@ export interface FullRealEstatePropertyData {
 // 2. WESTERN STAY (PG / HOSTEL) TYPES
 // =============================================================================
 export type RoomStatus = 'AVAILABLE' | 'OCCUPIED' | 'RESERVED' | 'MAINTENANCE' | 'INACTIVE';
-export type WesternStayEnquiryStatus = 'NEW' | 'CONTACTED' | 'FOLLOW-UP' | 'BOOKED' | 'CLOSED';
+export type WesternStayEnquiryStatus = 'NEW' | 'CONTACTED' | 'FOLLOW-UP' | 'BOOKED' | 'CONVERTED' | 'CANCELLED' | 'CLOSED';
 export type WesternStayImageCategory = 'Exterior' | 'Rooms' | 'Facilities' | 'Campus' | 'Dining' | 'Other';
 
 export interface WesternStaySettingsRecord {

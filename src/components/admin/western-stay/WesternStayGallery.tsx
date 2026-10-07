@@ -27,7 +27,7 @@ export function WesternStayGallery() {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('Exterior');
 
-  const categories = ['Exterior', 'Rooms', 'Campus', 'Dining'];
+  const categories = ['Exterior', 'Rooms', 'Facilities', 'Campus', 'Dining', 'Other'];
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
