@@ -247,8 +247,9 @@ export async function syncLeadToBudgetAi(
     }
 
     if (response.ok) {
-      // Extract CRM Lead ID (e.g. from data.id, id, lead_id, or crm_id)
+      // Extract CRM Lead ID (e.g. from lead.id, data.id, id, lead_id, or crm_id)
       const crmLeadId =
+        responseData?.lead?.id ||
         responseData?.id ||
         responseData?.data?.id ||
         responseData?.lead_id ||

@@ -64,25 +64,14 @@ function parseDncFlag(val: string | null | undefined): number {
   return trimmed === '1' ? 1 : 0;
 }
 
-export const GET: APIRoute = async ({ request, url }) => {
+// Common processor for both GET query parameters and POST payloads
+async function processJustdialPayload(rawPayload: Record<string, string>): Promise<Response> {
   try {
-    const searchParams = url.searchParams;
-
-    // Build raw payload dictionary preserving original parameter names & values
-    const rawPayload: Record<string, string> = {};
-    for (const [key, value] of searchParams.entries()) {
-      rawPayload[key] = value;
-    }
-
-    // Helper: case-insensitive query parameter retrieval
+    // Helper: case-insensitive payload retrieval
     const getParam = (paramName: string): string => {
-      if (searchParams.has(paramName)) {
-        return searchParams.get(paramName) || '';
-      }
-      for (const [k, v] of searchParams.entries()) {
-        if (k.toLowerCase() === paramName.toLowerCase()) {
-          return v || '';
-        }
+      if (rawPayload[paramName]) return rawPayload[paramName];
+      for (const [k, v] of Object.entries(rawPayload)) {
+        if (k.toLowerCase() === paramName.toLowerCase()) return v;
       }
       return '';
     };
@@ -250,4 +239,47 @@ export const GET: APIRoute = async ({ request, url }) => {
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
   }
+}
+
+// GET handler: Standard Justdial Webhook specification using query parameters
+export const GET: APIRoute = async ({ url }) => {
+  const rawPayload: Record<string, string> = {};
+  for (const [key, value] of url.searchParams.entries()) {
+    rawPayload[key] = value;
+  }
+  return processJustdialPayload(rawPayload);
+};
+
+// POST handler: Extended support for POST payloads (JSON or URL-encoded)
+export const POST: APIRoute = async ({ request, url }) => {
+  const rawPayload: Record<string, string> = {};
+
+  try {
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const json = await request.json().catch(() => ({}));
+      for (const [k, v] of Object.entries(json)) {
+        if (v !== undefined && v !== null) rawPayload[k] = String(v);
+      }
+    } else {
+      const text = await request.text();
+      if (text) {
+        const bodyParams = new URLSearchParams(text);
+        for (const [k, v] of bodyParams.entries()) {
+          rawPayload[k] = v;
+        }
+      }
+    }
+  } catch {
+    // Non-critical parsing fallback
+  }
+
+  // Merge any query parameters as fallback
+  for (const [key, value] of url.searchParams.entries()) {
+    if (!rawPayload[key]) {
+      rawPayload[key] = value;
+    }
+  }
+
+  return processJustdialPayload(rawPayload);
 };
