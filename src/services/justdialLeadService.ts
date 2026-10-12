@@ -4,6 +4,7 @@ import type { JustdialLeadRecord } from '../db/schema';
 export interface JustdialLeadFilters {
   search?: string;
   status?: string;
+  crmStatus?: string;
   category?: string;
   city?: string;
   sortBy?: 'newest' | 'oldest';
@@ -16,6 +17,10 @@ export interface JustdialLeadStats {
   followUpCount: number;
   convertedCount: number;
   closedCount: number;
+  // CRM Sync Status counts
+  pendingCrmCount: number;
+  syncedCrmCount: number;
+  failedCrmCount: number;
 }
 
 export const justdialLeadService = {
@@ -70,12 +75,45 @@ export const justdialLeadService = {
           item.raw_payload?.time ??
           null;
 
+        const rawCrm = item.raw_payload?.crm_sync;
+        const crmSyncStatus =
+          item.crmSyncStatus ||
+          item.crm_sync_status ||
+          rawCrm?.status ||
+          'pending';
+
+        const crmLeadId =
+          item.crmLeadId ||
+          item.crm_lead_id ||
+          rawCrm?.crm_lead_id ||
+          null;
+
+        const crmSyncedAt =
+          item.crmSyncedAt ||
+          item.crm_synced_at ||
+          rawCrm?.synced_at ||
+          null;
+
+        const crmSyncError =
+          item.crmSyncError ||
+          item.crm_sync_error ||
+          rawCrm?.error ||
+          null;
+
         return {
           ...item,
           leadDate,
           leadTime,
           lead_date: leadDate,
           lead_time: leadTime,
+          crmSyncStatus,
+          crmLeadId,
+          crmSyncedAt,
+          crmSyncError,
+          crm_sync_status: crmSyncStatus,
+          crm_lead_id: crmLeadId,
+          crm_synced_at: crmSyncedAt,
+          crm_sync_error: crmSyncError,
           createdAt: item.createdAt ?? item.created_at,
           updatedAt: item.updatedAt ?? item.updated_at,
           rawPayload: item.rawPayload ?? item.raw_payload,
@@ -83,6 +121,13 @@ export const justdialLeadService = {
       }).filter(
         (item) => !item.leadid?.toUpperCase().startsWith('TEST')
       ) as JustdialLeadRecord[];
+
+      if (filters.crmStatus && filters.crmStatus !== 'all') {
+        const targetCrm = filters.crmStatus.toLowerCase();
+        results = results.filter((item: any) =>
+          ((item.crmSyncStatus || item.crm_sync_status || 'pending').toLowerCase()) === targetCrm
+        );
+      }
 
       if (filters.search && filters.search.trim()) {
         const q = filters.search.toLowerCase().trim();
@@ -95,7 +140,8 @@ export const justdialLeadService = {
           (item.category && item.category.toLowerCase().includes(q)) ||
           (item.city && item.city.toLowerCase().includes(q)) ||
           (item.area && item.area.toLowerCase().includes(q)) ||
-          (item.company && item.company.toLowerCase().includes(q))
+          (item.company && item.company.toLowerCase().includes(q)) ||
+          ((item as any).crmLeadId && (item as any).crmLeadId.toLowerCase().includes(q))
         );
       }
 
@@ -132,6 +178,43 @@ export const justdialLeadService = {
     }
   },
 
+  // Retry CRM synchronization for a single lead via server-side endpoint
+  async retryCrmSync(leadId: string): Promise<{ success: boolean; status: string; crmLeadId?: string; error?: string }> {
+    try {
+      const response = await fetch('/api/leads/justdial/retry-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ leadId }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok && !data.success) {
+        return {
+          success: false,
+          status: data.status || 'failed',
+          error: data.error || `HTTP ${response.status}: Failed to synchronize with Budget AI CRM`,
+        };
+      }
+
+      return {
+        success: data.success,
+        status: data.status || 'synced',
+        crmLeadId: data.crmLeadId,
+        error: data.error,
+      };
+    } catch (err: any) {
+      console.error('Exception retrying CRM sync:', err);
+      return {
+        success: false,
+        status: 'failed',
+        error: err?.message || 'Network error triggering CRM sync',
+      };
+    }
+  },
+
   // Delete lead
   async deleteLead(id: string): Promise<boolean> {
     const client = getSupabaseClient();
@@ -164,6 +247,10 @@ export const justdialLeadService = {
       followUpCount: leads.filter((l) => (l.status || '').toLowerCase() === 'follow-up').length,
       convertedCount: leads.filter((l) => (l.status || '').toLowerCase() === 'converted').length,
       closedCount: leads.filter((l) => (l.status || '').toLowerCase() === 'closed').length,
+      // CRM status counts
+      pendingCrmCount: leads.filter((l: any) => (l.crmSyncStatus || l.crm_sync_status || 'pending').toLowerCase() === 'pending').length,
+      syncedCrmCount: leads.filter((l: any) => (l.crmSyncStatus || l.crm_sync_status || '').toLowerCase() === 'synced').length,
+      failedCrmCount: leads.filter((l: any) => (l.crmSyncStatus || l.crm_sync_status || '').toLowerCase() === 'failed').length,
     };
   },
 };

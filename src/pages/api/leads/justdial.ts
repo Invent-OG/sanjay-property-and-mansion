@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getSupabaseServerClient } from '../../../lib/supabaseServer';
+import { syncLeadToBudgetAi } from '../../../services/budgetAiCrmService';
 
 export const prerender = false;
 
@@ -126,14 +127,28 @@ export const GET: APIRoute = async ({ request, url }) => {
     // Server-side Supabase client using Service Role Key
     const supabase = getSupabaseServerClient();
 
-    // Check for existing lead to maintain idempotency and preserve existing admin status
+    // Check for existing lead to maintain idempotency, preserve existing admin status, and prevent duplicate CRM processing
     const { data: existingLead } = await supabase
       .from('justdial_leads')
-      .select('id, status')
+      .select('id, status, raw_payload')
       .eq('leadid', leadid)
       .maybeSingle();
 
     const currentStatus = existingLead?.status || 'new';
+    const existingCrmSync = existingLead?.raw_payload?.crm_sync;
+    const isAlreadySynced = existingCrmSync?.status === 'synced';
+
+    // Enrich rawPayload with initial CRM sync metadata if not already synced
+    const initialRawPayload = {
+      ...rawPayload,
+      crm_sync: existingCrmSync || {
+        status: 'pending',
+        crm_lead_id: null,
+        synced_at: null,
+        error: null,
+        created_at: new Date().toISOString(),
+      },
+    };
 
     const leadRecord = {
       leadid,
@@ -157,13 +172,15 @@ export const GET: APIRoute = async ({ request, url }) => {
       parentid,
       source: 'justdial',
       status: currentStatus,
-      raw_payload: rawPayload,
+      raw_payload: initialRawPayload,
       updated_at: new Date().toISOString(),
     };
 
-    const { error: dbError } = await supabase
+    const { data: upsertedData, error: dbError } = await supabase
       .from('justdial_leads')
-      .upsert(leadRecord, { onConflict: 'leadid' });
+      .upsert(leadRecord, { onConflict: 'leadid' })
+      .select('id')
+      .single();
 
     if (dbError) {
       console.error('[Justdial] Database upsert failed:', dbError.message);
@@ -173,10 +190,49 @@ export const GET: APIRoute = async ({ request, url }) => {
       });
     }
 
+    const savedLeadId = upsertedData?.id || existingLead?.id;
+
     if (existingLead) {
-      console.log(`[Justdial] Duplicate lead ${leadid} updated successfully`);
+      console.log(`[Justdial] Duplicate lead ${leadid} updated successfully in database`);
     } else {
-      console.log(`[Justdial] Database insert successful for Lead ID: ${leadid}`);
+      console.log(`[Justdial] Database insert successful for Lead ID: ${leadid} (UUID: ${savedLeadId})`);
+    }
+
+    // REQUIREMENT 1 & 4 & 6: Automatic CRM Synchronization
+    // If the lead was already successfully synced to CRM, avoid redundant duplicate processing
+    if (isAlreadySynced) {
+      console.log(`[Justdial] Lead ${leadid} already synced to CRM. Skipping duplicate transmission.`);
+    } else {
+      // Check if duplicate phone number exists across distinct Justdial enquiries
+      let duplicatePhoneDetected = false;
+      const targetPhone = mobile || phone;
+      if (targetPhone) {
+        try {
+          const { count } = await supabase
+            .from('justdial_leads')
+            .select('id', { count: 'exact', head: true })
+            .neq('leadid', leadid)
+            .or(`mobile.eq.${targetPhone},phone.eq.${targetPhone}`);
+          duplicatePhoneDetected = Boolean(count && count > 0);
+        } catch {
+          // Non-critical check failure
+        }
+      }
+
+      // Execute synchronous CRM synchronization with strict timeout to preserve Justdial SLA (<2.5s)
+      try {
+        const fullLeadForSync = {
+          ...leadRecord,
+          id: savedLeadId,
+        };
+        await syncLeadToBudgetAi(fullLeadForSync, {
+          timeoutMs: 2500,
+          isDuplicatePhone: duplicatePhoneDetected,
+        });
+      } catch (syncErr: any) {
+        console.error('[Justdial] Automatic CRM sync error:', syncErr?.message || syncErr);
+        // Lead remains safely preserved in Supabase with pending/failed status
+      }
     }
 
     // Exact response requirement: HTTP 200, Content-Type: text/plain, Body: RECEIVED

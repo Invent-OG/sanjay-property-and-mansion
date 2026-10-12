@@ -5,21 +5,24 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 let serverClientInstance: SupabaseClient | null = null;
 
-export const DEFAULT_SUPABASE_SERVICE_ROLE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0ZHF0cWRkbG5oaWJmYW5neG92Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4OTkzNDMyNiwiZXhwIjoyMTA1NTEwMzI2fQ.8cexQNT3kzK5Mn_d-KSdFNqEypDa-8ouV4STVcMbqY4';
-
 export function getSupabaseServerClient(): SupabaseClient {
   if (serverClientInstance) return serverClientInstance;
 
   const url =
-    (typeof process !== 'undefined' && process.env.PUBLIC_SUPABASE_URL) ||
-    (typeof import.meta !== 'undefined' && (import.meta as any).env?.PUBLIC_SUPABASE_URL) ||
-    'https://htdqtqddlnhibfangxov.supabase.co';
+    (typeof process !== 'undefined' && (process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL)) ||
+    (typeof import.meta !== 'undefined' && ((import.meta as any).env?.SUPABASE_URL || (import.meta as any).env?.PUBLIC_SUPABASE_URL)) ||
+    '';
 
   const serviceRoleKey =
     (typeof process !== 'undefined' && process.env.SUPABASE_SERVICE_ROLE_KEY) ||
     (typeof import.meta !== 'undefined' && (import.meta as any).env?.SUPABASE_SERVICE_ROLE_KEY) ||
-    DEFAULT_SUPABASE_SERVICE_ROLE_KEY;
+    '';
+
+  if (!url || !serviceRoleKey) {
+    throw new Error(
+      'Supabase server configuration error: SUPABASE_URL (or PUBLIC_SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY must be set in environment variables.'
+    );
+  }
 
   serverClientInstance = createClient(url, serviceRoleKey, {
     auth: {

@@ -5,11 +5,11 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-const supabaseUrl = process.env.PUBLIC_SUPABASE_URL || '';
+const supabaseUrl = process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL || '';
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 if (!supabaseUrl || !serviceRoleKey) {
-  console.error('Missing PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env');
+  console.error('Missing SUPABASE_URL (or PUBLIC_SUPABASE_URL) or SUPABASE_SERVICE_ROLE_KEY in .env');
   process.exit(1);
 }
 

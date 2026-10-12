@@ -55,3 +55,21 @@ export function useDeleteJustdialLead() {
     },
   });
 }
+
+export function useRetryJustdialCrmSync() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (leadId: string) => {
+      const result = await justdialLeadService.retryCrmSync(leadId);
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to sync with Budget AI CRM');
+      }
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: JUSTDIAL_LEADS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ['justdial-lead-stats'] });
+    },
+  });
+}

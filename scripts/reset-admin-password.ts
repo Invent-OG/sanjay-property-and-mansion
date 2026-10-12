@@ -3,11 +3,11 @@ dotenv.config();
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.PUBLIC_SUPABASE_URL;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !serviceRoleKey) {
-  console.error('Error: PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in .env');
+  console.error('Error: SUPABASE_URL (or PUBLIC_SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY must be set in .env');
   process.exit(1);
 }
 
@@ -19,8 +19,13 @@ const adminClient = createClient(supabaseUrl, serviceRoleKey, {
 });
 
 async function resetPassword() {
-  const targetEmail = process.argv[2] || 'admin@sanjayproperties.in';
-  const newPassword = process.argv[3] || 'sanjay123';
+  const targetEmail = process.argv[2];
+  const newPassword = process.argv[3];
+
+  if (!targetEmail || !newPassword) {
+    console.error('Usage: npx tsx scripts/reset-admin-password.ts <email> <newPassword>');
+    process.exit(1);
+  }
 
   console.log(`Setting password for ${targetEmail}...`);
 

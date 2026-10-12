@@ -414,6 +414,10 @@ export const justdialLeads = pgTable('justdial_leads', {
   source: varchar('source', { length: 50 }).default('justdial'),
   status: varchar('status', { length: 50 }).default('new'),
   rawPayload: jsonb('raw_payload'),
+  crmSyncStatus: varchar('crm_sync_status', { length: 50 }).default('pending'),
+  crmLeadId: varchar('crm_lead_id', { length: 255 }),
+  crmSyncedAt: timestamp('crm_synced_at', { withTimezone: true }),
+  crmSyncError: text('crm_sync_error'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });

@@ -21,12 +21,15 @@ import {
   ExternalLink,
   Code2,
   ChevronDown,
+  UploadCloud,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   useJustdialLeads,
   useJustdialLeadStats,
   useUpdateJustdialLeadStatus,
   useDeleteJustdialLead,
+  useRetryJustdialCrmSync,
 } from '../../hooks/useJustdialLeadsQuery';
 import type { JustdialLeadRecord } from '../../db/schema';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../ui/card';
@@ -123,11 +126,13 @@ const formatLeadTime = (timeVal?: string | null, fallbackVal?: string | Date | n
 export const AdminJustdialLeadsManager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [crmFilter, setCrmFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest'>('newest');
 
   // React Query Hooks
   const { data: rawLeads = [], isLoading, refetch } = useJustdialLeads({
     status: statusFilter,
+    crmStatus: crmFilter,
     search: searchQuery,
     sortBy,
   });
@@ -143,7 +148,7 @@ export const AdminJustdialLeadsManager: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, statusFilter, sortBy]);
+  }, [searchQuery, statusFilter, crmFilter, sortBy]);
 
   const totalPages = Math.ceil(displayLeads.length / pageSize) || 1;
   const paginatedLeads = useMemo(() => {
@@ -154,16 +159,41 @@ export const AdminJustdialLeadsManager: React.FC = () => {
   const { data: stats } = useJustdialLeadStats();
   const updateStatusMutation = useUpdateJustdialLeadStatus();
   const deleteLeadMutation = useDeleteJustdialLead();
+  const retrySyncMutation = useRetryJustdialCrmSync();
 
   // Selected Lead for Detail Modal
   const [selectedLead, setSelectedLead] = useState<JustdialLeadRecord | null>(null);
   const [showRawPayload, setShowRawPayload] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3500);
+  };
+
+  const handleRetrySync = async (leadId: string) => {
+    try {
+      setRetryingId(leadId);
+      const res = await retrySyncMutation.mutateAsync(leadId);
+      showToast(`CRM Sync: ${res.status.toUpperCase()}${res.crmLeadId ? ' (' + res.crmLeadId + ')' : ''}`);
+      if (selectedLead && (selectedLead.id === leadId || (selectedLead as any).leadid === leadId)) {
+        setSelectedLead({
+          ...selectedLead,
+          crmSyncStatus: res.status,
+          crmLeadId: res.crmLeadId,
+          crmSyncError: res.error,
+          crm_sync_status: res.status,
+          crm_lead_id: res.crmLeadId,
+          crm_sync_error: res.error,
+        } as any);
+      }
+    } catch (err: any) {
+      showToast(err.message || 'Retry failed');
+    } finally {
+      setRetryingId(null);
+    }
   };
 
   const handleStatusChange = async (leadId: string, newStatus: string) => {
@@ -277,6 +307,42 @@ export const AdminJustdialLeadsManager: React.FC = () => {
         </Card>
       </div>
 
+      {/* Budget AI CRM Synchronization Pipeline Metrics */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <Card className="p-3.5 bg-gradient-to-br from-emerald-950/30 to-[#14161b] border-emerald-900/40 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              Budget AI Synced
+            </span>
+            <p className="text-[11px] text-neutral-400 mt-0.5">Confirmed delivery to CRM</p>
+          </div>
+          <div className="text-2xl font-black text-emerald-400">{stats?.syncedCrmCount ?? 0}</div>
+        </Card>
+
+        <Card className="p-3.5 bg-gradient-to-br from-amber-950/20 to-[#14161b] border-amber-900/40 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              CRM Sync Pending
+            </span>
+            <p className="text-[11px] text-neutral-400 mt-0.5">Queued for automatic sync</p>
+          </div>
+          <div className="text-2xl font-black text-amber-400">{stats?.pendingCrmCount ?? 0}</div>
+        </Card>
+
+        <Card className="p-3.5 bg-gradient-to-br from-rose-950/30 to-[#14161b] border-rose-900/40 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+              CRM Sync Failed
+            </span>
+            <p className="text-[11px] text-neutral-400 mt-0.5">Needs administrator retry</p>
+          </div>
+          <div className="text-2xl font-black text-rose-400">{stats?.failedCrmCount ?? 0}</div>
+        </Card>
+      </div>
+
       {/* Filter and Search Controls */}
       <Card className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3.5 bg-[#14161b] border-neutral-800">
         <div className="relative flex-1">
@@ -308,6 +374,21 @@ export const AdminJustdialLeadsManager: React.FC = () => {
             </Select>
           </div>
 
+          {/* CRM Sync Filter */}
+          <div className="w-[140px] shrink-0">
+            <Select value={crmFilter} onValueChange={setCrmFilter}>
+              <SelectTrigger className="h-9 bg-neutral-900 border-neutral-700/80">
+                <SelectValue placeholder="CRM Sync" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All CRM Sync</SelectItem>
+                <SelectItem value="synced">Synced</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="failed">Failed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Sort Order */}
           <div className="w-[130px] shrink-0">
             <Select value={sortBy} onValueChange={(val) => setSortBy(val as any)}>
@@ -333,20 +414,21 @@ export const AdminJustdialLeadsManager: React.FC = () => {
             <TableHead>Category &amp; Location</TableHead>
             <TableHead>Lead Date / Time</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>CRM Sync</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-12 text-center text-neutral-500">
+              <TableCell colSpan={7} className="py-12 text-center text-neutral-500">
                 <RefreshCw className="w-6 h-6 mx-auto animate-spin mb-2 text-[#FFCC00]" />
                 <span>Loading Justdial leads...</span>
               </TableCell>
             </TableRow>
           ) : displayLeads.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="py-12 text-center text-neutral-500">
+              <TableCell colSpan={7} className="py-12 text-center text-neutral-500">
                 <PhoneCall className="w-8 h-8 mx-auto mb-2 text-neutral-600" />
                 <p className="font-semibold text-neutral-300">No Justdial leads found</p>
                 <p className="text-[11px] text-neutral-500 mt-1">
@@ -476,9 +558,90 @@ export const AdminJustdialLeadsManager: React.FC = () => {
                     </Select>
                   </TableCell>
 
+                  {/* CRM Sync Status */}
+                  <TableCell>
+                    {(() => {
+                      const syncStatus = ((lead as any).crmSyncStatus || (lead as any).crm_sync_status || 'pending').toLowerCase();
+                      const crmId = (lead as any).crmLeadId || (lead as any).crm_lead_id;
+                      const syncError = (lead as any).crmSyncError || (lead as any).crm_sync_error;
+                      const isRetrying = retryingId === lead.id;
+
+                      if (syncStatus === 'synced') {
+                        return (
+                          <div className="flex flex-col gap-0.5" title={crmId ? `CRM Lead ID: ${crmId}` : 'Synced to Budget AI Studio CRM'}>
+                            <Badge variant="success" className="text-[10px] gap-1 px-1.5 py-0 font-medium inline-flex items-center w-fit">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                              <span>Synced</span>
+                            </Badge>
+                            {crmId && (
+                              <span className="text-[10px] font-mono text-neutral-400 truncate max-w-[110px]">
+                                {crmId}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
+
+                      if (syncStatus === 'failed') {
+                        return (
+                          <div className="flex items-center gap-1.5">
+                            <Badge
+                              variant="destructive"
+                              className="text-[10px] gap-1 px-1.5 py-0 font-medium cursor-help"
+                              title={syncError || 'Sync failed. Click retry button.'}
+                            >
+                              <AlertTriangle className="w-3 h-3" />
+                              <span>Failed</span>
+                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => handleRetrySync(lead.id)}
+                              disabled={isRetrying}
+                              title="Retry Sync to Budget AI CRM"
+                              className="p-1 rounded bg-neutral-800 hover:bg-neutral-700 text-sky-400 hover:text-sky-300 transition-colors cursor-pointer"
+                            >
+                              <RefreshCw className={`w-3 h-3 ${isRetrying ? 'animate-spin text-[#FFCC00]' : ''}`} />
+                            </button>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline" className="text-[10px] gap-1 px-1.5 py-0 font-medium text-amber-400 border-amber-500/30">
+                            <Clock className="w-3 h-3 text-amber-400" />
+                            <span>Pending</span>
+                          </Badge>
+                          <button
+                            type="button"
+                            onClick={() => handleRetrySync(lead.id)}
+                            disabled={isRetrying}
+                            title="Sync now to Budget AI CRM"
+                            className="p-1 rounded bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-[#FFCC00] transition-colors cursor-pointer"
+                          >
+                            <UploadCloud className={`w-3 h-3 ${isRetrying ? 'animate-spin text-[#FFCC00]' : ''}`} />
+                          </button>
+                        </div>
+                      );
+                    })()}
+                  </TableCell>
+
                   {/* Quick Actions */}
                   <TableCell className="text-right">
                     <div className="inline-flex items-center gap-1.5">
+                      {/* Retry Sync Button if Failed */}
+                      {(((lead as any).crmSyncStatus || (lead as any).crm_sync_status || 'pending').toLowerCase() !== 'synced') && (
+                        <Button
+                          variant="secondary"
+                          size="icon"
+                          onClick={() => handleRetrySync(lead.id)}
+                          disabled={retryingId === lead.id}
+                          className="hover:text-[#FFCC00] hover:border-[#FFCC00]/30 text-sky-400"
+                          title="Retry Sync to Budget AI CRM"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 ${retryingId === lead.id ? 'animate-spin text-[#FFCC00]' : ''}`} />
+                        </Button>
+                      )}
                       {/* Call Button */}
                       {cleanPhone && (
                         <Button
@@ -685,6 +848,73 @@ export const AdminJustdialLeadsManager: React.FC = () => {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              {/* Budget AI Studio CRM Synchronization Status Card */}
+              <div className="p-4 rounded-2xl bg-neutral-900/90 border border-neutral-800 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-800 pb-2.5">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                        Budget AI Studio CRM Delivery
+                      </span>
+                      {(() => {
+                        const s = (((selectedLead as any).crmSyncStatus || (selectedLead as any).crm_sync_status || 'pending')).toLowerCase();
+                        if (s === 'synced') return <Badge variant="success" className="text-[10px] gap-1 px-2 py-0"><CheckCircle2 className="w-3 h-3 text-emerald-400" /> Synced</Badge>;
+                        if (s === 'failed') return <Badge variant="destructive" className="text-[10px] gap-1 px-2 py-0"><AlertTriangle className="w-3 h-3" /> Failed</Badge>;
+                        return <Badge variant="outline" className="text-[10px] gap-1 px-2 py-0 text-amber-400 border-amber-500/30"><Clock className="w-3 h-3" /> Pending</Badge>;
+                      })()}
+                    </div>
+                    <p className="text-xs text-neutral-400 mt-0.5">
+                      Target API: https://crm.budgetaistudio.com/api/agent/v1/leads
+                    </p>
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleRetrySync(selectedLead.id)}
+                    disabled={retryingId === selectedLead.id}
+                    className="gap-2 shrink-0 border-neutral-700 bg-neutral-800/80 hover:bg-neutral-700 text-xs text-white"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${retryingId === selectedLead.id ? 'animate-spin text-[#FFCC00]' : 'text-[#FFCC00]'}`} />
+                    <span>{retryingId === selectedLead.id ? 'Synchronizing...' : 'Sync to Budget AI'}</span>
+                  </Button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <span className="text-[10px] text-neutral-500 font-bold uppercase block">CRM Lead ID</span>
+                    <span className="font-mono text-neutral-200">
+                      {(selectedLead as any).crmLeadId || (selectedLead as any).crm_lead_id || 'Not assigned yet'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-neutral-500 font-bold uppercase block">Synced At</span>
+                    <span className="text-neutral-300">
+                      {(selectedLead as any).crmSyncedAt || (selectedLead as any).crm_synced_at
+                        ? new Date((selectedLead as any).crmSyncedAt || (selectedLead as any).crm_synced_at).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+                        : 'Pending'}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-neutral-500 font-bold uppercase block">Delivery Status</span>
+                    <span className="text-neutral-300">
+                      {((selectedLead as any).crmSyncStatus || (selectedLead as any).crm_sync_status || 'pending').toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+
+                {((selectedLead as any).crmSyncError || (selectedLead as any).crm_sync_error) && (
+                  <div className="p-2.5 rounded-xl bg-rose-950/30 border border-rose-900/50 text-[11px] text-rose-300 flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold block">Synchronization Error / Action Required:</span>
+                      <span>{(selectedLead as any).crmSyncError || (selectedLead as any).crm_sync_error}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Data Grid: Complete Justdial Fields */}
