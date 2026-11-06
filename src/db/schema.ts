@@ -425,3 +425,24 @@ export const justdialLeads = pgTable('justdial_leads', {
 export type JustdialLeadRecord = typeof justdialLeads.$inferSelect;
 export type NewJustdialLeadRecord = typeof justdialLeads.$inferInsert;
 
+// =============================================================================
+// 5. USERS & ADMIN AUTHENTICATION
+// =============================================================================
+
+export const users = pgTable('users', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  name: text('name').notNull().default('Administrator'),
+  role: text('role').notNull().default('admin'), // 'admin' | 'superadmin' | 'staff'
+  isActive: boolean('is_active').notNull().default(true),
+  avatarUrl: text('avatar_url'),
+  lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type UserDbRecord = typeof users.$inferSelect;
+export type NewUserDbRecord = typeof users.$inferInsert;
+
+

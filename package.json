@@ -12,6 +12,7 @@
     "lint": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx scripts/seed-drizzle.ts",
+    "db:users": "tsx scripts/create-user-table.ts",
     "reset-admin": "tsx scripts/reset-admin-password.ts",
     "clean:test-leads": "tsx scripts/clean-test-justdial-leads.ts"
   },

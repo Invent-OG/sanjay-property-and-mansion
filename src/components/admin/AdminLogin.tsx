@@ -33,11 +33,7 @@ export const AdminLogin: React.FC = () => {
       const { user, error } = await authService.signIn(email, password);
 
       if (error || !user) {
-        if (error?.toLowerCase().includes('invalid login credentials')) {
-          setErrorMsg('Invalid login credentials. Please ensure you have created this admin user in your Supabase Dashboard (Authentication → Users → Add User → Auto Confirm: ON).');
-        } else {
-          setErrorMsg(error || 'Invalid email or password.');
-        }
+        setErrorMsg(error || 'Invalid email or password. Please verify your credentials and try again.');
         setIsLoading(false);
         return;
       }

@@ -445,3 +445,21 @@ export type AccommodationRecord = WesternStayRoomTypeRecord;
 export type FacilityRecord = WesternStayFacilityRecord;
 export type MealPlanRecord = WesternStayMealPlanRecord;
 export type WeeklyMenuRecord = WesternStayMenuRecord;
+
+// =============================================================================
+// USER & ADMIN CREDENTIAL TYPES
+// =============================================================================
+export interface UserRecord {
+  id: string;
+  email: string;
+  password_hash: string;
+  name: string;
+  role: 'admin' | 'superadmin' | 'staff';
+  is_active: boolean;
+  avatar_url?: string | null;
+  last_login_at?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type AdminUserRecord = UserRecord;
