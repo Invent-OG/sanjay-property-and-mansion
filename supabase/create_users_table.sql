@@ -77,3 +77,4 @@ ON CONFLICT (email) DO UPDATE SET
 -- 7. Grant necessary permissions to anon and service_role
 GRANT SELECT ON public.users TO anon;
 GRANT ALL ON public.users TO service_role;
+

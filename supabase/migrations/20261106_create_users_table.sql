@@ -57,3 +57,4 @@ ON CONFLICT (email) DO UPDATE SET
 
 GRANT SELECT ON public.users TO anon;
 GRANT ALL ON public.users TO service_role;
+

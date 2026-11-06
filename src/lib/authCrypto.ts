@@ -57,3 +57,4 @@ export async function verifyPassword(password: string, storedHash: string): Prom
 export function generateSessionToken(): string {
   return crypto.randomBytes(32).toString('hex');
 }
+
