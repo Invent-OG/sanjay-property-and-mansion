@@ -18,7 +18,9 @@ import {
   MapPin,
   FileText,
   PhoneCall,
-  ChevronDown
+  ChevronDown,
+  ShieldCheck,
+  KeyRound
 } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { QueryProvider } from '../common/QueryProvider';
@@ -29,9 +31,17 @@ import { AdminLeadsManager } from './AdminLeadsManager';
 import { AdminJustdialLeadsManager } from './AdminJustdialLeadsManager';
 import { AdminMediaLibrary } from './AdminMediaLibrary';
 import { AdminSettings } from './AdminSettings';
+import { AdminSecuritySettings } from './AdminSecuritySettings';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Avatar } from '../ui/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '../ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -81,6 +91,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminEmail, setAdminEmail] = useState<string>('admin@sanjayproperties.in');
+  const [isSecurityModalOpen, setIsSecurityModalOpen] = useState(false);
 
   const [activePath, setActivePath] = useState<string>(() => {
     if (typeof window !== 'undefined') {
@@ -95,6 +106,16 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         setAdminEmail(user.email);
       }
     });
+
+    const unsubscribe = authService.onAuthStateChange((session) => {
+      if (session?.user?.email) {
+        setAdminEmail(session.user.email);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   // Sync with browser back/forward buttons
@@ -157,7 +178,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     {
       group: 'SYSTEM & SETTINGS',
       items: [
-        { label: 'Site Settings & SEO', href: '/admin/settings', icon: Settings }
+        { label: 'Site Settings & SEO', href: '/admin/settings', icon: Settings },
+        { label: 'Admin Security', href: '/admin/settings?tab=security', icon: ShieldCheck }
       ]
     }
   ];
@@ -165,6 +187,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const cleanActive = activePath.split('?')[0].replace(/\/$/, '') || '/admin';
 
   const isActiveRoute = (href: string, exact: boolean = false) => {
+    if (href.includes('?')) {
+      return activePath === href;
+    }
+    if (activePath.includes('?') && !href.includes('?')) {
+      const cleanHref = href.replace(/\/$/, '') || '/admin';
+      return cleanActive === cleanHref && !activePath.includes('tab=security');
+    }
     const cleanHref = href.replace(/\/$/, '') || '/admin';
     if (exact) {
       return cleanActive === cleanHref;
@@ -291,10 +320,15 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       };
     }
     if (cleanActive === '/admin/settings') {
+      const isSecurityTab = activePath.includes('tab=security');
       return {
-        title: 'Site Settings & SEO',
-        subtitle: 'Manage global Sanjay Properties contact details and default SEO tags',
-        breadcrumbs: [{ label: 'Settings & SEO' }]
+        title: isSecurityTab ? 'Admin Security & Credentials' : 'Site Settings & SEO',
+        subtitle: isSecurityTab
+          ? 'Manage administrator login email address and change account password'
+          : 'Manage global Sanjay Properties contact details and default SEO tags',
+        breadcrumbs: isSecurityTab
+          ? [{ label: 'Settings', href: '/admin/settings' }, { label: 'Security & Credentials' }]
+          : [{ label: 'Settings & SEO' }]
       };
     }
 
@@ -648,6 +682,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setIsSecurityModalOpen(true)}>
+                        <KeyRound className="w-3.5 h-3.5 mr-2 text-[#FFCC00]" />
+                        <span>Change Email &amp; Password</span>
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => navigateTo('/admin/settings')}>
                         <Settings className="w-3.5 h-3.5 mr-2 text-neutral-400" />
                         <span>Site Settings &amp; SEO</span>
@@ -672,6 +710,30 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               </main>
             </div>
           </div>
+
+          {/* Quick Security & Credentials Modal */}
+          <Dialog open={isSecurityModalOpen} onOpenChange={setIsSecurityModalOpen}>
+            <DialogContent className="max-w-4xl bg-[#12141a] border-neutral-800 p-6 sm:p-8">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-[#FFCC00]" />
+                  <span>Admin Security &amp; Credentials</span>
+                </DialogTitle>
+                <DialogDescription className="text-xs text-neutral-400">
+                  Update your administrator login email address or create a new password. Changes apply immediately.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="mt-4">
+                <AdminSecuritySettings
+                  onCredentialsChanged={(newEmail) => {
+                    if (newEmail) {
+                      setAdminEmail(newEmail);
+                    }
+                  }}
+                />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </AdminNavContext.Provider>
     </QueryProvider>

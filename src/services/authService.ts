@@ -94,5 +94,84 @@ export const authService = {
     return () => {
       data.subscription.unsubscribe();
     };
+  },
+
+  /**
+   * Update administrative credentials (email, password, or both).
+   * Verifies current password on server before applying changes.
+   * Auto-refreshes current session upon success.
+   */
+  async updateCredentials(params: {
+    currentPassword: string;
+    newEmail?: string;
+    newPassword?: string;
+  }): Promise<{
+    success: boolean;
+    message: string;
+    error: string | null;
+    user?: { id: string; email?: string } | null;
+  }> {
+    const session = await this.getSession();
+    if (!session || !session.access_token) {
+      return {
+        success: false,
+        message: '',
+        error: 'You must be signed in as an administrator to change credentials.'
+      };
+    }
+
+    try {
+      const response = await fetch('/api/admin/update-credentials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(params)
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.success) {
+        return {
+          success: false,
+          message: '',
+          error: data.error || 'Failed to update credentials. Please check your current password.'
+        };
+      }
+
+      // Automatically re-authenticate client session in the background
+      const targetEmail = params.newEmail?.trim().toLowerCase() || session.user?.email || '';
+      const targetPassword = params.newPassword || params.currentPassword;
+      if (targetEmail && targetPassword) {
+        try {
+          await this.signIn(targetEmail, targetPassword);
+        } catch (reAuthErr) {
+          console.warn('Re-authentication after credential update warning:', reAuthErr);
+        }
+      }
+
+      return {
+        success: true,
+        message: data.message || 'Credentials updated successfully!',
+        error: null,
+        user: data.user || null
+      };
+    } catch (err: any) {
+      console.error('Update credentials failure:', err);
+      return {
+        success: false,
+        message: '',
+        error: err.message || 'Network error occurred while updating credentials.'
+      };
+    }
+  },
+
+  async updateEmail(newEmail: string, currentPassword: string) {
+    return this.updateCredentials({ currentPassword, newEmail });
+  },
+
+  async updatePassword(newPassword: string, currentPassword: string) {
+    return this.updateCredentials({ currentPassword, newPassword });
   }
 };
