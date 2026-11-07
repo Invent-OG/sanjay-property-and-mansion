@@ -69,7 +69,7 @@ export const POST: APIRoute = async ({ request }) => {
         crmLeadId: result.crmLeadId || null,
         error: result.error || null,
       }),
-      { status: result.success ? 200 : 422, headers: corsHeaders }
+      { status: 200, headers: corsHeaders }
     );
   } catch (err: any) {
     console.error('[Retry Sync API] Unexpected error:', err?.message || err);

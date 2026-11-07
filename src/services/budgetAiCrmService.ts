@@ -267,7 +267,10 @@ export async function syncLeadToBudgetAi(
       if (lead.id) await updateLeadSyncStatusInDb(lead.id, result);
       return result;
     } else {
-      const errorMsg = `HTTP ${response.status} ${response.statusText}: ${responseData?.error || responseData?.message || responseText || 'Unknown CRM error'}`;
+      let errorMsg = `HTTP ${response.status} ${response.statusText}: ${responseData?.error || responseData?.message || responseText || 'Unknown CRM error'}`;
+      if (response.status === 401) {
+        errorMsg = 'Invalid or expired CRM API key. Please check BUDGET_AI_API_KEY in your .env or Budget AI Studio account.';
+      }
       console.error(`[Budget AI CRM] Lead sync failed for ${lead.leadid || lead.id}: ${errorMsg}`);
 
       const result: CrmSyncResult = {
